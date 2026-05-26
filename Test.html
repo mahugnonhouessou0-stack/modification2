@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Cours Animé : Décomposition en facteurs premiers</title>
+    <style>
+        :root {
+            /* Variable qui pilotera toute l'interface */
+            --board-bg: #1c3826;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; overflow: hidden; }
+        
+        body { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-family: Georgia, serif;
+            /* Couleur de base solide pour toute la page */
+            background-color: var(--board-bg);
+            /* Reflet miroir plus fin pour laisser paraître la vraie couleur */
+            background-image: linear-gradient(
+                145deg, 
+                rgba(255,255,255,0) 40%, 
+                rgba(255,255,255,0.12) 50%, 
+                rgba(255,255,255,0) 60%
+            );
+            background-size: 300% 300%;
+            animation: shimmer 15s ease infinite;
+            background-attachment: fixed;
+            transition: background-color 0.6s ease; /* Transition douce pour l'interface */
+        }
+
+        .board-frame {
+            padding: 22px;
+            background: #5d4037;
+            /* Simulation de grain de bois avec des gradients */
+            background-image: 
+                repeating-linear-gradient(to right, rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 1px, transparent 1px, transparent 60px),
+                linear-gradient(135deg, #795548 0%, #3e2723 100%);
+            border-radius: 15px;
+            border: 6px solid #4e342e;
+            box-shadow: 
+                inset 0 0 30px rgba(0,0,0,0.8), /* Ombre interne pour l'effet de cadre */
+                0 30px 80px rgba(0,0,0,0.8);    /* Ombre portée globale */
+            display: inline-flex;
+            position: relative;
+            line-height: 0;
+        }
+        /* Texture fine supplémentaire pour les fibres */
+        .board-frame::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 4px);
+            pointer-events: none;
+            border-radius: 10px;
+        }
+        #boardCanvas {
+            border-radius: 4px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.6);
+            display: block;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 12px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-family: inherit;
+            color: white;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            transition: all 0.2s ease;
+        }
+        button:hover { background: rgba(255, 255, 255, 0.25); }
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 8px 12px;
+            backdrop-filter: blur(4px);
+        }
+        .speed-control input[type="range"] {
+            -webkit-appearance: none;
+            width: 100px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+        }
+        .color-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 8px 12px;
+            backdrop-filter: blur(4px);
+        }
+        select {
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            cursor: pointer;
+            outline: none;
+            font-family: inherit;
+        }
+
+        /* Media Queries pour la réactivité */
+        @media (max-width: 768px) {
+            .board-frame { padding: 12px; border: 3px solid #4e342e; border-radius: 10px; }
+            .controls { flex-wrap: wrap; justify-content: center; bottom: 10px; gap: 8px; }
+            .speed-control, .color-control { padding: 6px 10px; font-size: 0.8rem; }
+            button { padding: 8px 15px; font-size: 0.9rem; }
+            .speed-control input[type="range"] { width: 80px; }
+            /* Ajuster la marge du canvas pour les petits écrans */
+            #boardCanvas { margin: 0 auto; }
+        }
+    </style>
+</head>
+<body>
+<audio id="chalkSound" src="chalk_writing.mp3" preload="auto" loop></audio>
+<audio id="eraserSound" src="eraser_brushing.mp3" preload="auto" loop></audio>
+
+<div class="board-frame">
+    <canvas id="boardCanvas"></canvas>
+</div>
+<div class="controls">
+    <button id="replayBtn">Rejouer</button>
+    <button id="switchBtn">Changer de scène</button>
+    <button id="pausePlayBtn">Pause</button>
+    <div class="speed-control">
+        <span>Vitesse:</span>
+        <input type="range" id="speedSlider" min="0.1" max="2" step="0.1" value="1">
+    </div>
+    <div class="color-control">
+        <span>Tableau:</span>
+        <select id="colorSelect">
+            <option value="#1c3826">Vert Forêt</option>
+            <option value="#2c3e50">Noir Ardoise</option>
+            <option value="#1a1a1a">Noir Profond</option>
+        </select>
+    </div>
+</div>
+
+<script>
+const canvas = document.getElementById('boardCanvas');
+const ctx = canvas.getContext('2d');
+let boardWidth, boardHeight;
+
+function sizeBoard() {
+    const dpr = window.devicePixelRatio || 1;
+    const w = Math.min(window.innerWidth - (window.innerWidth > 768 ? 120 : 40), 940); /* Moins de marge sur mobile */
+    const h = Math.round(w * 9 / 16);
+    boardWidth = w; boardHeight = h;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+window.addEventListener('resize', sizeBoard);
+sizeBoard();
+
+const CW = '#f2ede4', CY = '#f5e441', CG = '#7af0a0', CB = '#8dd0f0';
+let boardColor = '#1c3826';
+
+const S1 = [
+    { text: 'Notion : Décomposition en facteurs premiers', y: 0.12, sz: 0.066, bold: true, color: CY },
+    { text: 'SEP', y: 0.195 },
+    { text: "Un nombre premier est divisible uniquement par 1 et lui-même.", y: 0.32, sz: 0.046, color: CW },
+    { text: "Exemples :  2,   3,   5,   7,   11,   13,   17 ...", y: 0.455, sz: 0.045, italic: true, color: CG },
+    { text: "4, 6, 8, 9 ne sont pas premiers  (ils ont d'autres diviseurs).", y: 0.575, sz: 0.038, color: 'rgba(242,237,228,0.62)' },
+    { text: "Tout entier ≥ 2 s'écrit comme produit de nombres premiers.", y: 0.705, sz: 0.046, color: CW },
+    { text: "→ Cette écriture est unique.   (Théorème fondamental)", y: 0.845, sz: 0.042, italic: true, color: CB },
+];
+
+const DIV = [{ q: '54', d: '2' }, { q: '27', d: '3' }, { q: '9', d: '3' }, { q: '3', d: '3' }, { q: '1', d: '' }];
+const F1 = '54  =  2  ×  3  ×  3  ×  3', F2 = '54  =  2  ×  3³';
+
+let timer = 0, events = [], maxTime = 0, animationSpeed = 1;
+let phase = 'write'; // 'write' pour théorie, 'example' pour décomposition
+const chalkSound = document.getElementById('chalkSound');
+const eraserSound = document.getElementById('eraserSound');
+let isPaused = false;
+let isTransitioning = false, nextPhase = null, eraserX = -100;
+
+function performReset(targetPhase) {
+    phase = targetPhase;
+    timer = 0;
+    initEvents();
+    if (!chalkSound.paused) {
+        chalkSound.pause();
+        chalkSound.currentTime = 0;
+    }
+    if (!eraserSound.paused) {
+        eraserSound.pause();
+        eraserSound.currentTime = 0;
+    }
+}
+
+function getFont(sz, isBold, isItalic) { 
+    return `${isItalic ? 'italic ' : ''}${isBold ? 'bold ' : ''}${Math.round(boardHeight * sz)}px Georgia, serif`; 
+}
+
+function initEvents() {
+    events = [];
+    let t = 20;
+
+    if (phase === 'write') {
+        S1.forEach(line => {
+            if (line.text === 'SEP') return;
+            events.push({ type: 'text', text: line.text, x: 0.055, y: line.y, sz: line.sz || 0.045, bold: line.bold, italic: line.italic, color: line.color || CW, start: t, duration: line.text.length * 2 });
+            t += (line.text.length * 2) + 30;
+        });
+    } else {
+        // Scène Exemple
+        events.push({ type: 'text', text: "Exemple : 54", x: 0.05, y: 0.2, sz: 0.06, bold: true, color: CY, start: t, duration: 40 });
+        t += 80;
+
+        // On affiche le premier nombre (54)
+        events.push({ type: 'text', text: DIV[0].q, x: 0.1, y: 0.3, sz: 0.045, color: CW, start: t, duration: 20 });
+        t += 40;
+
+        // La barre se trace progressivement après le 54
+        let lineEv = { type: 'line', y: 0.25, start: t, duration: 60 };
+        events.push(lineEv);
+        t += 80;
+
+        let nextQuotientStart = t;
+        
+        DIV.forEach((row, i) => {
+            // Le premier quotient est déjà affiché au-dessus
+            if (i > 0) {
+                events.push({ type: 'text', text: row.q, x: 0.1, y: 0.3 + i*0.1, sz: 0.045, color: CW, start: nextQuotientStart, duration: 20 });
+            }
+            
+            if (row.d) {
+                t = Math.max(t, nextQuotientStart + 30);
+                let divisorStart = t;
+                let divisorDuration = 20;
+                events.push({ type: 'text', text: row.d, x: 0.25, y: 0.3 + i*0.1, sz: 0.045, color: CG, start: divisorStart, duration: divisorDuration });
+                
+                // Pause de 2 secondes (120 ticks) après l'écriture du facteur premier
+                let brouillonStart = divisorStart + divisorDuration + 120;
+                let brouillonDuration = 80;
+                
+                // On enregistre le calcul (la visibilité sera chaînée après la boucle)
+                let brouillonEvent = { type: 'brouillon', text: `${row.q} ÷ ${row.d} = ${DIV[i+1].q}`, start: brouillonStart, duration: brouillonDuration, sz: 0.04, color: CW };
+                events.push(brouillonEvent);
+                
+                // Calculer la position X exacte du résultat dans le brouillon
+                ctx.save();
+                ctx.font = getFont(brouillonEvent.sz, false, false); // Utiliser la police du brouillon pour la mesure
+                let precedingText = `${row.q} ÷ ${row.d} = `;
+                let precedingTextWidth = ctx.measureText(precedingText).width;
+                ctx.restore();
+
+                // La position de base X du brouillon est boardWidth * 0.62
+                let resultStartX = (boardWidth * 0.62 + precedingTextWidth) / boardWidth;
+                
+                // Animation du déplacement du résultat (le 27 par ex) vers la table
+                let moveStart = brouillonStart + brouillonDuration + 120; // Ajout d'un délai de 2 secondes (120 ticks)
+                let moveDuration = 160; // Encore plus lent pour bien le voir
+                events.push({
+                    type: 'move',
+                    text: DIV[i+1].q,
+                    startX: resultStartX, // Position calculée dynamiquement
+                    startY: 0.2,
+                    endX: 0.1,    // Colonne de gauche
+                    endY: 0.3 + (i+1)*0.1,
+                    start: moveStart,
+                    duration: moveDuration,
+                    color: CW
+                });
+
+                nextQuotientStart = moveStart + moveDuration;
+                t = nextQuotientStart;
+            }
+        });
+        t += 40;
+        events.push({ type: 'text', text: F1, x: 0.05, y: 0.8, sz: 0.045, color: CW, start: t, duration: 60 });
+        t += 80;
+        events.push({ type: 'text', text: F2, x: 0.05, y: 0.9, sz: 0.045, color: CW, start: t, duration: 40, underline: true });
+    }
+    maxTime = t + 100;
+
+    // On fait en sorte que chaque calcul de brouillon reste jusqu'au début du suivant
+    const bEvents = events.filter(e => e.type === 'brouillon');
+    bEvents.forEach((be, idx) => {
+        be.endAt = (idx < bEvents.length - 1) ? bEvents[idx + 1].start : maxTime;
+    });
+}
+
+function drawTextProgress(ev) {
+    const elapsed = timer - ev.start;
+    const duration = ev.duration || 1;
+    const progress = Math.min(1, elapsed / duration);
+    const count = Math.floor(progress * ev.text.length);
+    
+    // On s'assure d'afficher au moins le premier caractère dès le début (progress 0)
+    const safeCount = Math.max(count, progress > 0 ? 1 : 0);
+    if (safeCount <= 0 && progress <= 0) return false;
+
+    ctx.fillStyle = ev.color;
+    ctx.font = getFont(ev.sz, ev.bold, ev.italic);
+    const textX = boardWidth * ev.x;
+    const textY = ev.y * boardHeight;
+    const textToDraw = ev.text.slice(0, Math.max(safeCount, progress === 1 ? ev.text.length : 0));
+    ctx.fillText(textToDraw, textX, textY);
+
+    // Animation du soulignement
+    let uProgress = 0;
+    if (ev.underline && timer >= ev.start + duration) {
+        const uStart = ev.start + duration;
+        const uDuration = 30; // Temps pour tracer les traits
+        uProgress = Math.min(1, (timer - uStart) / uDuration);
+
+        ctx.save();
+        // Mesurer la largeur du contenu réel du texte, sans les espaces de début
+        const contentText = ev.text.trimStart();
+        const metrics = ctx.measureText(contentText);
+        const contentWidth = metrics.width;
+
+        // Calculer la largeur des espaces de début pour décaler le soulignement
+        const leadingSpacesWidth = ctx.measureText(ev.text.substring(0, ev.text.indexOf(contentText))).width;
+        const underlineStartX = textX + leadingSpacesWidth;
+
+        const fontSize = Math.round(boardHeight * (ev.sz || 0.045)); // Taille réelle de la police en pixels
+        ctx.strokeStyle = ev.color;
+        ctx.lineWidth = 2;
+        // Premier trait
+        ctx.beginPath();
+        ctx.moveTo(underlineStartX, textY + fontSize * 0.15);
+        ctx.lineTo(underlineStartX + contentWidth * uProgress, textY + fontSize * 0.15);
+        ctx.stroke();
+        // Deuxième trait
+        ctx.beginPath();
+        ctx.moveTo(underlineStartX, textY + fontSize * 0.3);
+        ctx.lineTo(underlineStartX + contentWidth * uProgress, textY + fontSize * 0.3);
+        ctx.stroke();
+        ctx.restore();
+    }
+    return progress < 1 || (ev.underline && uProgress < 1); // Joue le son tant que le texte ou le trait s'écrit
+}
+
+function animate() {
+    if (isPaused) { requestAnimationFrame(animate); return; } // Pause logic
+
+    if (isTransitioning) {
+        if (eraserSound.paused) eraserSound.play().catch(e => {});
+        eraserX += 15 * animationSpeed;
+        if (eraserX > boardWidth + 150) {
+            eraserSound.pause();
+            eraserSound.currentTime = 0;
+            performReset(nextPhase);
+            isTransitioning = false;
+            eraserX = -100;
+        }
+    }
+
+    ctx.fillStyle = boardColor; ctx.fillRect(0, 0, boardWidth, boardHeight);
+    
+    // Dessin de la zone brouillon statique (cadre et titre) durant la phase exemple
+    if (phase === 'example') {
+        ctx.fillStyle = 'rgba(255,255,255,0.05)';
+        ctx.fillRect(boardWidth*0.6, boardHeight*0.1, boardWidth*0.35, boardHeight*0.15);
+        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+        ctx.strokeRect(boardWidth*0.6, boardHeight*0.1, boardWidth*0.35, boardHeight*0.15);
+        ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.font = getFont(0.03, true, false);
+        ctx.fillText("BROUILLON", boardWidth*0.62, boardHeight*0.14);
+    }
+
+    let currentlyWriting = false;
+
+    events.forEach(ev => {
+        if (timer >= ev.start) {
+            if (ev.type === 'text') {
+                if (drawTextProgress(ev)) currentlyWriting = true;
+            } else if (ev.type === 'line') {
+                const elapsed = timer - ev.start;
+                const progress = ev.duration ? Math.min(1, elapsed / ev.duration) : 1;
+                const startY = ev.y * boardHeight;
+                const endY = boardHeight * 0.75;
+                const currentY = startY + (endY - startY) * progress;
+                
+                ctx.strokeStyle = CW; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.moveTo(boardWidth*0.2, startY); 
+                ctx.lineTo(boardWidth*0.2, currentY); ctx.stroke();
+            } else if (ev.type === 'move') {
+                if (timer >= ev.start && timer <= ev.start + ev.duration) {
+                    const progress = (timer - ev.start) / ev.duration;
+                    const curX = ev.startX + (ev.endX - ev.startX) * progress;
+                    const curY = ev.startY + (ev.endY - ev.startY) * progress;
+                    ctx.fillStyle = ev.color;
+                    ctx.font = getFont(0.045, false, false);
+                    ctx.fillText(ev.text, boardWidth * curX, curY * boardHeight);
+                    currentlyWriting = true;
+                }
+            } else if (ev.type === 'brouillon') {
+                // Reste visible jusqu'au prochain calcul ou jusqu'à la fin de la scène
+                if (timer >= ev.start && timer < ev.endAt) {
+                    drawTextProgress({...ev, x: 0.62, y: 0.2, sz: 0.04, color: CW});
+                    if (timer < ev.start + ev.duration) currentlyWriting = true;
+                }
+            }
+        }
+    });
+
+    // Gestion du son
+    if (currentlyWriting && !isPaused && !isTransitioning) {
+        if (chalkSound.paused) chalkSound.play().catch(e => {});
+    } else {
+        chalkSound.pause();
+    }
+
+    if (timer >= maxTime && !isTransitioning) {
+        isTransitioning = true;
+        nextPhase = (phase === 'write') ? 'example' : 'write';
+    }
+
+    if (isTransitioning && eraserX > -100) {
+        // Effacement visuel derrière la brosse
+        ctx.fillStyle = boardColor;
+        ctx.fillRect(0, 0, eraserX, boardHeight);
+
+        // Dessin de la Brosse (Effaceur)
+        ctx.save();
+        ctx.shadowBlur = 20; 
+        ctx.shadowColor = 'rgba(0,0,0,0.5)';
+        
+        // Corps en bois de la brosse
+        ctx.fillStyle = '#5d4037';
+        ctx.fillRect(eraserX, 0, 50, boardHeight);
+        
+        // Couche de feutre/éponge (côté qui touche le tableau)
+        ctx.fillStyle = '#3e2723';
+        ctx.fillRect(eraserX - 10, 0, 10, boardHeight);
+
+        // Traces de poussière sur le bord de la brosse
+        ctx.fillStyle = 'rgba(255,255,255,0.1)';
+        ctx.fillRect(eraserX - 12, 0, 2, boardHeight);
+        
+        ctx.restore();
+    }
+
+    timer += animationSpeed;
+    requestAnimationFrame(animate);
+}
+
+document.getElementById('replayBtn').addEventListener('click', () => {
+    if (!chalkSound.paused) { chalkSound.pause(); chalkSound.currentTime = 0; }
+    isTransitioning = true;
+    nextPhase = 'write';
+});
+
+document.getElementById('switchBtn').addEventListener('click', () => {
+    if (!chalkSound.paused) { chalkSound.pause(); chalkSound.currentTime = 0; }
+    isTransitioning = true;
+    nextPhase = (phase === 'write') ? 'example' : 'write';
+});
+
+document.getElementById('speedSlider').addEventListener('input', (event) => {
+    animationSpeed = parseFloat(event.target.value);
+});
+
+function togglePause() {
+    isPaused = !isPaused;
+    const button = document.getElementById('pausePlayBtn');
+    if (isPaused) {
+        button.textContent = 'Lecture';
+        if (!chalkSound.paused) { chalkSound.pause(); }
+        if (!eraserSound.paused) { eraserSound.pause(); }
+    } else {
+        button.textContent = 'Pause';
+    }
+}
+
+document.getElementById('pausePlayBtn').addEventListener('click', (e) => {
+    e.stopPropagation(); // Empêche le déclenchement du listener global
+    togglePause();
+});
+
+window.addEventListener('click', (e) => {
+    // On ne met pas en pause si on clique sur un bouton, un menu ou le curseur
+    if (!['BUTTON', 'INPUT', 'SELECT'].includes(e.target.tagName)) {
+        togglePause();
+    }
+});
+
+document.getElementById('colorSelect').addEventListener('change', (e) => {
+    boardColor = e.target.value;
+    document.documentElement.style.setProperty('--board-bg', boardColor);
+});
+
+initEvents();
+animate();
+</script>
+</body>
+</html>
