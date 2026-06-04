@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>3o</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <audio id="chalkSound" src="chalk_writing.mp3" preload="auto" loop></audio>
+    <audio id="eraserSound" src="eraser_brushing.mp3" preload="auto" loop></audio>
+
+    <div class="dlg-shell" id="shell">
+      <div class="dlg-header">
+        <div class="dlg-avatar" id="hdr-av">C</div>
+        <div>
+          <div class="dlg-name" id="hdr-name">Camélia</div>
+          <div class="dlg-status"><span class="dlg-dot"></span> En ligne avec vous</div>
+        </div>
+        <button class="dlg-min-btn" id="dlg-min-btn" title="Réduire / Agrandir">—</button>
+      </div>
+      <div class="dlg-body" id="dlg-body"></div>
+      <div class="dlg-footer">
+        <div class="dlg-q-label" id="q-label"></div>
+        <div class="dlg-choices" id="choices"></div>
+      </div>
+    </div>
+
+    <div class="board-frame">
+        <canvas id="boardCanvas"></canvas>
+    </div>
+    <div class="controls">
+        <button id="replayBtn">Rejouer</button>
+        <button id="switchBtn">Changer de scène</button>
+        <button id="pausePlayBtn">Pause</button>
+        <div class="speed-control">
+            <span>Vitesse:</span>
+            <input type="range" id="speedSlider" min="0.1" max="2" step="0.1" value="1">
+        </div>
+        <div class="color-control">
+            <span>Tableau:</span>
+            <select id="colorSelect">
+                <option value="#1c3826">Vert Forêt</option>
+                <option value="#2c3e50">Noir Ardoise</option>
+                <option value="#1a1a1a">Noir Profond</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- En mode module, on ne charge que le point d'entrée -->
+    <script type="module" src="moteur.js"></script>
+</body>
+</html>

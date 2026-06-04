@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Authentification - Cours Animé</title>
+    <style>
+        :root {
+            --board-bg: #1a1a1a;
+            --chalk-white: rgba(242, 237, 228, 0.9);
+            --chalk-yellow: #f5e441;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { min-height: 100%; }
+        
+        body { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-family: Georgia, serif;
+            background-color: var(--board-bg);
+            background-image: linear-gradient(145deg, rgba(255,255,255,0) 40%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0) 60%);
+            background-size: 300% 300%;
+            animation: shimmer 15s ease infinite;
+            min-height: 100vh;
+            padding: 40px 10px;
+            overflow-y: auto;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .auth-container {
+            background-color: rgba(30, 30, 30, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            padding: 25px;
+            color: var(--chalk-white);
+            width: 95%;
+            max-width: 950px; /* Élargi pour supporter les 3 colonnes */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h1 {
+            color: var(--chalk-yellow);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            font-weight: normal;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr; /* Une colonne par défaut (mobile) */
+            gap: 10px 15px;
+        }
+
+        .full-width { grid-column: span 1; }
+
+        /* Passage à 2 colonnes sur tablettes et ordinateurs */
+        @media (min-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .full-width { grid-column: span 2; }
+        }
+
+        /* Grille spécifique pour le Foyer (3 colonnes) */
+        .foyer-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+
+        @media (min-width: 900px) {
+            .foyer-grid {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            color: white;
+            font-family: Georgia, serif;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--chalk-yellow);
+        }
+
+        select option {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            font-family: inherit;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .submit-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .toggle-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .toggle-link span {
+            color: var(--chalk-yellow);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .hidden { display: none; }
+
+        /* Style pour les titres de section dans les formulaires */
+        .section-title {
+            font-size: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            margin: 15px 0 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-container">
+    <!-- 1. CONNEXION -->
+    <div id="loginForm">
+        <h1>Connexion</h1>
+        <div class="form-group">
+            <label>Nom d'utilisateur</label>
+            <input type="text" id="loginUser" placeholder="votre nom...">
+        </div>
+        <div class="form-group">
+            <label>Mot de passe</label>
+            <input type="password" id="loginPass" placeholder="********">
+        </div>
+        <button class="submit-btn" onclick="goToCourse()">Se connecter</button>
+        <p class="toggle-link">Pas encore inscrit ? <span onclick="showRoleSelection()">Créer un compte</span></p>
+    </div>
+
+    <!-- 2. CHOIX DU RÔLE -->
+    <div id="roleSelection" class="hidden">
+        <h1>Qui êtes-vous ?</h1>
+        <p style="text-align:center; margin-bottom:20px; font-style:italic;">Choisissez votre profil pour continuer</p>
+        <button class="submit-btn" style="margin-bottom:10px;" onclick="showForm('foyerForm')">Parent / Foyer</button>
+        <button class="submit-btn" style="margin-bottom:10px;" onclick="showForm('enseignantForm')">Enseignant</button>
+        <button class="submit-btn" onclick="showForm('registerForm')">Élève</button>
+        <p class="toggle-link"><span onclick="showLoginForm()">Retour à la connexion</span></p>
+    </div>
+
+    <!-- 3. INSCRIPTION FOYER (PARENTS) -->
+    <div id="foyerForm" class="hidden">
+        <h1>Inscription Foyer</h1>
+        <div class="foyer-grid">
+            <!-- Colonne 1 : Informations de la Mère -->
+            <div class="foyer-column">
+                <h2 class="section-title">Informations de la Mère</h2>
+                <div class="form-group"><label>Nom (Mère)</label><input type="text" id="foyerNomM"></div>
+                <div class="form-group"><label>Prénoms (Mère)</label><input type="text" id="foyerPreM"></div>
+                <div class="form-group"><label>Profession</label><input type="text" id="foyerProfM"></div>
+                <div class="form-group"><label>Téléphone</label><input type="tel" id="foyerTelM"></div>
+            </div>
+
+            <!-- Colonne 2 : Informations du Père -->
+            <div class="foyer-column">
+                <h2 class="section-title">Informations du Père</h2>
+                <div class="form-group"><label>Nom (Père)</label><input type="text" id="foyerNomP"></div>
+                <div class="form-group"><label>Prénoms (Père)</label><input type="text" id="foyerPreP"></div>
+                <div class="form-group"><label>Profession</label><input type="text" id="foyerProfP"></div>
+                <div class="form-group"><label>Téléphone</label><input type="tel" id="foyerTelP"></div>
+            </div>
+
+            <!-- Colonne 3 : Infos Communes -->
+            <div class="foyer-column">
+                <h2 class="section-title">Infos Communes</h2>
+                <div class="form-group"><label>Ville</label><input type="text" id="foyerVille"></div>
+                <div class="form-group"><label>Quartier</label><input type="text" id="foyerQuartier"></div>
+                <div class="form-group"><label>Mot de passe</label><input type="password" id="foyerPass"></div>
+                <p style="font-size: 0.8rem; opacity: 0.7; font-style: italic; margin-top: 10px;">Ce mot de passe servira à la connexion du foyer.</p>
+            </div>
+        </div>
+        <button class="submit-btn" onclick="goToCourse()">Inscrire le Foyer</button>
+        <p class="toggle-link"><span onclick="showRoleSelection()">Retour</span></p>
+    </div>
+
+    <!-- 4. INSCRIPTION ENSEIGNANT -->
+    <div id="enseignantForm" class="hidden">
+        <h1>Inscription Enseignant</h1>
+        <div class="form-grid">
+            <div class="form-group"><label>Nom</label><input type="text" id="ensNom"></div>
+            <div class="form-group"><label>Prénoms</label><input type="text" id="ensPre"></div>
+            <div class="form-group"><label>Matière</label>
+                <select id="ensMatiere">
+                    <option value="Maths">Mathématiques</option>
+                    <option value="PCT">PCT</option>
+                    <option value="SVT">SVT</option>
+                    <option value="Fr">Français</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Téléphone</label><input type="tel" id="ensTel"></div>
+            <div class="form-group full-width"><label>Établissement actuel</label><input type="text" id="ensEtab"></div>
+            <div class="form-group"><label>Ville</label><input type="text" id="ensVille"></div>
+            <div class="form-group"><label>Grade</label><input type="text" id="ensGrade" placeholder="A1-1, B1-2..."></div>
+            <div class="form-group full-width"><label>Mot de passe</label><input type="password" id="ensPass"></div>
+        </div>
+        <button class="submit-btn" onclick="goToCourse()">S'inscrire</button>
+        <p class="toggle-link"><span onclick="showRoleSelection()">Retour</span></p>
+    </div>
+
+    <!-- 5. INSCRIPTION ÉLÈVE -->
+    <div id="registerForm" class="hidden">
+        <h1>Inscription Élève</h1>
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label>Parent / Foyer responsable</label>
+                <select id="regParentFoyer">
+                    <option value="">-- Sélectionner votre foyer --</option>
+                    <option value="1">Foyer BAKPE (Cotonou)</option>
+                    <option value="2">Foyer SOGLO (Abomey)</option>
+                    <option value="3">Foyer TCHOUTCHOU (Parakou)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Nom</label>
+                <input type="text" id="regNom" placeholder="Ex: BAKPE">
+            </div>
+            <div class="form-group">
+                <label>Prénoms</label>
+                <input type="text" id="regPrenoms" placeholder="Ex: Gismano">
+            </div>
+            <div class="form-group">
+                <label>Âge</label>
+                <input type="number" id="regAge" min="10" max="25" placeholder="15">
+            </div>
+            <div class="form-group">
+                <label>Ville</label>
+                <input type="text" id="regVille" placeholder="Ex: Cotonou">
+            </div>
+            <div class="form-group full-width">
+                <label>Établissement (Collège/Lycée)</label>
+                <input type="text" id="regEtab" placeholder="Ex: CEG Sainte Rita">
+            </div>
+            
+            <div class="form-group">
+                <label>Type d'enseignement</label>
+                <select id="typeEnseignement" onchange="updatePath()">
+                    <option value="">-- Choisir --</option>
+                    <option value="ESG">Général (ESG)</option>
+                    <option value="EST">Technique (EST)</option>
+                </select>
+            </div>
+            
+            <div id="cycleGroup" class="form-group">
+                <label id="pathLabel">Cycle / Secteur</label>
+                <select id="pathSelect" onchange="updateClasses()">
+                    <option value="">-- Choisir --</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Classe</label>
+                <select id="classeSelect" onchange="updateSeries()">
+                    <option value="">-- Choisir --</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Série</label>
+                <select id="serieSelect">
+                    <option value="">-- Choisir --</option>
+                </select>
+            </div>
+
+            <div class="form-group full-width">
+                <label>Mot de passe</label>
+                <input type="password" id="regPass" placeholder="********">
+            </div>
+        </div>
+        <button class="submit-btn" onclick="goToCourse()">S'inscrire</button>
+        <p class="toggle-link"><span onclick="showRoleSelection()">Retour</span></p>
+    </div>
+</div>
+
+<script>
+    const eduData = {
+        ESG: {
+            label: "Cycle",
+            paths: {
+                "1er Cycle": {
+                    classes: ["6ème", "5ème", "4ème", "3ème"],
+                    series: ["Série Unique"]
+                },
+                "2nd Cycle": {
+                    classes: ["Seconde", "Première", "Terminale"],
+                    seriesByClass: {
+                        "Seconde": ["A", "C/D"],
+                        "Première": ["A1", "A2", "B", "C", "D"],
+                        "Terminale": ["A1", "A2", "B", "C", "D"]
+                    }
+                }
+            }
+        },
+        EST: {
+            label: "Secteur",
+            paths: {
+                "Commercial": ["G1", "G2", "G3"],
+                "Industriel": ["E", "F1", "F2", "F3", "F4"],
+                "Spécialisé": ["HR", "EA"]
+            },
+            classes: ["Seconde", "Première", "Terminale"]
+        }
+    };
+
+    function showLoginForm() {
+        hideAll();
+        document.getElementById('loginForm').classList.remove('hidden');
+    }
+
+    function showRoleSelection() {
+        hideAll();
+        document.getElementById('roleSelection').classList.remove('hidden');
+    }
+
+    function showForm(formId) {
+        hideAll();
+        document.getElementById(formId).classList.remove('hidden');
+    }
+
+    function hideAll() {
+        ['loginForm', 'roleSelection', 'registerForm', 'foyerForm', 'enseignantForm'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('hidden');
+        });
+    }
+
+    function updatePath() {
+        const type = document.getElementById('typeEnseignement').value;
+        const pathSelect = document.getElementById('pathSelect');
+        const pathLabel = document.getElementById('pathLabel');
+        
+        pathSelect.innerHTML = '<option value="">-- Choisir --</option>';
+        document.getElementById('classeSelect').innerHTML = '<option value="">-- Choisir --</option>';
+        document.getElementById('serieSelect').innerHTML = '<option value="">-- Choisir --</option>';
+
+        if (!type) return;
+
+        pathLabel.innerText = eduData[type].label;
+        Object.keys(eduData[type].paths).forEach(p => {
+            pathSelect.innerHTML += `<option value="${p}">${p}</option>`;
+        });
+    }
+
+    function updateClasses() {
+        const type = document.getElementById('typeEnseignement').value;
+        const path = document.getElementById('pathSelect').value;
+        const classeSelect = document.getElementById('classeSelect');
+        
+        classeSelect.innerHTML = '<option value="">-- Choisir --</option>';
+        if (!path) return;
+
+        let classes = [];
+        if (type === 'ESG') {
+            classes = eduData.ESG.paths[path].classes;
+        } else {
+            classes = eduData.EST.classes;
+        }
+
+        classes.forEach(c => {
+            classeSelect.innerHTML += `<option value="${c}">${c}</option>`;
+        });
+    }
+
+    function updateSeries() {
+        const type = document.getElementById('typeEnseignement').value;
+        const path = document.getElementById('pathSelect').value;
+        const classe = document.getElementById('classeSelect').value;
+        const serieSelect = document.getElementById('serieSelect');
+
+        serieSelect.innerHTML = '<option value="">-- Choisir --</option>';
+        if (!classe) return;
+
+        if (type === 'ESG') {
+            if (path === "1er Cycle") {
+                serieSelect.innerHTML = '<option value="Unique">Série Unique</option>';
+            } else {
+                eduData.ESG.paths["2nd Cycle"].seriesByClass[classe].forEach(s => {
+                    serieSelect.innerHTML += `<option value="${s}">${s}</option>`;
+                });
+            }
+        } else {
+            eduData.EST.paths[path].forEach(s => {
+                serieSelect.innerHTML += `<option value="${s}">${s}</option>`;
+            });
+        }
+    }
+
+    function goToCourse() {
+        let displayName = "";
+
+        if (!document.getElementById('registerForm').classList.contains('hidden')) {
+            // Validation Élève
+            const fields = [
+                { id: 'regParentFoyer', name: 'le Parent/Foyer' },
+                { id: 'regNom', name: 'le Nom' },
+                { id: 'regPrenoms', name: 'les Prénoms' },
+                { id: 'regAge', name: "l'Âge" },
+                { id: 'regVille', name: 'la Ville' },
+                { id: 'regEtab', name: "l'Établissement" },
+                { id: 'typeEnseignement', name: "le Type d'enseignement" },
+                { id: 'pathSelect', name: 'le Cycle/Secteur' },
+                { id: 'classeSelect', name: 'la Classe' },
+                { id: 'serieSelect', name: 'la Série' },
+                { id: 'regPass', name: 'le Mot de passe' }
+            ];
+
+            for (let f of fields) {
+                const val = document.getElementById(f.id).value.trim();
+                if (!val) {
+                    alert("Action requise : Veuillez remplir " + f.name + ".");
+                    return;
+                }
+            }
+            displayName = document.getElementById('regPrenoms').value;
+        } 
+        else if (!document.getElementById('foyerForm').classList.contains('hidden')) {
+            // Validation Foyer
+            const foyerFields = ['foyerNomP', 'foyerPreP', 'foyerNomM', 'foyerPreM', 'foyerTelP', 'foyerPass'];
+            for (let id of foyerFields) {
+                if (!document.getElementById(id).value.trim()) {
+                    alert("Veuillez remplir toutes les informations essentielles du foyer.");
+                    return;
+                }
+            }
+            displayName = "Foyer " + document.getElementById('foyerNomP').value;
+        } 
+        else if (!document.getElementById('enseignantForm').classList.contains('hidden')) {
+            // Validation Enseignant
+            const ensFields = ['ensNom', 'ensPre', 'ensTel', 'ensEtab', 'ensPass'];
+            for (let id of ensFields) {
+                if (!document.getElementById(id).value.trim()) {
+                    alert("Veuillez remplir toutes les informations professionnelles.");
+                    return;
+                }
+            }
+            displayName = "M./Mme " + document.getElementById('ensNom').value;
+        } 
+        else if (!document.getElementById('loginForm').classList.contains('hidden')) {
+            // Validation Connexion
+            const user = document.getElementById('loginUser').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
+            if (!user || !pass) {
+                alert("Veuillez entrer votre nom d'utilisateur et votre mot de passe.");
+                return;
+            }
+            displayName = user;
+        }
+
+        if (displayName) {
+            localStorage.setItem('welcomeUser', displayName);
+        }
+
+        // Si tout est valide, on redirige
+        window.location.href = 'index.html';
+    }
+</script>
+
+</body>
+</html>
