@@ -4,15 +4,13 @@ import { pipeline, cos_sim } from 'https://cdn.jsdelivr.net/npm/@xenova/transfor
 import { 
     canvas, ctx, boardWidth, boardHeight, boardColor, particles, 
     isPaused, isTransitioning, getNextPhase, getCurrentNotionId, animationSpeed, eraserX, getFont, drawBoardBackground, drawEraser, createConfetti,
-    chalkSound, eraserSound, setCurrentNotionId, setPaused, setIsTransitioning, setNextPhase, setAnimationSpeed, setBoardColor, setEraserX
+    setCurrentNotionId, setPaused, setIsTransitioning, setNextPhase, setAnimationSpeed, setBoardColor, setEraserX
 } from './tableau.js';
 
-import { notions, CW, CY, CG, CB } from './contenu.js';
-// On garde les constantes de style mais on ne récupère plus 'notions' ici
-import { CW, CY, CG, CB } from './contenu.js';
+import { notions as staticNotions, CW, CY, CG, CB } from './contenu.js';
 
 // Variable globale pour stocker les leçons récupérées
-let notions = {};
+let notions = staticNotions;
 
 import {
     createDialogue, updateDialogueToSuccess, openDialogueBox, closeDialogueBox, clearDialogueHistory
@@ -37,10 +35,11 @@ let extractor = null; // Le modèle d'IA
 async function loadData() {
     try {
         const response = await fetch('./notions.json');
-        notions = await response.json();
-        initEvents(); // On initialise le moteur une fois les données reçues
+        if (response.ok) {
+            notions = await response.json();
+        }
     } catch (e) {
-        console.error("Erreur de chargement des leçons : ", e);
+        console.warn("Fichier notions.json non trouvé, utilisation du contenu statique.");
     }
 }
 
@@ -186,10 +185,44 @@ const DrawingLibrary = {
         const textX = boardWidth * (ev.x || 0.05);
         const textY = (ev.y || 0.5) * boardHeight;
         const textToDraw = ev.text.slice(0, Math.max(safeCount, progress === 1 ? ev.text.length : 0));
-        ctx.fillText(textToDraw, textX, textY);
-        ctx.textAlign = 'left'; // Réinitialisation pour les autres éléments
 
-        // Gestion du soulignement (spécifique à l'arithmétique)
+        // Détection du marqueur ~
+        if (textToDraw.includes('~')) {
+            const parts = textToDraw.split(/(~\w+)/g);
+            let currentX = textX;
+            const fontSize = Math.round(boardHeight * (ev.sz || 0.045));
+
+            parts.forEach(part => {
+                if (part.startsWith('~')) {
+                    const letters = part.slice(1);
+                    const partWidth = ctx.measureText(letters).width;
+
+                    // Lettres
+                    ctx.fillText(letters, currentX, textY);
+
+                    // Arc courbé vers le haut
+                    const arcY = textY - fontSize * 0.85;
+                    const arcHeight = fontSize * 0.25;
+                    ctx.strokeStyle = ev.color || CW;
+                    ctx.lineWidth = 1.5;
+                    ctx.beginPath();
+                    ctx.moveTo(currentX, arcY);
+                    ctx.quadraticCurveTo(currentX + partWidth / 2, arcY + arcHeight, currentX + partWidth, arcY);
+                    ctx.stroke();
+
+                    currentX += partWidth;
+                } else {
+                    ctx.fillText(part, currentX, textY);
+                    currentX += ctx.measureText(part).width;
+                }
+            });
+        } else {
+            ctx.fillText(textToDraw, textX, textY);
+        }
+
+        ctx.textAlign = 'left';
+
+        // Gestion du soulignement
         if (ev.underline && timer >= ev.start + duration) {
             const uStart = ev.start + duration;
             const uProgress = Math.min(1, (timer - uStart) / 30);
@@ -226,33 +259,333 @@ const DrawingLibrary = {
         return progress < 1;
     },
     cercle: (ev) => {
+        const cx = ev.x * boardWidth;
+        const cy = ev.y * boardHeight;
+        const R  = ev.r * boardHeight;
+        const s  = boardWidth * 0.012;
+
+        const p = Math.min(1, (timer - ev.start) / (ev.duration || 300));
+        const t = (step) => Math.min(1, Math.max(0, (p - step / 3) * 3));
+
+        // Étape 0 : Croix ×
+        if (t(0) > 0) {
+            const ss = s * 0.5;
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1.5;
+
+            const prog1 = Math.min(1, t(0) * 2);
+            ctx.beginPath();
+            ctx.moveTo(cx - ss, cy - ss);
+            ctx.lineTo(cx - ss + (cx + ss - (cx - ss)) * prog1, cy - ss + (cy + ss - (cy - ss)) * prog1);
+            ctx.stroke();
+
+            const prog2 = Math.min(1, Math.max(0, (t(0) - 0.5) * 2));
+            if (prog2 > 0) {
+                ctx.beginPath();
+                ctx.moveTo(cx + ss, cy - ss);
+                ctx.lineTo(cx + ss + (cx - ss - (cx + ss)) * prog2, cy - ss + (cy + ss - (cy - ss)) * prog2);
+                ctx.stroke();
+            }
+        }
+
+        // Étape 1 : Label O
+        if (t(1) > 0) {
+            ctx.fillStyle = '#ff4444';
+            ctx.font = getFont(0.04, true, false);
+            ctx.fillText('O', cx - s * 2.5, cy - s * 0.5);
+        }
+
+        // Étape 2 : Cercle complet
+        if (t(2) > 0) {
+            ctx.strokeStyle = ev.color || '#4a9eff';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(cx, cy, R, 0, Math.PI * 2 * t(2));
+            ctx.stroke();
+        }
+
+        return p < 1;
+    },
+   
+    arc: (ev) => {
         const progress = Math.min(1, (timer - ev.start) / (ev.duration || 80));
         ctx.strokeStyle = ev.color || '#ffffff';
-        ctx.lineWidth = 3;
+        ctx.lineWidth = ev.lineWidth || 3;
+        const startAngle = ev.startAngle !== undefined ? ev.startAngle : 0;
+        const endAngle = ev.endAngle !== undefined ? ev.endAngle : Math.PI * 2;
+        const anticlockwise = ev.anticlockwise || false;
+        const span = anticlockwise ? (startAngle - endAngle + Math.PI * 2) % (Math.PI * 2) : (endAngle - startAngle + Math.PI * 2) % (Math.PI * 2);
+        const cx = boardWidth * ev.x;
+        const cy = boardHeight * ev.y;
+        const R = ev.r * boardHeight;
+        const s = boardWidth * 0.012;
+
         ctx.beginPath();
-        ctx.arc(boardWidth * ev.x, boardHeight * ev.y, ev.r * boardHeight, 0, Math.PI * 2 * progress);
+        ctx.arc(cx, cy, R, startAngle, startAngle + span * progress, anticlockwise);
         ctx.stroke();
+
+        if (progress === 1 && ev.labelStart) {
+            ctx.fillStyle = '#ffffff';
+            ctx.font = getFont(0.04, true, false);
+            const ax = cx + R * Math.cos(startAngle);
+            const ay = cy + R * Math.sin(startAngle);
+            ctx.fillText(ev.labelStart, ax + s, ay - s);
+        }
+        if (progress === 1 && ev.labelEnd) {
+            ctx.fillStyle = '#ffffff';
+            ctx.font = getFont(0.04, true, false);
+            const bx = cx + R * Math.cos(endAngle);
+            const by = cy + R * Math.sin(endAngle);
+            ctx.fillText(ev.labelEnd, bx + s, by + s);
+        }
+
+        // NOUVEAU : label L(arc) au-dessus de l'arc, optionnel
+        if (ev.labelArc && progress === 1) {
+            const midAngle = anticlockwise
+                ? startAngle - span / 2
+                : startAngle + span / 2;
+            const lx = cx + (R + s * 3) * Math.cos(midAngle);
+            const ly = cy + (R + s * 3) * Math.sin(midAngle);
+            ctx.fillStyle = ev.labelColor || '#ffffff';
+            ctx.font = getFont(0.035, false, false);
+            ctx.fillText(ev.labelArc, lx, ly);
+        }
+
         return progress < 1;
     },
-    arc: (ev) => {
-    const progress = Math.min(1, (timer - ev.start) / (ev.duration || 80));
-    ctx.strokeStyle = ev.color || '#ffffff';
-    ctx.lineWidth = ev.lineWidth || 3;
-    const startAngle = ev.startAngle !== undefined ? ev.startAngle : 0;
-    const endAngle = ev.endAngle !== undefined ? ev.endAngle : Math.PI * 2;
-    const span = endAngle - startAngle;
-    ctx.beginPath();
-    ctx.arc(
-        boardWidth * ev.x,
-        boardHeight * ev.y,
-        ev.r * boardHeight,
-        startAngle,
-        startAngle + span * progress
-    );
-    ctx.stroke();
-    return progress < 1;
+    insert_arc: (ev) => {
+        const elapsed = timer - ev.start;
+        const dur = ev.duration || 60;
+        const p = Math.min(1, elapsed / dur);
+
+        const targetX = ev.targetX * boardWidth;
+        const targetY = ev.targetY * boardHeight;
+        const startX = ev.xStart * boardWidth;
+        const startY = ev.y * boardHeight;
+
+        const cx = startX + (targetX - startX) * p;
+        const cy = startY + (targetY - startY) * p;
+        const R = ev.r * boardHeight;
+        const s = boardWidth * 0.012;
+
+        const startAngle = ev.startAngle !== undefined ? ev.startAngle : 0;
+        const endAngle = ev.endAngle !== undefined ? ev.endAngle : Math.PI * 2;
+        const anticlockwise = ev.anticlockwise || false;
+        const span = anticlockwise
+            ? (startAngle - endAngle + Math.PI * 2) % (Math.PI * 2)
+            : (endAngle - startAngle + Math.PI * 2) % (Math.PI * 2);
+
+        ctx.strokeStyle = ev.color || '#ff9900';
+        ctx.lineWidth = ev.lineWidth || 6;
+        ctx.beginPath();
+        ctx.arc(cx, cy, R, startAngle, startAngle + span, anticlockwise);
+        ctx.stroke();
+
+        if (p === 1 && ev.labelStart) {
+            ctx.fillStyle = '#ffffff';
+            ctx.font = getFont(0.04, true, false);
+            const ax = cx + R * Math.cos(startAngle);
+            const ay = cy + R * Math.sin(startAngle);
+            ctx.fillText(ev.labelStart, ax + s, ay - s);
+        }
+        if (p === 1 && ev.labelEnd) {
+            ctx.fillStyle = '#ffffff';
+            ctx.font = getFont(0.04, true, false);
+            const bx = cx + R * Math.cos(endAngle);
+            const by = cy + R * Math.sin(endAngle);
+            ctx.fillText(ev.labelEnd, bx + s, by + s);
+        }
+
+        return p < 1;
+        },
+    arc_angle_growth: (ev) => {
+        const elapsed = timer - ev.start;
+        const dur = ev.duration || 300;
+        const p = Math.min(1, elapsed / dur);
+
+        const cx = ev.x * boardWidth;
+        const cy = ev.y * boardHeight;
+        const R = ev.r * boardHeight;
+        const s = boardWidth * 0.012;
+
+        const maxAngleDeg = ev.maxAngle || 270;
+        const maxAngleRad = maxAngleDeg * Math.PI / 180;
+        const currentAngleRad = maxAngleRad * p;
+        const currentAngleDeg = Math.round(maxAngleDeg * p);
+
+        // NOUVEAU : offset de départ optionnel
+        const offsetRad = ev.startAngle !== undefined ? ev.startAngle : 0;
+
+        // Arc qui grandit en sens antihoraire
+        ctx.strokeStyle = ev.color || '#f5e441';
+        ctx.lineWidth = ev.lineWidth || 6;
+        ctx.beginPath();
+        ctx.arc(cx, cy, R, offsetRad, offsetRad - currentAngleRad, true);
+        ctx.stroke();
+
+        // Rayon fixe (premier côté de l'angle)
+        ctx.strokeStyle = '#ff4444';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + R * Math.cos(offsetRad), cy + R * Math.sin(offsetRad));
+        ctx.stroke();
+
+        // Rayon qui tourne en sens antihoraire
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + R * Math.cos(offsetRad - currentAngleRad), cy + R * Math.sin(offsetRad - currentAngleRad));
+        ctx.stroke();
+
+        // Petit arc de l'angle au centre
+        ctx.strokeStyle = '#ffff00';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(cx, cy, R * 0.20, offsetRad, offsetRad - currentAngleRad, true);
+        ctx.stroke();
+
+        // Nombre de degrés qui augmente
+        ctx.fillStyle = '#ffff00';
+        ctx.font = getFont(0.04, true, false);
+        const midAngle = offsetRad - currentAngleRad / 2;
+        ctx.fillText(
+            currentAngleDeg + '°',
+            cx + R * 0.30 * Math.cos(midAngle),
+            cy + R * 0.30 * Math.sin(midAngle)
+        );
+
+        // Labels fixes
+        ctx.fillStyle = '#ffffff';
+        ctx.font = getFont(0.04, true, false);
+        ctx.fillText('O', cx - s * 2.5, cy - s * 0.5);
+
+        // NOUVEAU : labels personnalisables, défaut B et A
+        const labelFixed = ev.labelFixed || 'B';
+        const labelMoving = ev.labelMoving || 'A';
+        ctx.fillText(labelFixed, cx + R * Math.cos(offsetRad) + s, cy + R * Math.sin(offsetRad) + s);
+        ctx.fillText(labelMoving, cx + R * Math.cos(offsetRad - currentAngleRad) + s, cy + R * Math.sin(offsetRad - currentAngleRad) + s);
+
+        // NOUVEAU : label L(arc) au-dessus de l'arc qui augmente, optionnel
+        if (ev.labelArc) {
+            const arcMid = offsetRad - currentAngleRad / 2;
+            const lx = cx + (R + s * 3) * Math.cos(arcMid);
+            const ly = cy + (R + s * 3) * Math.sin(arcMid);
+            const maxLength = ev.maxLength || 10;
+            const currentLength = (maxLength * p).toFixed(1);
+            ctx.fillStyle = ev.labelColor || '#ffffff';
+            ctx.font = getFont(0.032, false, false);
+            ctx.fillText(`L(${ev.labelArc}) = ${currentLength} cm`, lx, ly);
+        }
+
+        return p < 1;
     },
-cercle_pedagogique: (ev) => {
+
+    detached_arc: (ev) => {
+        const elapsed = timer - ev.start;
+        const dur = ev.duration || 60;
+        const p = Math.min(1, elapsed / dur);
+
+        const targetX = ev.targetX * boardWidth;
+        const targetY = ev.targetY * boardHeight;
+        const startX = ev.xStart * boardWidth;
+        const startY = ev.y * boardHeight;
+
+        const cx = targetX + (startX - targetX) * p;
+        const cy = targetY + (startY - targetY) * p;
+        const R = ev.r * boardHeight;
+        const angleRad = (ev.angle || 45) * Math.PI / 180;
+
+        ctx.strokeStyle = ev.color || '#ff9900';
+        ctx.lineWidth = ev.lineWidth || 6;
+        ctx.beginPath();
+        ctx.arc(cx, cy, R, -angleRad, 0);
+        ctx.stroke();
+
+        return p < 1;
+    },
+   angle: (ev) => {
+    const cx = ev.x * boardWidth;
+    const cy = ev.y * boardHeight;
+    const R = ev.r * boardHeight;
+    const angleDeg = ev.angle || 45;
+    const angleRad = angleDeg * Math.PI / 180;
+    const s = boardWidth * 0.012;
+    const vertex = ev.vertex || 'C';
+    const labelLeft = ev.labelLeft || 'A';
+    const labelRight = ev.labelRight || 'B';
+    const color = ev.color || '#ff4444';
+
+    const bx = cx + R;
+    const by = cy;
+    const ax = cx + R * Math.cos(angleRad);
+    const ay = cy - R * Math.sin(angleRad);
+
+    const p = Math.min(1, (timer - ev.start) / (ev.duration || 180));
+    const t = (step) => Math.min(1, Math.max(0, (p - step / 4) * 4));
+
+    // Étape 0 : Point sommet
+    if (t(0) > 0) {
+        ctx.fillStyle = '#ffffff';
+        ctx.font = getFont(0.04, true, false);
+        ctx.fillText(vertex, cx - s * 2.5, cy - s * 0.5);
+    }
+
+    // Étape 1 : Premier rayon → droite
+    if (t(1) > 0) {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + (bx - cx) * t(1), cy);
+        ctx.stroke();
+        if (t(1) === 1) {
+            ctx.fillStyle = '#ffffff';
+            ctx.font = getFont(0.04, true, false);
+            ctx.fillText(labelRight, bx + s, by + s * 0.5);
+        }
+    }
+
+    // Étape 2 : Deuxième rayon → angle
+    if (t(2) > 0) {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + (ax - cx) * t(2), cy + (ay - cy) * t(2));
+        ctx.stroke();
+        if (t(2) === 1) {
+            ctx.fillStyle = '#ffffff';
+            ctx.font = getFont(0.04, true, false);
+            ctx.fillText(labelLeft, ax + s, ay - s);
+        }
+    }
+
+    // Étape 3 : Arc + mesure
+    if (t(3) > 0) {
+        const arcR = R * 0.25;
+        // Petit arc jaune
+        ctx.strokeStyle = '#ffff00';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(cx, cy, arcR * t(3), -angleRad, 0);
+        ctx.stroke();
+
+        // Mesure en degrés
+        if (t(3) === 1) {
+            const midAngle = -angleRad / 2;
+            ctx.fillStyle = '#ffff00';
+            ctx.font = getFont(0.030, false, false);
+            ctx.fillText(
+                angleDeg + '°',
+                cx + (arcR + s) * Math.cos(midAngle),
+                cy + (arcR + s) * Math.sin(midAngle)
+            );
+        }
+    }
+
+    return p < 1;
+},
+cercle_angle: (ev) => {
     const cx = ev.x * boardWidth;
     const cy = ev.y * boardHeight;
     const R  = ev.r * boardHeight;
@@ -472,10 +805,11 @@ cercle_pedagogique: (ev) => {
         ctx.restore();
 
         return p < 1;
-    },
-    detached_angle: (ev) => {
+        },
+    insert_angle: (ev) => {
         const elapsed = timer - ev.start;
-        const p = Math.min(1, elapsed / (ev.duration || 60));
+        const dur = ev.duration || 60;
+        const p = Math.min(1, elapsed / dur);
         const cx = (ev.xStart + (ev.xEnd - ev.xStart) * p) * boardWidth;
         const cy = ev.y * boardHeight;
         const R = ev.r * boardHeight;
@@ -484,8 +818,6 @@ cercle_pedagogique: (ev) => {
 
         ctx.strokeStyle = ev.color || '#ff4444';
         ctx.lineWidth = 2;
-
-        // Rayons
         ctx.beginPath();
         ctx.moveTo(cx, cy);
         ctx.lineTo(cx + R, cy);
@@ -496,18 +828,52 @@ cercle_pedagogique: (ev) => {
         ctx.lineTo(cx + R * Math.cos(angleRad), cy - R * Math.sin(angleRad));
         ctx.stroke();
 
-        // Arc jaune
         ctx.strokeStyle = '#ffff00';
         ctx.beginPath();
         ctx.arc(cx, cy, R * 0.20, -angleRad, 0);
         ctx.stroke();
 
-        // Labels A, B, O
         ctx.fillStyle = '#ffffff';
         ctx.font = getFont(0.04, true, false);
-        ctx.fillText('O', cx - s*2.5, cy - s*0.5);
-        ctx.fillText('B', cx + R + s, cy + s*0.5);
-        ctx.fillText('A', cx + R * Math.cos(angleRad) + s, cy - R * Math.sin(angleRad) - s);
+        ctx.fillText(ev.vertex || 'C', cx - s*2.5, cy - s*0.5);
+        ctx.fillText(ev.labelRight || 'B', cx + R + s, cy + s*0.5);
+        ctx.fillText(ev.labelLeft || 'A', cx + R * Math.cos(angleRad) + s, cy - R * Math.sin(angleRad) - s);
+
+        return p < 1;
+    },
+
+    detached_angle: (ev) => {
+        const elapsed = timer - ev.start;
+        const dur = ev.duration || 60;
+        const p = Math.min(1, elapsed / dur);
+        const cx = (ev.xStart + (ev.xEnd - ev.xStart) * p) * boardWidth;
+        const cy = ev.y * boardHeight;
+        const R = ev.r * boardHeight;
+        const angleRad = (ev.angle || 45) * Math.PI / 180;
+        const s = boardWidth * 0.012;
+
+        ctx.strokeStyle = ev.color || '#ff4444';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + R, cy);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + R * Math.cos(angleRad), cy - R * Math.sin(angleRad));
+        ctx.stroke();
+
+        ctx.strokeStyle = '#ffff00';
+        ctx.beginPath();
+        ctx.arc(cx, cy, R * 0.20, -angleRad, 0);
+        ctx.stroke();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = getFont(0.04, true, false);
+        ctx.fillText(ev.vertex || 'C', cx - s*2.5, cy - s*0.5);
+        ctx.fillText(ev.labelRight || 'B', cx + R + s, cy + s*0.5);
+        ctx.fillText(ev.labelLeft || 'A', cx + R * Math.cos(angleRad) + s, cy - R * Math.sin(angleRad) - s);
 
         return p < 1;
     },
@@ -689,12 +1055,17 @@ cercle_pedagogique: (ev) => {
     }
 };
 
-function showNotUnderstoodMessage() {
+function showNotUnderstoodMessage(onConfirm) {
+    setPaused(true);
     createDialogue({
-        text: "Je n'ai pas compris. Si tu veux, appuie sur Rejouer pour reprendre cette leçon.",
+        text: "Je n'ai pas bien compris. Reprenons",
         author: 'Camélia',
         choices: [{ label: "D'accord", value: 'ok' }],
-        onChoice: () => closeDialogueBox()
+        onChoice: () => {
+            closeDialogueBox();
+            if (onConfirm) onConfirm();
+            setPaused(false);
+        }
     });
     openDialogueBox();
 }
@@ -717,12 +1088,6 @@ function performReset(targetNotionId, isReplay = false) {
     setCurrentNotionId(targetNotionId);
     timer = 0;
     initEvents(targetNotionId);
-    if (!chalkSound.paused) { chalkSound.pause(); chalkSound.currentTime = 0; }
-    if (!eraserSound.paused) { eraserSound.pause(); eraserSound.currentTime = 0; }
-    // On n'affiche pas le message d'échec pour les phases d'introduction S0 et S00
-    if (!isReplay && !lastNotionUnderstood && lastCompletedNotionId !== 'S0' && lastCompletedNotionId !== 'S00') {
-        showNotUnderstoodMessage();
-    }
 }
 
 function normalizeForMatch(s) {
@@ -871,7 +1236,7 @@ function initEvents(notionId) {
     const currentName = localStorage.getItem('welcomeUser') || "l'ami";
 
     source.forEach((line, index) => {
-        if (line.text === 'SEP') {
+        if (line.type === 'SEP' || line.text === 'SEP') {
             // Restauration du comportement original : SEP nettoie tout ce qui n'est pas un titre
             events.forEach(ev => {
                 if (ev.stop === undefined && !ev.isTitle) ev.stop = autoAdvanceTime;
@@ -883,7 +1248,7 @@ function initEvents(notionId) {
         // Nouveau : Nettoyage ciblé par type (ex: pour effacer les traits sans le texte)
         if (line.type === 'clear') {
             events.forEach(ev => {
-                if (ev.type === line.target && ev.stop === undefined) {
+                if (ev.type === line.target && ev.stop === undefined && !ev.isTitle) {
                     ev.stop = autoAdvanceTime;
                 }
             });
@@ -944,11 +1309,8 @@ function animate() {
     if (isPaused && particles.length === 0) { requestAnimationFrame(animate); return; } // Pause logic
 
     if (isTransitioning && !isPaused) {
-        if (eraserSound.paused) eraserSound.play().catch(e => {});
         setEraserX(eraserX + 15 * animationSpeed);
         if (eraserX > boardWidth + 150) {
-            eraserSound.pause();
-            eraserSound.currentTime = 0;
             performReset(getNextPhase());
             setIsTransitioning(false);
             setEraserX(-100);
@@ -998,15 +1360,17 @@ function animate() {
         if (p.life <= 0) particles.splice(i, 1);
     }
 
-    // Gestion du son
-    if (currentlyWriting && !isPaused && !isTransitioning) {
-        if (chalkSound.paused) chalkSound.play().catch(e => {});
-    } else {
-        chalkSound.pause();
-    }
-
     if (!isPaused && timer >= maxTime && !isTransitioning) {
-        transitionToNextNotion();
+        const currentId = getCurrentNotionId();
+        const understood = evaluateNotionUnderstood();
+
+        if (!understood && currentId !== 'S0' && currentId !== 'S00') {
+            showNotUnderstoodMessage(() => {
+                performReset(currentId, true); // Rejoue la notion actuelle
+            });
+        } else {
+            transitionToNextNotion();
+        }
     }
 
     if (isTransitioning) {
@@ -1017,12 +1381,13 @@ function animate() {
     requestAnimationFrame(animate);
 }
 
-initEvents();
-animate();
 // Lancement du projet
 loadData().then(() => {
-    // On restaure la progression si elle existe
-    const saved = loadProgress();
-    setCurrentNotionId(saved);
+    // Pour respecter la consigne "S0 et S00 passent toujours en premier",
+    // on force le démarrage à S0 à chaque chargement de la page.
+    // La progression (localStorage) pourra être utilisée plus tard pour des sauts de chapitre.
+    
+    setCurrentNotionId('S0');
+    initEvents(); // Initialiser les événements après avoir chargé les données
     animate();
 });

@@ -5,10 +5,15 @@
     <meta charset="UTF-8">
     <title>3o</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Configuration MathJax -->
+    <script>
+      window.MathJax = {
+        tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-    <audio id="chalkSound" src="chalk_writing.mp3" preload="auto" loop></audio>
-    <audio id="eraserSound" src="eraser_brushing.mp3" preload="auto" loop></audio>
 
     <div class="dlg-shell" id="shell">
       <div class="dlg-header">

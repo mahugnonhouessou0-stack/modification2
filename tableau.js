@@ -108,23 +108,17 @@ export function drawEraser(x) {
     ctx.restore();
 }
 
-export const chalkSound = document.getElementById('chalkSound');
-export const eraserSound = document.getElementById('eraserSound');
-
 function togglePause() {
     setPaused(!isPaused);
     const button = document.getElementById('pausePlayBtn');
     if (isPaused) {
         button.textContent = 'Lecture';
-        if (!chalkSound.paused) { chalkSound.pause(); }
-        if (!eraserSound.paused) { eraserSound.pause(); }
     } else {
         button.textContent = 'Pause';
     }
 }
 
 document.getElementById('replayBtn').addEventListener('click', () => {
-    if (!chalkSound.paused) { chalkSound.pause(); chalkSound.currentTime = 0; }
     if (window.onReplayRequest) {
         window.onReplayRequest();
     } else {
@@ -137,7 +131,6 @@ document.getElementById('replayBtn').addEventListener('click', () => {
 import { notions } from './contenu.js';
 
 document.getElementById('switchBtn').addEventListener('click', () => {
-    if (!chalkSound.paused) { chalkSound.pause(); chalkSound.currentTime = 0; }
     setIsTransitioning(true);
     setPaused(false);
     const notionIds = Object.keys(notions);

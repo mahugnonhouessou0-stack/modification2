@@ -83,6 +83,8 @@ export function createDialogue(content) {
             } else {
                 clearInterval(iv);
                 cursor.remove();
+                // Demander à MathJax de transformer les $...$ en formules
+                if (window.MathJax) MathJax.typesetPromise([bubble]);
                 if (cb) cb();
             }
         }, speed);

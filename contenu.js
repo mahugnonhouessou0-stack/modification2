@@ -283,22 +283,148 @@ const S3_Events = [
 ];
 
 const S4_Events = [
-    { type: 'text', text: 'Le cercle', x: 0.05, y: 0.08, sz: 0.05, bold: true, color: '#f5e441', start: 0, isTitle: true },
-    { type: 'cercle_pedagogique', x: 0.50, y: 0.52, r: 0.28, color: '#4a9eff', angle: 45, start: 30, duration: 1200, stop: 1250 },
-    { type: 'move_cercle', xStart: 0.50, xEnd: 0.25, y: 0.52, r: 0.28, angle: 45, color: '#4a9eff', start: 1250, duration: 80 },
-    { type: 'detached_angle', xStart: 0.25, xEnd: 0.70, y: 0.52, r: 0.28, angle: 45, color: '#ff4444', start: 1350, duration: 100 },
-    { text: "Voici l'angle au centre d'un cercle.", x: 0.55, y: 0.80, sz: 0.035, color: '#8dd0f0' },
+    { text: 'Notion : Angles au centre d\'un cercle',isTitle: true, x: 0.05, y: 0.08, sz: 0.05, bold: true, color: '#f5e441', start: 0, isTitle: true },
+
+    // --- GAUCHE : Le cercle ---
+    { type: "text", text: "Question : ", x: 0.05, y: 0.25, sz: 0.035, start: 60, color: '#f5e441' },
+    { type: "text", text: "Quel est le centre de ce cercle ?", x: 0.15, y: 0.25, sz: 0.035, start: 120, color: CW },
+    { type: 'cercle', x: 0.25, y: 0.55, r: 0.18, color: CB, start: 200, duration: 300 },
+
     { 
         type: 'question', 
-        isVerification: true,
-        text: "Pourquoi dit-on que cet angle est 'au centre' ?", 
+        text: "As-tu une idée ?", 
         options: [
-            { text: "Parce que son sommet est le point O", isCorrect: true },
-            { text: "Parce qu'il est joli", isCorrect: false },
-            { text: "Parce qu'il touche le bord", isCorrect: false }
-        ],
-        retryStart: 5
+            { text: "Oui, c'est O", isCorrect: true },
+            { text: "Non", isCorrect: false },
+        ]
+    },
+    { type: "text", text: "Le centre de ce cercle est : O", x: 0.05, y: 0.82, sz: 0.035, color: '#ffffff', pause: 400 },
+
+    // --- Séparation ---
+    { type: 'line', x1: 0.50, y1: 0.15, x2: 0.50, y2: 0.90, color: '#ffffff', duration: 40 },
+
+    // --- DROITE : L'angle ---
+    { type: "text", text: "Question : ", x: 0.52, y: 0.25, sz: 0.035, color: '#f5e441' },
+    { type: "text", text: "Quel est le sommet de cet angle ?", x: 0.63, y: 0.25, sz: 0.035, color: CW },
+    { type: 'angle', x: 0.70, y: 0.55, r: 0.18, angle: 45, vertex: 'C', labelLeft: 'A', labelRight: 'B', duration: 180 },
+    
+
+    { 
+        type: 'question', 
+        text: "As-tu une idée ?", 
+        options: [
+            { text: "Oui, c'est A", isCorrect: false },
+            { text: "Oui, c'est B", isCorrect: false },
+            { text: "Oui, c'est C", isCorrect: true }
+        ]
+    },
+    { type: "text", text: "Le sommet de cet angle est : C", x: 0.60, y: 0.65, sz: 0.035, color: 'CW', pause: 400 },
+    // L'angle entre dans le cercle
+    { type: 'insert_angle', xStart: 0.75, xEnd: 0.25, y: 0.55, r: 0.18, angle: 45, vertex: 'O', labelLeft: 'A', labelRight: 'B', color: '#ff4444', duration: 150 },
+    {type:'SEP'},
+
+    {type:'move_cercle', xStart: 0.25, xEnd: 0.55, y: 0.55, r: 0.18, color: CB, duration: 150 },
+    
+    { 
+        type: 'question', 
+        text: "Hum ? Qu'est devenu le sommet de cet angle qu'on a déplacé ?", 
+        options: [
+            { text: " C'est toujours C", isCorrect: false },
+            { text: "C'est devenu le point O qui est le centre du cercle", isCorrect: true },
+            { text: "Je ne sais pas trop", isCorrect: false }
+        ]
+    },
+    { type: "text", text: "C'est devenu le point O qui est le centre du cercle", x: 0.10, y: 0.75, sz: 0.035, color: '#ffffff', pause: 400 },
+    { type: "text", text: "Autrement dit, il est devenu un angle au centre d'un cercle. On le note désormais : AÔB", x: 0.10, y: 0.80, sz: 0.035, color: '#ffffff', pause: 400 },
+    { type: "text", text: "Définition : ", x: 0.10, y: 0.85, sz: 0.035, color: '#f5e441', pause: 400 },
+    { type: "text", text: "Un angle est dit angle au centre d'un cercle lorsque son sommet est le centre du cercle.", x: 0.21, y: 0.85, sz: 0.035, color: '#ffffff', pause: 400 },
+    { type: "text", text: "EXERCICE ", x: 0.50, y: 0.20, sz: 0.035,bold: true, color: '#f5e441', pause: 400 },
+    {type : 'SEP'},
+    { type: 'cercle_angle', x: 0.25, y: 0.55, r: 0.18, color: CB, duration: 300 },
+    { type: 'line', x1: 0.50, y1: 0.15, x2: 0.50, y2: 0.90, color: '#ffffff', duration: 40 },
+    { type: "text", text: "Un arc est une portion d'un cercle.", x: 0.63, y: 0.25, sz: 0.035, color: ' CW', pause: 400 },
+    
+    // 1. L'arc apparaît à droite
+    { type: 'arc', x: 0.75, y: 0.55, r: 0.18, startAngle: -0.785, endAngle: 0, labelStart: 'A', labelEnd: 'B',color: '#f5e441', lineWidth: 6, duration: 80, pause: 100 },
+    { type: "text", text: "Voici l'arc A͡B.", x: 0.75, y: 0.65, sz: 0.035, color: 'CW', pause: 400 },
+    // 2. L'arc se déplace vers le cercle
+    //{ type: 'arc', x: 0.75, y: 0.55, r: 0.18, startAngle: -0.785, endAngle: 0,labelStart: 'A', labelEnd: 'B', color: '#f5e441', lineWidth: 6, duration: 80,pause: 100 },
+    { type: 'insert_arc', xStart: 0.75, y: 0.55, targetX: 0.25, targetY: 0.55, r: 0.18, startAngle: -0.785, endAngle: 0, color: '#f5e441', lineWidth: 6, duration: 150, pause: 400 },
+    { type: 'clear', target: 'text' },
+    { type: 'clear', target: 'arc' },
+    { type: 'clear', target: 'line' },
+    { type: "text", text: "L'arc A͡B est donc la portion du cercle qui couvre l'angle AÔB.", x: 0.05, y: 0.80, sz: 0.035, color: 'CW', pause: 400 },
+    { type: "text", text: "On dit que l'arc A͡B intercepte l'angle AÔB.", x: 0.05, y: 0.85, sz: 0.035, color: 'CW', pause: 400 },
+    {type:'angle', x: 0.25, y: 0.55, r: 0.18, angle: 65, vertex: 'O', labelLeft: 'C', labelRight: 'B', color: '#f5e441', duration: 150 },
+    {type:'clear', target: 'text'},
+    { type: "text", text: "Quel est l'arc qui intercepte l'angle CÔB ?", x: 0.05, y: 0.80, sz: 0.035, color: 'CW', pause: 400 },
+    { 
+        type: 'question', 
+        text: "As-tu une idée ?", 
+        options: [
+            { text: "Oui, c'est l'arc A͡B", isCorrect: false },
+            { text: "Oui, c'est l'arc B͡C", isCorrect: true },
+            { text: "Oui, c'est l'arc C͡A", isCorrect: false },
+            { text: "Non", isCorrect: false },
+        ]
+    },
+    {type:'clear', target: 'text'},
+    { type: "text", text: "Nous avons deux types d'arc :", x: 0.05, y: 0.80, sz: 0.035, color: 'CW', pause: 400 },
+    {type:'clear', target: 'text'},
+    { type: "text", text: "Les petits arcs et les grands arcs.", x: 0.05, y: 0.80, sz: 0.035, color: 'CW', pause: 400 },
+    {type:'clear', target: 'text'},
+    { type: "text", text: "Les arcs A͡B et B͡C sont des petits arcs.", x: 0.05, y: 0.80, sz: 0.035, color: 'CW', pause: 400 },
+    {type:'clear', target: 'text'},
+    { type: 'line', x1: 0.50, y1: 0.15, x2: 0.50, y2: 0.90, color: '#ffffff', duration: 40 },
+    { type: "text", text: "Voici le grand arc AB : ", x: 0.55, y: 0.30, sz: 0.035, color: 'CW', pause: 400 },
+    { type: 'arc', x: 0.75, y: 0.55, r: 0.18, startAngle: 0, endAngle: -0.785, anticlockwise: false, labelStart: 'B', labelEnd: 'A', color: '#f5e441', lineWidth: 6, duration: 80, pause: 100 },
+    { type: "text", text: "On le note : ~AB", x: 0.55, y: 0.80, sz: 0.035, color: 'CW', pause: 400 },
+    { type: 'insert_arc', xStart: 0.75, y: 0.55, targetX: 0.25, targetY: 0.55, r: 0.18, startAngle: 0, endAngle: -0.785, anticlockwise: false, color: '#ee1717', lineWidth: 6, duration: 150, pause: 400 },
+    { type: "text", text: "L'arc A͡B intercepte l'angle AÔB: ", x: 0.05, y: 0.80, sz: 0.035, color: 'CW', pause: 400 },
+    { type: "text", text: "L'arc ~AB intercepte l'angle ~AOB: ", x: 0.05, y: 0.85, sz: 0.035, color: 'CW', pause: 400 },
+    {type:'SEP'},
+    { type: 'arc_angle_growth', x: 0.50, y: 0.50, r: 0.25, maxAngle: 100, color: '#f5e441', lineWidth: 6, duration: 600 },
+    { 
+        type: 'question', 
+        text: "Waouh..! C'est incroyable. L'arc devient plus grand au fur et à mesure que l'angle augmente. As-tu remarqué ?", 
+        options: [
+            { text: "Oui", isCorrect: true },
+            { text: "Pas vraiment", isCorrect: false },
+            { text: "Non", isCorrect: false },
+        ]
+    },
+    { type: 'clear', target: 'arc_angle_growth' },
+    { type: 'arc_angle_growth', x: 0.50, y: 0.50, r: 0.25, maxAngle: 180, color: '#f5e441', lineWidth: 6, duration: 600 },
+    { type: "text", text: "Le fait que plus l’angle au centre est grand, plus l’arc correspondant est long, ", x: 0.05, y: 0.75, sz: 0.035, color: 'CW', pause: 400 },
+    {type:'text', text: "veut dire que la longueur d’un arc de cercle est proportionnelle à la mesure de l’angle au centre qui l’intercepte. ", x: 0.05, y: 0.80, sz: 0.035, color: 'CW', pause: 400 },
+    {type:'text', text: "Autrement dit, si on double l’angle, on double aussi la longueur de l’arc.", x: 0.05, y: 0.85, sz: 0.035, color: 'CW', pause: 400 },
+    {type:'SEP'},
+    {type:'cercle', x: 0.25, y: 0.50, r: 0.25, color: CB, duration: 300 },
+    // Premier angle : de 0° à 60°
+    { type: 'arc_angle_growth', x: 0.25, y: 0.50, r: 0.25, maxAngle: 60, startAngle: 0, labelFixed: 'B', labelMoving: 'A', labelArc: '⌢AB', maxLength: 5.2, color: '#f5e441', duration: 400 },
+
+    // Deuxième angle : de 180° à 240° (éloigné du premier)
+    { type: 'arc_angle_growth', x: 0.25, y: 0.50, r: 0.25, maxAngle: 60, startAngle: 3.14, labelFixed: 'D', labelMoving: 'C', labelArc: '⌢CD', maxLength: 5.2, color: '#ec0a0a', duration: 400 },
+    { type: 'line', x1: 0.50, y1: 0.15, x2: 0.50, y2: 0.90, color: '#ffffff', duration: 40 },
+    {type:'cercle', x: 0.65, y: 0.50, r: 0.25, color: CB, duration: 300 },
+    // Premier angle : de 0° à 60°
+    { type: 'arc_angle_growth', x: 0.65, y: 0.50, r: 0.25, maxAngle: 60, startAngle: 0, labelFixed: 'B', labelMoving: 'A', labelArc: '⌢AB', maxLength: 5.2, color: '#f5e441', duration: 400 },
+
+    // Deuxième angle : de 180° à 240° (éloigné du premier)
+    { type: 'arc_angle_growth', x: 0.65, y: 0.50, r: 0.25, maxAngle: 60, startAngle: 3.14, labelFixed: 'D', labelMoving: 'C', labelArc: '⌢CD', maxLength: 5.2, color: '#ec0a0a', duration: 400 },
+
+    {type:'text', text: "Question : ", x: 0.40, y: 0.95, sz: 0.035, color: '#f5e441', pause: 400 },
+    {type:'text', text: "Qu'as-tu remarqué ?", x: 0.50, y: 0.95, sz: 0.035, color: '#ffffff', pause: 400 },
+    {type:'question',
+        text: "As-tu une idée de ce qu'ils veulent qu'on remarque ?",
+        options: [
+            { text: "Oui, mes(AÔB)=mes(CÔD)=60°", isCorrect: false },
+            { text: "Oui, c'est pour dire que lorsque mes(AÔB)=mes(CÔD) alors L(A͡B)=L(C͡D)", isCorrect: true },
+            { text: "Non", isCorrect: false },
+        ]
     }
+
+
 ];
 
 export const notions = {
