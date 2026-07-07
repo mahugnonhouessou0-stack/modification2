@@ -5,12 +5,17 @@
     <meta charset="UTF-8">
     <title>3o</title>
     <link rel="stylesheet" href="style.css">
+    <script defer src="https://unpkg.com/mathlive"></script>
+    <link rel="stylesheet" href="cahier.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <!-- Configuration MathJax -->
     <script>
       window.MathJax = {
         tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
       };
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
@@ -32,8 +37,42 @@
     </div>
 
     <div class="board-frame">
+        <div id="tableau-topbar" class="tableau-topbar">
+            <div id="tableau-countdown" class="tableau-countdown">15:00</div>
+        </div>
         <canvas id="boardCanvas"></canvas>
+        <canvas id="threeCanvas" style="position:absolute; top:0; left:0; pointer-events:none; display:none;"></canvas>
     </div>
+
+    <div id="cahier" class="cahier-bulle">
+
+        <!-- Header -->
+        <div id="cahier-header">
+            <span id="cahier-title">✏️ Cahier</span>
+            <div id="cahier-size-btns">
+                <button data-size="bulle" title="Réduire">⬤</button>
+                <button data-size="petit" title="Petit">▪</button>
+                <button data-size="moyen" title="Moyen">▬</button>
+                <button data-size="plein" title="Plein écran">⛶</button>
+            </div>
+        </div>
+
+        <!-- Zone d'écriture -->
+        <div id="cahier-body">
+            <div class="cahier-math-row">
+                <div class="cahier-math-field">
+                    <math-field id="cahier-math-input" virtual-keyboard-mode="manual" placeholder=" "></math-field>
+                </div>
+            </div>
+        </div>
+
+        <div id="cahier-keyboard"></div>
+
+        <!-- Bouton envoyer -->
+        <button id="cahier-send">Envoyer ✓</button>
+
+    </div>
+
     <div class="controls">
         <button id="replayBtn">Rejouer</button>
         <button id="switchBtn">Changer de scène</button>
@@ -54,5 +93,6 @@
 
     <!-- En mode module, on ne charge que le point d'entrée -->
     <script type="module" src="moteur.js"></script>
+    <script src="cahier.js"></script>
 </body>
 </html>

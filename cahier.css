@@ -1,0 +1,136 @@
+/* Base commune */
+#cahier {
+    position: fixed;
+    z-index: 1000;
+    backdrop-filter: blur(6px);
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+/* État bulle */
+#cahier.cahier-bulle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    bottom: 20px;
+    right: 20px;
+    cursor: pointer;
+}
+#cahier.cahier-bulle #cahier-header,
+#cahier.cahier-bulle #cahier-body,
+#cahier.cahier-bulle #cahier-keyboard,
+#cahier.cahier-bulle #cahier-send {
+    display: none;
+}
+
+/* État petit */
+#cahier.cahier-petit {
+    width: 320px;
+    height: 480px; /* Augmenté pour contenir le clavier (320px) + l'éditeur */
+    bottom: 20px;
+    right: 20px;
+}
+
+/* État moyen */
+#cahier.cahier-moyen {
+    width: 55vw;
+    height: 75vh; /* Augmenté pour le confort visuel */
+    bottom: 5vh;
+    right: 3vw;
+}
+
+/* État plein écran */
+#cahier.cahier-plein {
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    border-radius: 0;
+}
+
+/* Header */
+#cahier-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    font-family: Georgia, serif;
+    cursor: grab;
+}
+
+#cahier-size-btns button {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    border-radius: 4px;
+    margin-left: 4px;
+    cursor: pointer;
+    padding: 2px 6px;
+}
+#cahier-size-btns button:hover {
+    background: rgba(255,255,255,0.4);
+}
+
+/* Zone d'écriture */
+#cahier-body {
+    flex: 1;
+    overflow: hidden;
+    padding: 12px;
+    color: white;
+    font-family: Georgia, serif;
+    font-size: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cahier-math-row {
+    display: flex;
+    flex: 1;
+}
+
+.cahier-math-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 220px;
+}
+
+.cahier-math-field math-field {
+    flex: 1;
+    width: 100%;
+    min-height: 220px;
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 16px;
+    background: rgba(255,255,255,0.12);
+    color: white;
+    padding: 12px;
+}
+
+.cahier-math-field math-field:focus {
+    outline: 2px solid rgba(255,255,255,0.4);
+    border-color: rgba(255,255,255,0.5);
+}
+
+#cahier-keyboard {
+    border-top: 1px solid rgba(255,255,255,0.2);
+    background: rgba(0,0,0,0.1);
+    min-height: 200px; /* Réserve un espace minimum pour le clavier */
+    overflow: visible; /* Changé de 'hidden' à 'visible' pour éviter le rognage */
+    flex-shrink: 0;
+}
+
+#cahier-keyboard .ML__keyboard {
+    position: relative !important;
+    width: 100% !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}

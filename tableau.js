@@ -4,6 +4,9 @@ export let boardWidth, boardHeight;
 export let boardColor = '#1a1a1a';
 
 export let particles = [];
+export let notionCountdownSeconds = 0;
+let countdownTimer = null;
+let countdownActive = false;
 // Global state variables, shared with moteur.js
 export let isPaused = false;
 export let isTransitioning = false;
@@ -32,9 +35,68 @@ export function getCurrentNotionId() {
     return currentNotionId;
 }
 
+function formatCountdown(seconds) {
+    const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+    const secs = String(seconds % 60).padStart(2, '0');
+    return `${mins}:${secs}`;
+}
+
+function updateTopBar() {
+    const topbarEl = document.getElementById('tableau-topbar');
+    const countdownEl = document.getElementById('tableau-countdown');
+    if (!topbarEl || !countdownEl) return;
+    if (!countdownActive) {
+        topbarEl.style.display = 'none';
+        return;
+    }
+    topbarEl.style.display = 'flex';
+    countdownEl.textContent = formatCountdown(notionCountdownSeconds);
+}
+
+function resetNotionCountdown(seconds = null) {
+    if (seconds === null || seconds === undefined) {
+        countdownActive = false;
+        notionCountdownSeconds = 0;
+    } else {
+        countdownActive = true;
+        notionCountdownSeconds = Math.max(0, Number(seconds) || 0);
+    }
+    updateTopBar();
+}
+
+export let countdownEndCallback = null;
+
+export function startNotionCountdown(initialSeconds) {
+    if (countdownTimer) clearInterval(countdownTimer);
+    resetNotionCountdown(initialSeconds);
+    if (!countdownActive) return;
+    countdownTimer = setInterval(() => {
+        notionCountdownSeconds = Math.max(0, notionCountdownSeconds - 1);
+        updateTopBar();
+        if (notionCountdownSeconds <= 0) {
+            clearInterval(countdownTimer);
+            countdownTimer = null;
+            countdownActive = false;
+            updateTopBar();
+            if (typeof countdownEndCallback === 'function') {
+                countdownEndCallback();
+            }
+        }
+    }, 1000);
+}
+
+export function setCountdownEndCallback(callback) {
+    countdownEndCallback = typeof callback === 'function' ? callback : null;
+}
+
+export function setNotionCountdownSeconds(seconds) {
+    resetNotionCountdown(seconds);
+}
+
 export function setCurrentNotionId(newId) {
     console.log(`[Tableau] Mise à jour de la notion actuelle : ${currentNotionId} -> ${newId}`);
     currentNotionId = newId;
+    resetNotionCountdown();
 }
 
 export function setPaused(value) {
@@ -70,15 +132,6 @@ export function drawBoardBackground() {
     ctx.fillStyle = boardColor;
     ctx.fillRect(0, 0, boardWidth, boardHeight);
 
-    if (currentNotionId === 'S3') {
-        ctx.fillStyle = 'rgba(255,255,255,0.05)';
-        ctx.fillRect(boardWidth * 0.6, boardHeight * 0.1, boardWidth * 0.35, boardHeight * 0.15);
-        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-        ctx.strokeRect(boardWidth * 0.6, boardHeight * 0.1, boardWidth * 0.35, boardHeight * 0.15);
-        ctx.fillStyle = 'rgba(255,255,255,0.4)';
-        ctx.font = getFont(0.03, true, false);
-        ctx.fillText("BROUILLON", boardWidth * 0.62, boardHeight * 0.14);
-    }
 }
 
 export function drawEraser(x) {

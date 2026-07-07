@@ -111,6 +111,61 @@ export function createDialogue(content) {
         });
     }
 
+    function showTextInput() {
+        if (!content.input) return;
+        console.log('[Dialogue] showTextInput called', content);
+        qLabel.textContent = '';
+        choicesEl.innerHTML = '';
+
+        const inputRow = document.createElement('div');
+        inputRow.className = 'dlg-input-row chat-input-row';
+
+        const textarea = document.createElement('textarea');
+        textarea.className = 'dlg-input';
+        textarea.placeholder = content.input.placeholder || 'Aa…';
+        textarea.rows = 1;
+        textarea.style.height = '44px';
+        textarea.addEventListener('input', () => {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 140) + 'px';
+        });
+        textarea.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                submitText();
+            }
+        });
+
+        const btn = document.createElement('button');
+        btn.className = 'dlg-send-icon';
+        btn.type = 'button';
+        btn.innerHTML = '➤';
+        btn.setAttribute('aria-label', content.input.buttonLabel || 'Envoyer');
+
+        const submitText = () => {
+            const value = textarea.value.trim();
+            if (!value) return;
+            textarea.disabled = true;
+            btn.disabled = true;
+            qLabel.textContent = '';
+            const { bubble, cursor } = addUserBubble();
+            typeText(bubble, cursor, value, () => {
+                if (content.onSubmit) content.onSubmit(value);
+            });
+        };
+
+        btn.onclick = submitText;
+        inputRow.appendChild(textarea);
+        inputRow.appendChild(btn);
+        choicesEl.appendChild(inputRow);
+        try {
+            textarea.focus();
+            console.log('[Dialogue] textarea focused');
+        } catch (e) {
+            console.error('[Dialogue] failed to focus textarea', e);
+        }
+    }
+
     // Lancer le message avec typing indicator
     showTyping();
     setTimeout(() => {
@@ -118,6 +173,8 @@ export function createDialogue(content) {
         typeText(bubble, cursor, content.text, () => {
             if (content.choices && content.choices.length > 0) {
                 showChoices(content.question, content.choices);
+            } else if (content.input) {
+                showTextInput();
             }
             if (content.onDone) content.onDone();
         });
@@ -154,6 +211,25 @@ export function updateDialogueToSuccess(successMsg, onContinue) {
     btn.textContent = 'Continuer';
     btn.onclick = onContinue;
     choicesEl.appendChild(btn);
+}
+
+export function appendUserMessage(text, author = 'Vous') {
+    const body = document.getElementById('dlg-body');
+    if (!body) return;
+
+    const row = document.createElement('div');
+    row.className = 'dlg-row user';
+    const bubble = document.createElement('div');
+    bubble.className = 'dlg-bubble';
+    bubble.textContent = text || '';
+    row.appendChild(bubble);
+    body.appendChild(row);
+    body.scrollTop = body.scrollHeight;
+
+    const hdrAv = document.getElementById('hdr-av');
+    const hdrName = document.getElementById('hdr-name');
+    if (hdrAv) hdrAv.textContent = author[0] || 'V';
+    if (hdrName) hdrName.textContent = author;
 }
 
 export function openDialogueBox() {

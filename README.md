@@ -2,6 +2,23 @@
 
 Ce projet est un moteur de "Storytelling Pédagogique". Contrairement à une application de quiz classique, il simule une séance de travail réelle sur tableau noir où l'élève interagit avec **Camélia**, une IA (scénarisée) qui apprend en même temps que lui.
 
+## 🚀 Déploiement simple
+
+Pour héberger l’application en ligne, vous pouvez la servir avec Node.js via le serveur fourni :
+
+```bash
+npm install
+npm start
+```
+
+Le site sera alors accessible sur http://localhost:3000.
+
+### Vérification rapide
+
+```bash
+curl http://localhost:3000/health
+```
+
 ## 🚀 Stack Technique
 - **Langage** : JavaScript (ES6+ Modules)
 - **Rendu** : HTML5 Canvas API
@@ -96,6 +113,96 @@ Le moteur ne fait pas qu'effacer tout le tableau. Il gère des couches :
 La liste des tâches techniques, les bugs identifiés et la roadmap de modernisation sont centralisés dans le fichier TODO.md.
 
 Consultez ce fichier avant toute nouvelle contribution pour voir les priorités (notamment la migration vers une architecture pilotée par les données).
+## Pour faire apparaître le cahier après une question
+
+Tu utilises la 3ème méthode : une question à choix avec `addOther: true`.
+
+### Exemple à mettre dans contenu.js
+
+```js
+{
+    type: 'question',
+    text: "Quel est le périmètre d'un cercle de rayon r ?",
+    options: [
+        { text: "2πr", isCorrect: true },
+        { text: "πr²", isCorrect: false }
+    ],
+    addOther: true,
+    expectedAnswer: "2\\pi r"
+}
+```
+
+### Ce que ça fait
+- la question s’affiche normalement avec les boutons de choix
+- le moteur ajoute automatiquement un bouton complémentaire `Autre (écrire...)`
+- quand l’élève clique sur ce bouton, le code déclenche `window.openCahier()`
+- le cahier s’ouvre pour saisir une formule
+- la réponse saisie dans le cahier est évaluée avec `expectedAnswer`
+
+### Important
+- `addOther: true` marche uniquement pour les questions à choix (`options`)
+- ne mets pas `freeAnswer: true` dans la même question
+- le cahier reste réservé aux formules / saisies mathématiques
+
+Si tu veux, je peux aussi te montrer un petit exemple complet avec `options` et `addOther` dans la même notion.
+---
+## Ce qu’il faut savoir
+
+### En l’état actuel
+Le cahier ne s’ouvre pas automatiquement avec une simple propriété de contenu.js.
+
+Tu peux déjà faire apparaître le cahier via :
+- `addOther: true` → ajoute un bouton `Autre (écrire...)`
+- `choice.value = { useCahier: true }` → ouvre le cahier quand on clique sur ce bouton
 
 ---
+
+## Si tu veux l’ouvrir systématiquement après une question
+
+Il faut appeler `window.openCahier()` dans le moteur.
+
+### Option actuelle la plus simple
+Utilise `addOther: true` sur ta question à choix :
+
+```js
+{
+  type: 'question',
+  text: "Quel est le périmètre d'un cercle de rayon r ?",
+  options: [
+    { text: "2πr", isCorrect: true },
+    { text: "πr²", isCorrect: false }
+  ],
+  addOther: true,
+  expectedAnswer: "2\\pi r"
+}
+```
+
+Mais ça laisse encore le bouton `Autre` à cliquer.
+
+---
+
+## Pour un cahier qui s’ouvre automatiquement
+Il faudrait ajouter une nouvelle propriété de type :
+
+```js
+{
+  type: 'question',
+  text: "Écris la formule ici :",
+  openCahier: true,
+  expectedAnswer: "2\\pi r"
+}
+```
+
+et dans moteur.js faire :
+
+- `if (ev.openCahier) window.openCahier();`
+- régler `window.onCahierSend` pour cette question
+
+---
+
+## Résumé
+- Si tu veux juste que le cahier soit disponible : `addOther: true`
+- Si tu veux qu’il s’ouvre sans action de l’élève : il faut ajouter `openCahier: true` dans contenu.js et adapter moteur.js
+
+Je peux tout de suite implémenter ce `openCahier: true` si tu veux.
 *3o - Chaque élève compte*

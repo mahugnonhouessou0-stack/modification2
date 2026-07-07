@@ -6,10 +6,10 @@
     <title>Authentification - Cours Animé</title>
     <style>
         :root {
-            --board-bg: #1a1a1a;
-            --chalk-white: rgba(242, 237, 228, 0.9);
-            --chalk-yellow: #f5e441;
+            --logo-brown: #3E2A1B; /* Le marron foncé texturé du chiffre 3 */
+            --logo-beige: #DCC5A3; /* Le beige chaud de la lettre o */
         }
+        
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { min-height: 100%; }
         
@@ -18,53 +18,43 @@
             align-items: center; 
             justify-content: center; 
             font-family: Georgia, serif;
-            background-color: var(--board-bg);
-            background-image: linear-gradient(145deg, rgba(255,255,255,0) 40%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0) 60%);
-            background-size: 300% 300%;
-            animation: shimmer 15s ease infinite;
+            background-color: var(--logo-brown); /* Fond basé uniquement sur le marron du logo */
             min-height: 100vh;
             padding: 40px 10px;
             overflow-y: auto;
-        }
-
-        @keyframes shimmer {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            color: var(--logo-brown);
         }
 
         .auth-container {
-            background-color: rgba(30, 30, 30, 0.85);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background-color: var(--logo-beige); /* Bloc basé uniquement sur le beige du logo */
+            border: 3px solid var(--logo-brown);
             border-radius: 16px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            padding: 25px;
-            color: var(--chalk-white);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+            padding: 35px 25px;
             width: 95%;
-            max-width: 950px; /* Élargi pour supporter les 3 colonnes */
+            max-width: 950px;
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
 
         h1 {
-            color: var(--chalk-yellow);
+            color: var(--logo-brown);
             text-align: center;
             margin-bottom: 30px;
-            font-size: 1.8rem;
-            font-weight: normal;
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: -0.5px;
         }
 
         .form-grid {
             display: grid;
-            grid-template-columns: 1fr; /* Une colonne par défaut (mobile) */
-            gap: 10px 15px;
+            grid-template-columns: 1fr;
+            gap: 12px 15px;
         }
 
         .full-width { grid-column: span 1; }
 
-        /* Passage à 2 colonnes sur tablettes et ordinateurs */
         @media (min-width: 600px) {
             .form-grid {
                 grid-template-columns: 1fr 1fr;
@@ -93,77 +83,93 @@
             display: block;
             margin-bottom: 8px;
             font-style: italic;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: var(--logo-brown);
         }
 
         input, select {
             width: 100%;
             padding: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 4px;
-            color: white;
+            background: #FFFFFF; /* Conservé en blanc pur pour un confort de saisie optimal */
+            border: 2px solid var(--logo-brown);
+            border-radius: 6px;
+            color: var(--logo-brown);
             font-family: Georgia, serif;
             font-size: 1rem;
             outline: none;
-            transition: border-color 0.3s;
+            transition: all 0.2s;
         }
 
         input:focus, select:focus {
-            border-color: var(--chalk-yellow);
+            box-shadow: 0 0 0 3px rgba(62, 42, 27, 0.25);
         }
 
         select option {
-            background: #1a1a1a;
-            color: white;
+            background: #FFFFFF;
+            color: var(--logo-brown);
         }
 
+        /* Boutons : Inversion parfaite (Fond Marron, Texte Beige) */
         .submit-btn {
             width: 100%;
-            padding: 12px;
-            margin-top: 10px;
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            color: white;
+            padding: 14px;
+            margin-top: 15px;
+            background: var(--logo-brown);
+            border: 2px solid var(--logo-brown);
+            color: var(--logo-beige);
             font-family: inherit;
             font-size: 1.1rem;
             cursor: pointer;
             border-radius: 8px;
             transition: all 0.2s;
+            font-weight: bold;
         }
 
         .submit-btn:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateY(-2px);
+            background: #271a10; /* Version légèrement assombrie du marron au survol */
+            border-color: #271a10;
+            transform: translateY(-1px);
         }
 
         .toggle-link {
             text-align: center;
-            margin-top: 20px;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.6);
+            margin-top: 25px;
+            font-size: 0.95rem;
+            color: var(--logo-brown);
+            font-weight: 500;
         }
 
         .toggle-link span {
-            color: var(--chalk-yellow);
+            color: var(--logo-brown);
             cursor: pointer;
             text-decoration: underline;
+            font-weight: bold;
         }
 
         .hidden { display: none; }
 
-        /* Style pour les titres de section dans les formulaires */
         .section-title {
-            font-size: 1rem;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-            margin: 15px 0 10px 0;
+            font-size: 1.1rem;
+            color: var(--logo-brown);
+            border-bottom: 2px solid var(--logo-brown);
+            margin: 15px 0 15px 0;
+            padding-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        p.info-text {
+            font-size: 0.85rem; 
+            color: var(--logo-brown); 
+            font-style: italic; 
+            margin-top: 10px;
+            opacity: 0.9;
         }
     </style>
 </head>
 <body>
 
 <div class="auth-container">
-    <!-- 1. CONNEXION -->
     <div id="loginForm">
         <h1>Connexion</h1>
         <div class="form-group">
@@ -178,21 +184,18 @@
         <p class="toggle-link">Pas encore inscrit ? <span onclick="showRoleSelection()">Créer un compte</span></p>
     </div>
 
-    <!-- 2. CHOIX DU RÔLE -->
     <div id="roleSelection" class="hidden">
         <h1>Qui êtes-vous ?</h1>
-        <p style="text-align:center; margin-bottom:20px; font-style:italic;">Choisissez votre profil pour continuer</p>
-        <button class="submit-btn" style="margin-bottom:10px;" onclick="showForm('foyerForm')">Parent / Foyer</button>
-        <button class="submit-btn" style="margin-bottom:10px;" onclick="showForm('enseignantForm')">Enseignant</button>
+        <p style="text-align:center; margin-bottom:25px; font-style:italic; color: var(--logo-brown);">Choisissez votre profil pour continuer</p>
+        <button class="submit-btn" style="margin-bottom:12px;" onclick="showForm('foyerForm')">Parent / Foyer</button>
+        <button class="submit-btn" style="margin-bottom:12px;" onclick="showForm('enseignantForm')">Enseignant</button>
         <button class="submit-btn" onclick="showForm('registerForm')">Élève</button>
         <p class="toggle-link"><span onclick="showLoginForm()">Retour à la connexion</span></p>
     </div>
 
-    <!-- 3. INSCRIPTION FOYER (PARENTS) -->
     <div id="foyerForm" class="hidden">
         <h1>Inscription Foyer</h1>
         <div class="foyer-grid">
-            <!-- Colonne 1 : Informations de la Mère -->
             <div class="foyer-column">
                 <h2 class="section-title">Informations de la Mère</h2>
                 <div class="form-group"><label>Nom (Mère)</label><input type="text" id="foyerNomM"></div>
@@ -201,7 +204,6 @@
                 <div class="form-group"><label>Téléphone</label><input type="tel" id="foyerTelM"></div>
             </div>
 
-            <!-- Colonne 2 : Informations du Père -->
             <div class="foyer-column">
                 <h2 class="section-title">Informations du Père</h2>
                 <div class="form-group"><label>Nom (Père)</label><input type="text" id="foyerNomP"></div>
@@ -210,20 +212,18 @@
                 <div class="form-group"><label>Téléphone</label><input type="tel" id="foyerTelP"></div>
             </div>
 
-            <!-- Colonne 3 : Infos Communes -->
             <div class="foyer-column">
                 <h2 class="section-title">Infos Communes</h2>
                 <div class="form-group"><label>Ville</label><input type="text" id="foyerVille"></div>
                 <div class="form-group"><label>Quartier</label><input type="text" id="foyerQuartier"></div>
                 <div class="form-group"><label>Mot de passe</label><input type="password" id="foyerPass"></div>
-                <p style="font-size: 0.8rem; opacity: 0.7; font-style: italic; margin-top: 10px;">Ce mot de passe servira à la connexion du foyer.</p>
+                <p class="info-text">Ce mot de passe servira à la connexion du foyer.</p>
             </div>
         </div>
         <button class="submit-btn" onclick="goToCourse()">Inscrire le Foyer</button>
         <p class="toggle-link"><span onclick="showRoleSelection()">Retour</span></p>
     </div>
 
-    <!-- 4. INSCRIPTION ENSEIGNANT -->
     <div id="enseignantForm" class="hidden">
         <h1>Inscription Enseignant</h1>
         <div class="form-grid">
@@ -247,7 +247,6 @@
         <p class="toggle-link"><span onclick="showRoleSelection()">Retour</span></p>
     </div>
 
-    <!-- 5. INSCRIPTION ÉLÈVE -->
     <div id="registerForm" class="hidden">
         <h1>Inscription Élève</h1>
         <div class="form-grid">
@@ -438,7 +437,6 @@
         let displayName = "";
 
         if (!document.getElementById('registerForm').classList.contains('hidden')) {
-            // Validation Élève
             const fields = [
                 { id: 'regParentFoyer', name: 'le Parent/Foyer' },
                 { id: 'regNom', name: 'le Nom' },
@@ -463,7 +461,6 @@
             displayName = document.getElementById('regPrenoms').value;
         } 
         else if (!document.getElementById('foyerForm').classList.contains('hidden')) {
-            // Validation Foyer
             const foyerFields = ['foyerNomP', 'foyerPreP', 'foyerNomM', 'foyerPreM', 'foyerTelP', 'foyerPass'];
             for (let id of foyerFields) {
                 if (!document.getElementById(id).value.trim()) {
@@ -474,7 +471,6 @@
             displayName = "Foyer " + document.getElementById('foyerNomP').value;
         } 
         else if (!document.getElementById('enseignantForm').classList.contains('hidden')) {
-            // Validation Enseignant
             const ensFields = ['ensNom', 'ensPre', 'ensTel', 'ensEtab', 'ensPass'];
             for (let id of ensFields) {
                 if (!document.getElementById(id).value.trim()) {
@@ -485,7 +481,6 @@
             displayName = "M./Mme " + document.getElementById('ensNom').value;
         } 
         else if (!document.getElementById('loginForm').classList.contains('hidden')) {
-            // Validation Connexion
             const user = document.getElementById('loginUser').value.trim();
             const pass = document.getElementById('loginPass').value.trim();
             if (!user || !pass) {
@@ -499,7 +494,6 @@
             localStorage.setItem('welcomeUser', displayName);
         }
 
-        // Si tout est valide, on redirige
         window.location.href = 'index.html';
     }
 </script>

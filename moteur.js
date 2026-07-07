@@ -1,10 +1,10 @@
-// Import de la bibliothèque Transformers.js (via CDN pour plus de simplicité)
-import { pipeline, cos_sim } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.1';
-
+import { sceneCordeSaut } from './scene3d.js';
+import { evaluateAnswer, normalizeForAiMatch, hasKeyword } from './aiService.js';
 import { 
     canvas, ctx, boardWidth, boardHeight, boardColor, particles, 
     isPaused, isTransitioning, getNextPhase, getCurrentNotionId, animationSpeed, eraserX, getFont, drawBoardBackground, drawEraser, createConfetti,
-    setCurrentNotionId, setPaused, setIsTransitioning, setNextPhase, setAnimationSpeed, setBoardColor, setEraserX
+    setCurrentNotionId, setPaused, setIsTransitioning, setNextPhase, setAnimationSpeed, setBoardColor, setEraserX,
+    startNotionCountdown, setCountdownEndCallback
 } from './tableau.js';
 
 import { notions as staticNotions, CW, CY, CG, CB } from './contenu.js';
@@ -13,7 +13,7 @@ import { notions as staticNotions, CW, CY, CG, CB } from './contenu.js';
 let notions = staticNotions;
 
 import {
-    createDialogue, updateDialogueToSuccess, openDialogueBox, closeDialogueBox, clearDialogueHistory
+    createDialogue, updateDialogueToSuccess, openDialogueBox, closeDialogueBox, clearDialogueHistory, appendUserMessage
 } from './dialogue.js';
 
 /**
@@ -26,7 +26,6 @@ export function dwell(event, pauseDuration) {
 
 let timer = 0, events = [], maxTime = 0;
 let pendingQuestionTimeout = null;
-let extractor = null; // Le modèle d'IA
 
 /**
  * Simule un appel API pour charger les notions
@@ -43,33 +42,24 @@ async function loadData() {
     }
 }
 
-/**
- * Charge le modèle d'IA sémantique en arrière-plan
- */
-async function loadSemanticModel() {
-    if (extractor) return;
-    console.log("[IA] Chargement du modèle sémantique...");
-    // Utilisation d'un modèle léger optimisé pour le français et la similarité
-    extractor = await pipeline('feature-extraction', 'Xenova/paraphrase-multilingual-MiniLM-L12-v2');
-    console.log("[IA] Modèle prêt.");
-}
-loadSemanticModel();
-
-/**
- * Vérifie si deux phrases ont le même sens
- */
 async function arePhrasesSimilar(input, target) {
-    if (!extractor) return fuzzyMatch(input, target); // Fallback si le modèle n'est pas prêt
+    return evaluateAnswer(input, target);
+}
 
-    // Génération des "empreintes digitales" (embeddings) des phrases
-    const output1 = await extractor(input, { pooling: 'mean', normalize: true });
-    const output2 = await extractor(target, { pooling: 'mean', normalize: true });
-
-    // Calcul du score de similarité cosinus (de 0 à 1)
-    const similarity = cos_sim(output1.data, output2.data);
-    console.log(`[IA] Score de similarité : ${similarity.toFixed(2)}`);
-    
-    return similarity > 0.75; // Seuil de tolérance (ajustable)
+/**
+ * Convertit le LaTeX basique en texte lisible pour l'IA
+ */
+function mathToText(latex) {
+    if (!latex) return "";
+    return latex
+        .replace(/\\frac{([^}]*)}{([^}]*)}/g, '$1/$2')
+        .replace(/\\vec{([^}]*)}/g, 'vecteur $1')
+        .replace(/\\sqrt{([^}]*)}/g, 'racine de $1')
+        .replace(/\\hat{([^}]*)}/g, 'angle $1')
+        .replace(/[\{\}]/g, '')
+        .replace(/\\/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
 }
 
 const REPLAY_LIMIT_PER_NOTION = 3;
@@ -128,6 +118,19 @@ const transitionToNextNotion = () => {
     setNextPhase(nextId);
     setPaused(false); // On s'assure que le moteur tourne pour l'animation de l'effaceur
 };
+
+function getNotionCountdownSeconds(notion) {
+    if (!notion || !Array.isArray(notion.events)) return null;
+    const override = notion.events.find(ev => ev.compteur !== undefined);
+    if (!override) return null;
+    const minutes = Number(override.compteur);
+    return Number.isFinite(minutes) && minutes > 0 ? Math.round(minutes * 60) : null;
+}
+
+function applyNotionCountdown(notion) {
+    const seconds = getNotionCountdownSeconds(notion);
+    startNotionCountdown(seconds);
+}
 
 function showReplayLimitMessage(text) {
     createDialogue({
@@ -503,240 +506,240 @@ const DrawingLibrary = {
 
         return p < 1;
     },
-   angle: (ev) => {
-    const cx = ev.x * boardWidth;
-    const cy = ev.y * boardHeight;
-    const R = ev.r * boardHeight;
-    const angleDeg = ev.angle || 45;
-    const angleRad = angleDeg * Math.PI / 180;
-    const s = boardWidth * 0.012;
-    const vertex = ev.vertex || 'C';
-    const labelLeft = ev.labelLeft || 'A';
-    const labelRight = ev.labelRight || 'B';
-    const color = ev.color || '#ff4444';
+    angle: (ev) => {
+        const cx = ev.x * boardWidth;
+        const cy = ev.y * boardHeight;
+        const R = ev.r * boardHeight;
+        const angleDeg = ev.angle || 45;
+        const angleRad = angleDeg * Math.PI / 180;
+        const startAngleDeg = ev.startAngle || 0;  // Nouveau : 0 par défaut
+        const startAngleRad = startAngleDeg * Math.PI / 180;
+        const s = boardWidth * 0.012;
+        const vertex = ev.vertex || 'C';
+        const labelLeft = ev.labelLeft || 'A';
+        const labelRight = ev.labelRight || 'B';
+        const color = ev.color || '#ff4444';
 
-    const bx = cx + R;
-    const by = cy;
-    const ax = cx + R * Math.cos(angleRad);
-    const ay = cy - R * Math.sin(angleRad);
+        const bx = cx + R * Math.cos(startAngleRad);
+        const by = cy - R * Math.sin(startAngleRad);
+        const ax = cx + R * Math.cos(startAngleRad + angleRad);
+        const ay = cy - R * Math.sin(startAngleRad + angleRad);
 
-    const p = Math.min(1, (timer - ev.start) / (ev.duration || 180));
-    const t = (step) => Math.min(1, Math.max(0, (p - step / 4) * 4));
+        const p = Math.min(1, (timer - ev.start) / (ev.duration || 180));
+        const t = (step) => Math.min(1, Math.max(0, (p - step / 4) * 4));
 
-    // Étape 0 : Point sommet
-    if (t(0) > 0) {
-        ctx.fillStyle = '#ffffff';
-        ctx.font = getFont(0.04, true, false);
-        ctx.fillText(vertex, cx - s * 2.5, cy - s * 0.5);
-    }
-
-    // Étape 1 : Premier rayon → droite
-    if (t(1) > 0) {
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(cx + (bx - cx) * t(1), cy);
-        ctx.stroke();
-        if (t(1) === 1) {
+        // Étape 0 : Point sommet
+        if (t(0) > 0) {
             ctx.fillStyle = '#ffffff';
             ctx.font = getFont(0.04, true, false);
-            ctx.fillText(labelRight, bx + s, by + s * 0.5);
+            ctx.fillText(vertex, cx - s * 2.5, cy - s * 0.5);
         }
-    }
 
-    // Étape 2 : Deuxième rayon → angle
-    if (t(2) > 0) {
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(cx + (ax - cx) * t(2), cy + (ay - cy) * t(2));
-        ctx.stroke();
-        if (t(2) === 1) {
-            ctx.fillStyle = '#ffffff';
-            ctx.font = getFont(0.04, true, false);
-            ctx.fillText(labelLeft, ax + s, ay - s);
-        }
-    }
-
-    // Étape 3 : Arc + mesure
-    if (t(3) > 0) {
-        const arcR = R * 0.25;
-        // Petit arc jaune
-        ctx.strokeStyle = '#ffff00';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.arc(cx, cy, arcR * t(3), -angleRad, 0);
-        ctx.stroke();
-
-        // Mesure en degrés
-        if (t(3) === 1) {
-            const midAngle = -angleRad / 2;
-            ctx.fillStyle = '#ffff00';
-            ctx.font = getFont(0.030, false, false);
-            ctx.fillText(
-                angleDeg + '°',
-                cx + (arcR + s) * Math.cos(midAngle),
-                cy + (arcR + s) * Math.sin(midAngle)
-            );
-        }
-    }
-
-    return p < 1;
-},
-cercle_angle: (ev) => {
-    const cx = ev.x * boardWidth;
-    const cy = ev.y * boardHeight;
-    const R  = ev.r * boardHeight;
-    const angleDeg = ev.angle || 45;
-    const angleRad = angleDeg * Math.PI / 180;
-
-    // Points exacts sur le cercle — R s'applique directement en pixels
-    const bx = cx + R;                              // B : droite
-    const by = cy;
-    const ax = cx + R * Math.cos(angleRad);         // A : angle
-    const ay = cy - R * Math.sin(angleRad);
-    const lx = cx - R;                              // gauche du diamètre
-    const s  = boardWidth * 0.012;
-
-    const p = Math.min(1, (timer - ev.start) / (ev.duration || 900));
-    const t = (step) => Math.min(1, Math.max(0, (p - step / 10) * 10));
-
-    ctx.lineWidth = 2;
-
-   // Étape 0 : Croix × — les deux lignes se dessinent l'une après l'autre
-    if (t(0) > 0) {
-        const ss = s * 0.5; // plus petite croix
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 1.5;
-
-        // Première diagonale (\ ) se dessine en premier
-        const prog1 = Math.min(1, t(0) * 2); // occupe la première moitié de t(0)
-        ctx.beginPath();
-        ctx.moveTo(cx - ss, cy - ss);
-        ctx.lineTo(cx - ss + (cx + ss - (cx - ss)) * prog1, cy - ss + (cy + ss - (cy - ss)) * prog1);
-        ctx.stroke();
-
-        // Deuxième diagonale ( / ) se dessine après
-        const prog2 = Math.min(1, Math.max(0, (t(0) - 0.5) * 2)); // occupe la deuxième moitié
-        if (prog2 > 0) {
+        // Étape 1 : Premier rayon
+        if (t(1) > 0) {
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.moveTo(cx + ss, cy - ss);
-            ctx.lineTo(cx + ss + (cx - ss - (cx + ss)) * prog2, cy - ss + (cy + ss - (cy - ss)) * prog2);
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + (bx - cx) * t(1), cy + (by - cy) * t(1));
+            ctx.stroke();
+            if (t(1) === 1) {
+                ctx.fillStyle = '#ffffff';
+                ctx.font = getFont(0.04, true, false);
+                ctx.fillText(labelRight, bx + s, by + s * 0.5);
+            }
+        }
+
+        // Étape 2 : Deuxième rayon
+        if (t(2) > 0) {
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + (ax - cx) * t(2), cy + (ay - cy) * t(2));
+            ctx.stroke();
+            if (t(2) === 1) {
+                ctx.fillStyle = '#ffffff';
+                ctx.font = getFont(0.04, true, false);
+                ctx.fillText(labelLeft, ax + s, ay - s);
+            }
+        }
+
+        // Étape 3 : Arc + mesure
+        if (t(3) > 0) {
+            const arcR = R * 0.25;
+            ctx.strokeStyle = '#ffff00';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(cx, cy, arcR * t(3), -startAngleRad - angleRad, -startAngleRad);
+            ctx.stroke();
+
+            if (t(3) === 1) {
+                const midAngle = -startAngleRad - angleRad / 2;
+                ctx.fillStyle = '#ffff00';
+                ctx.font = getFont(0.030, false, false);
+                ctx.fillText(
+                    angleDeg + '°',
+                    cx + (arcR + s) * Math.cos(midAngle),
+                    cy + (arcR + s) * Math.sin(midAngle)
+                );
+            }
+        }
+
+        return p < 1;
+    },
+    cercle_angle: (ev) => {
+        const cx = ev.x * boardWidth;
+        const cy = ev.y * boardHeight;
+        const R  = ev.r * boardHeight;
+        const angleDeg = ev.angle || 45;
+        const angleRad = angleDeg * Math.PI / 180;
+
+        // Points exacts sur le cercle — R s'applique directement en pixels
+        const bx = cx + R;                              // B : droite
+        const by = cy;
+        const ax = cx + R * Math.cos(angleRad);         // A : angle
+        const ay = cy - R * Math.sin(angleRad);
+        const lx = cx - R;                              // gauche du diamètre
+        const s  = boardWidth * 0.012;
+
+        const p = Math.min(1, (timer - ev.start) / (ev.duration || 900));
+        const t = (step) => Math.min(1, Math.max(0, (p - step / 10) * 10));
+
+        ctx.lineWidth = 2;
+
+    // Étape 0 : Croix × — les deux lignes se dessinent l'une après l'autre
+        if (t(0) > 0) {
+            const ss = s * 0.5; // plus petite croix
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1.5;
+
+            // Première diagonale (\ ) se dessine en premier
+            const prog1 = Math.min(1, t(0) * 2); // occupe la première moitié de t(0)
+            ctx.beginPath();
+            ctx.moveTo(cx - ss, cy - ss);
+            ctx.lineTo(cx - ss + (cx + ss - (cx - ss)) * prog1, cy - ss + (cy + ss - (cy - ss)) * prog1);
+            ctx.stroke();
+
+            // Deuxième diagonale ( / ) se dessine après
+            const prog2 = Math.min(1, Math.max(0, (t(0) - 0.5) * 2)); // occupe la deuxième moitié
+            if (prog2 > 0) {
+                ctx.beginPath();
+                ctx.moveTo(cx + ss, cy - ss);
+                ctx.lineTo(cx + ss + (cx - ss - (cx + ss)) * prog2, cy - ss + (cy + ss - (cy - ss)) * prog2);
+                ctx.stroke();
+            }
+        }
+
+        // Étape 1 : Label O
+        if (t(1) > 0) {
+            ctx.fillStyle = '#ff4444';
+            ctx.font = getFont(0.04, true, false);
+            ctx.fillText('O', cx - s*2.5, cy - s*0.5);
+        }
+
+        // Étape 2 : Rayon horizontal O → B (touche le cercle en bx, by)
+        if (t(2) > 0) {
+            ctx.strokeStyle = '#ff4444';
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + (bx - cx) * t(2), cy);
             ctx.stroke();
         }
-    }
 
-    // Étape 1 : Label O
-    if (t(1) > 0) {
-        ctx.fillStyle = '#ff4444';
-        ctx.font = getFont(0.04, true, false);
-        ctx.fillText('O', cx - s*2.5, cy - s*0.5);
-    }
-
-    // Étape 2 : Rayon horizontal O → B (touche le cercle en bx, by)
-    if (t(2) > 0) {
-        ctx.strokeStyle = '#ff4444';
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(cx + (bx - cx) * t(2), cy);
-        ctx.stroke();
-    }
-
-    // Étape 3 : Cercle complet
-    if (t(3) > 0) {
-        ctx.strokeStyle = ev.color || '#4a9eff';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.arc(cx, cy, R, 0, Math.PI * 2 * t(3));
-        ctx.stroke();
-        ctx.lineWidth = 2;
-        if (t(3) === 1) {
-            ctx.fillStyle = ev.color || '#4a9eff';
-            ctx.font = getFont(0.04, true, false);
-            ctx.fillText('(C)', bx + s*2, cy - R * 0.25);
+        // Étape 3 : Cercle complet
+        if (t(3) > 0) {
+            ctx.strokeStyle = ev.color || '#4a9eff';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(cx, cy, R, 0, Math.PI * 2 * t(3));
+            ctx.stroke();
+            ctx.lineWidth = 2;
+            if (t(3) === 1) {
+                ctx.fillStyle = ev.color || '#4a9eff';
+                ctx.font = getFont(0.04, true, false);
+                ctx.fillText('(C)', bx + s*2, cy - R * 0.25);
+            }
         }
-    }
 
-    // Étape 4 : Rayon à l'angle O → A (touche le cercle en ax, ay)
-    if (t(4) > 0) {
-        ctx.strokeStyle = '#ff4444';
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(cx + (ax - cx) * t(4), cy + (ay - cy) * t(4));
-        ctx.stroke();
-    }
-
-    // Étape 5 : Petit arc jaune
-    if (t(5) > 0) {
-        ctx.strokeStyle = '#ffff00';
-        ctx.beginPath();
-        ctx.arc(cx, cy, R * 0.20, -angleRad * t(5), 0);
-        ctx.stroke();
-    }
-
-    // Étape 6 : Label angle au milieu
-    if (t(6) > 0) {
-        ctx.fillStyle = '#ffff00';
-        ctx.font = getFont(0.035, false, false);
-        const midAngle = -angleRad / 2;
-        const labelR = R * 0.20;
-        ctx.fillText(
-            angleDeg + '°',
-            cx + labelR * Math.cos(midAngle) + 4,
-            cy + labelR * Math.sin(midAngle) - 4
-        );
-    }
-
-    // Étape 7 : Labels A et B aux extrémités exactes
-    if (t(7) > 0) {
-        ctx.fillStyle = '#ffffff';
-        ctx.font = getFont(0.04, true, false);
-        ctx.fillText('A', ax + s, ay - s);
-        ctx.fillText('B', bx + s, by + s*0.5);
-    }
-
-    // Étape 8 : Label r au milieu de OB
-
-    if (t(8) > 0) {
-        ctx.fillStyle = '#ffffff';
-        ctx.font = getFont(0.038, false, false);
-        ctx.fillText('r', cx + (bx - cx) * 0.7 - s, cy - s * 0.3); // très proche du segment
-    }
-
-   // Étape 9 : Double flèche diamètre
-    if (t(9) > 0) {
-        const fy = cy + R * 0.05;
-        const prog = t(9);
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 1.5;
-
-        // Ligne
-        ctx.beginPath();
-        ctx.moveTo(lx, fy);
-        ctx.lineTo(lx + (bx - lx) * prog, fy);
-        ctx.stroke();
-
-        // Flèches — étape séparée basée sur p directement
-        if (p > 0.99) {
-            const hs = 10;
+        // Étape 4 : Rayon à l'angle O → A (touche le cercle en ax, ay)
+        if (t(4) > 0) {
+            ctx.strokeStyle = '#ff4444';
             ctx.beginPath();
-            ctx.moveTo(lx, fy); ctx.lineTo(lx + hs, fy - 5); ctx.stroke();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + (ax - cx) * t(4), cy + (ay - cy) * t(4));
+            ctx.stroke();
+        }
+
+        // Étape 5 : Petit arc jaune
+        if (t(5) > 0) {
+            ctx.strokeStyle = '#ffff00';
             ctx.beginPath();
-            ctx.moveTo(lx, fy); ctx.lineTo(lx + hs, fy + 5); ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(bx, fy); ctx.lineTo(bx - hs, fy - 5); ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(bx, fy); ctx.lineTo(bx - hs, fy + 5); ctx.stroke();
-            // Label d
+            ctx.arc(cx, cy, R * 0.20, -angleRad * t(5), 0);
+            ctx.stroke();
+        }
+
+        // Étape 6 : Label angle au milieu
+        if (t(6) > 0) {
+            ctx.fillStyle = '#ffff00';
+            ctx.font = getFont(0.035, false, false);
+            const midAngle = -angleRad / 2;
+            const labelR = R * 0.20;
+            ctx.fillText(
+                angleDeg + '°',
+                cx + labelR * Math.cos(midAngle) + 4,
+                cy + labelR * Math.sin(midAngle) - 4
+            );
+        }
+
+        // Étape 7 : Labels A et B aux extrémités exactes
+        if (t(7) > 0) {
+            ctx.fillStyle = '#ffffff';
+            ctx.font = getFont(0.04, true, false);
+            ctx.fillText('A', ax + s, ay - s);
+            ctx.fillText('B', bx + s, by + s*0.5);
+        }
+
+        // Étape 8 : Label r au milieu de OB
+
+        if (t(8) > 0) {
             ctx.fillStyle = '#ffffff';
             ctx.font = getFont(0.038, false, false);
-            ctx.fillText('d', cx - s * 0.5, fy + s * 2);
+            ctx.fillText('r', cx + (bx - cx) * 0.7 - s, cy - s * 0.3); // très proche du segment
         }
-    }
-    return p < 1;
-},
+
+    // Étape 9 : Double flèche diamètre
+        if (t(9) > 0) {
+            const fy = cy + R * 0.05;
+            const prog = t(9);
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1.5;
+
+            // Ligne
+            ctx.beginPath();
+            ctx.moveTo(lx, fy);
+            ctx.lineTo(lx + (bx - lx) * prog, fy);
+            ctx.stroke();
+
+            // Flèches — étape séparée basée sur p directement
+            if (p > 0.99) {
+                const hs = 10;
+                ctx.beginPath();
+                ctx.moveTo(lx, fy); ctx.lineTo(lx + hs, fy - 5); ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(lx, fy); ctx.lineTo(lx + hs, fy + 5); ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(bx, fy); ctx.lineTo(bx - hs, fy - 5); ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(bx, fy); ctx.lineTo(bx - hs, fy + 5); ctx.stroke();
+                // Label d
+                ctx.fillStyle = '#ffffff';
+                ctx.font = getFont(0.038, false, false);
+                ctx.fillText('d', cx - s * 0.5, fy + s * 2);
+            }
+        }
+        return p < 1;
+    },
     arrow: (ev) => {
         const progress = Math.min(1, (timer - ev.start) / (ev.duration || 60));
         ctx.strokeStyle = ev.color || '#ffffff';
@@ -1052,8 +1055,172 @@ cercle_angle: (ev) => {
             showQuestionBox(ev);
         }
         return false;
+    },
+    scene3d: (ev) => {
+    if (!ev.triggered) {
+        ev.triggered = true;
+        if (ev.scene === 'corde_saut') {
+            setPaused(true);
+            sceneCordeSaut(() => {
+                setPaused(false);
+            });
+        }
     }
+    return false;
+},
+    point: (ev) => {
+            const p = Math.min(1, (timer - ev.start) / (ev.duration || 60));
+            if (p <= 0) return true;
+
+            const cx = ev.x * boardWidth;
+            const cy = ev.y * boardHeight;
+            const s = boardWidth * 0.008;
+            const label = ev.label || '';
+            const labelPos = ev.labelPos || 'top'; // top, bottom, left, right
+
+            // Croix ×
+            ctx.strokeStyle = ev.color || '#ffffff';
+            ctx.lineWidth = 1.5;
+
+            const prog1 = Math.min(1, p * 2);
+            ctx.beginPath();
+            ctx.moveTo(cx - s, cy - s);
+            ctx.lineTo(cx - s + (cx + s - (cx - s)) * prog1, cy - s + (cy + s - (cy - s)) * prog1);
+            ctx.stroke();
+
+            const prog2 = Math.min(1, Math.max(0, (p - 0.5) * 2));
+            if (prog2 > 0) {
+                ctx.beginPath();
+                ctx.moveTo(cx + s, cy - s);
+                ctx.lineTo(cx + s + (cx - s - (cx + s)) * prog2, cy - s + (cy + s - (cy - s)) * prog2);
+                ctx.stroke();
+            }
+
+            // Label
+            if (p === 1 && label) {
+                ctx.fillStyle = ev.color || '#ffffff';
+                ctx.font = getFont(ev.sz || 0.035, true, false);
+                const offset = s * 2.5;
+                let lx = cx, ly = cy;
+                if (labelPos === 'top')    { lx = cx - s; ly = cy - offset; }
+                if (labelPos === 'bottom') { lx = cx - s; ly = cy + offset * 2; }
+                if (labelPos === 'left')   { lx = cx - offset * 3; ly = cy + s; }
+                if (labelPos === 'right')  { lx = cx + offset; ly = cy + s; }
+                ctx.fillText(label, lx, ly);
+            }
+
+            return p < 1;
+        },
+    signe_angle: (ev) => {
+        const p = Math.min(1, (timer - ev.start) / (ev.duration || 60));
+        if (p <= 0) return true;
+
+        const cx = ev.x * boardWidth;
+        const cy = ev.y * boardHeight;
+        const R = (ev.r || 0.06) * boardHeight;
+
+        const a1 = -(ev.angle1 * Math.PI / 180);
+        const a2 = -(ev.angle2 * Math.PI / 180);
+        const anticlockwise = ev.anticlockwise || false;
+
+        // Animation progressive
+        const currentEnd = a1 + (a2 - a1) * p;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(cx, cy, R, a1, currentEnd, anticlockwise);
+        ctx.strokeStyle = ev.color || '#f5e441';
+        ctx.lineWidth = ev.lineWidth || 2;
+        ctx.stroke();
+        ctx.restore();
+
+        // Label au milieu
+        if (p === 1 && ev.label) {
+            const midAngle = anticlockwise
+                ? a1 - Math.abs(a2 - a1) / 2
+                : a1 + Math.abs(a2 - a1) / 2;
+            const labelR = R * 1.5;
+            ctx.save();
+            ctx.fillStyle = ev.color || '#f5e441';
+            ctx.font = getFont(ev.sz || 0.028, false, false);
+            ctx.textAlign = 'center';
+            ctx.fillText(ev.label, cx + labelR * Math.cos(midAngle), cy + labelR * Math.sin(midAngle));
+            ctx.restore();
+        }
+
+        return p < 1;
+    },
+    reflet: (ev) => {
+        const p = Math.min(1, (timer - ev.start) / (ev.duration || 120));
+        if (p <= 0) return true;
+
+        const ox = ev.ox * boardWidth;
+        const oy = ev.oy * boardHeight;
+
+        // Point original
+        const ax = ev.ax * boardWidth;
+        const ay = ev.ay * boardHeight;
+
+        // Direction de l'axe de symétrie (normalisée en pixels réels)
+        const axeX = ev.axe_x2 * boardWidth - ev.axe_x1 * boardWidth;
+        const axeY = ev.axe_y2 * boardHeight - ev.axe_y1 * boardHeight;
+        const axeLen = Math.sqrt(axeX * axeX + axeY * axeY);
+        const ux = axeX / axeLen;
+        const uy = axeY / axeLen;
+
+        // Vecteur OP
+        const px = ax - ox;
+        const py = ay - oy;
+
+        // Réflexion de P par rapport à la droite passant par O de direction u
+        const dot = px * ux + py * uy;
+        const rx = 2 * dot * ux - px; // coordonnées du reflet par rapport à O
+        const ry = 2 * dot * uy - py;
+
+        // Position finale du reflet
+        const finalX = ox + rx;
+        const finalY = oy + ry;
+
+        // Animation : interpolation angulaire du segment original vers le reflet
+        const currentX = ax + (finalX - ax) * p;
+        const currentY = ay + (finalY - ay) * p;
+
+        // Segment original (atténué)
+        ctx.save();
+        ctx.globalAlpha = 1 - p * 0.6;
+        ctx.strokeStyle = ev.color || '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        ctx.moveTo(ox, oy);
+        ctx.lineTo(ax, ay);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.restore();
+
+        // Segment animé (tourne vers le reflet)
+        ctx.save();
+        ctx.strokeStyle = ev.colorReflet || '#f5e441';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(ox, oy);
+        ctx.lineTo(currentX, currentY);
+        ctx.stroke();
+        ctx.restore();
+
+        // Label du reflet à la fin
+        if (p === 1 && ev.label) {
+            const s = boardWidth * 0.012;
+            ctx.fillStyle = ev.colorReflet || '#f5e441';
+            ctx.font = getFont(0.035, true, false);
+            ctx.fillText(ev.label, finalX + s, finalY - s);
+        }
+
+        return p < 1;
+    },
 };
+    
+
 
 function showNotUnderstoodMessage(onConfirm) {
     setPaused(true);
@@ -1090,34 +1257,6 @@ function performReset(targetNotionId, isReplay = false) {
     initEvents(targetNotionId);
 }
 
-function normalizeForMatch(s) {
-    return (s || '')
-        .toString()
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '') // accents
-        .replace(/[“”]/g, '"')
-        .replace(/[’]/g, "'")
-        .replace(/[^\p{L}\p{N}\s'".,;:-]/gu, ' ') // retire char spéciaux (garde lettres/chiffres)
-        .replace(/\s+/g, ' ')
-        .trim();
-}
-
-function escapeRegExp(str) {
-    return (str || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
-function tokenPresence(textNorm, keywordNorm) {
-    // Cas numérique: on veut matcher "2" sans casser sur 20, 12, etc.
-    // On utilise des bornes sur les tokens (séparés par espaces / ponctuation).
-    if (keywordNorm !== '' && /^-?\d+(\.\d+)?$/.test(keywordNorm)) {
-        const num = escapeRegExp(keywordNorm);
-        const re = new RegExp(`(^|[^\\d])${num}([^\\d]|$)`, 'g');
-        return re.test(textNorm);
-    }
-    // Sinon, simple inclusion sur texte normalisé (tolérant ponctuation/espaces)
-    return textNorm.includes(keywordNorm);
-}
 
 function showQuestionBox(ev) {
     // Arrête IMMÉDIATEMENT
@@ -1142,8 +1281,29 @@ function showQuestionBox(ev) {
                 return;
             }
 
+        // Cas spécial : L'élève a cliqué sur "Autre" pour ouvrir le cahier
+        if (choice && choice.useCahier) {
+            if (window.openCahier) window.openCahier();
+            // On branche l'envoi du cahier sur cette même question
+            window.onCahierSend = async (rawText) => {
+                const text = typeof rawText === 'string' ? rawText : '';
+                if (text) appendUserMessage(text, 'Vous');
+                const normalized = mathToText(text);
+                const isCorrect = await arePhrasesSimilar(normalized, contextEv.expectedAnswer || '');
+                handleChoice({ isCorrect }, contextEv);
+            };
+            return;
+        }
+
             const isNoIdeaQuestion = contextEv.text && contextEv.text.toLowerCase().includes("tu as une idée");
             const label = choice && choice._label ? choice._label.toString().trim().toLowerCase() : '';
+
+            const getFeedbackText = (correct, context) => {
+                if (correct) {
+                    return "Ok. Merci beaucoup.";
+                }
+                return "J'ai un doute, voyons voir ce qui est fait au tableau.";
+            };
 
             const showContinueDialogue = (text, onContinue) => {
                 createDialogue({
@@ -1179,7 +1339,7 @@ function showQuestionBox(ev) {
                     contextEv.answered = true; contextEv.correctlyAnswered = true;
                     if (contextEv !== ev) { ev.answered = true; ev.correctlyAnswered = true; }
                     
-                    showContinueDialogue('Ok. Merci beaucoup', () => {
+                    showContinueDialogue(getFeedbackText(true, contextEv), () => {
                         if (contextEv.nextQuestion) {
                             createDialogue({
                                 text: contextEv.nextQuestion.text,
@@ -1197,7 +1357,7 @@ function showQuestionBox(ev) {
                     });
                 } else {
                     contextEv.answered = true; contextEv.correctlyAnswered = false;
-                    showContinueDialogue("J'ai un doute, voyons voir ce qui est fait au tableau", () => {
+                    showContinueDialogue(getFeedbackText(false, contextEv), () => {
                         if (contextEv.retryStart !== undefined && contextEv.isVerification) {
                             performReset(getCurrentNotionId(), true);
                         } else {
@@ -1209,17 +1369,37 @@ function showQuestionBox(ev) {
         };
 
         // Préparation des données pour dialogue.js (question initiale)
+        let dialogueChoices = ev.freeAnswer ? [] : (ev.options ? ev.options.map(opt => ({ 
+            label: opt.text, 
+            value: opt.value ? { ...opt.value, _label: opt.text } : { isCorrect: opt.isCorrect, _label: opt.text } 
+        })) : (ev.isIntro ? [{ label: "C'est parti !", value: 'next' }] : [{ label: "Continuer", value: 'next' }]));
+
+        // Ajout automatique de l'option "Autre" si demandée dans le contenu
+        if (ev.addOther && !ev.freeAnswer) {
+            dialogueChoices.push({ label: "Autre...", value: { useCahier: true } });
+        }
+
         const dialogueData = {
             text: ev.text,
             author: ev.author || "Camélia",
-            choices: ev.options ? ev.options.map(opt => ({ label: opt.text, value: opt.value ? { ...opt.value, _label: opt.text } : { isCorrect: opt.isCorrect, _label: opt.text } })) :
-                     (ev.isIntro ? [{ label: "C'est parti !", value: 'next' }] : [{ label: "Continuer", value: 'next' }]),
+            choices: dialogueChoices,
             onChoice: handleChoice
         };
 
+        if (ev.freeAnswer) {
+            dialogueData.input = {
+                label: 'Écris ta réponse',
+                placeholder: 'Écris ton texte ici...',
+                buttonLabel: 'Envoyer',
+                rows: 4
+            };
+            dialogueData.onSubmit = async (value) => {
+                handleChoice(value, ev);
+            };
+        }
+
         createDialogue(dialogueData);
         openDialogueBox();
-
     }, 2000);
 }
 
@@ -1234,6 +1414,7 @@ function initEvents(notionId) {
     const notion = notions[currentId];
     const source = notion ? notion.events : [];
     const currentName = localStorage.getItem('welcomeUser') || "l'ami";
+    applyNotionCountdown(notion);
 
     source.forEach((line, index) => {
         if (line.type === 'SEP' || line.text === 'SEP') {
@@ -1245,10 +1426,14 @@ function initEvents(notionId) {
             return;
         }
 
-        // Nouveau : Nettoyage ciblé par type (ex: pour effacer les traits sans le texte)
+        // Nettoyage ciblé : par type (target), par identifiant unique (id) ou par groupe (tag)
         if (line.type === 'clear') {
             events.forEach(ev => {
-                if (ev.type === line.target && ev.stop === undefined && !ev.isTitle) {
+                const matchType = line.target && ev.type === line.target;
+                const matchId = line.id && ev.id === line.id;
+                const matchTag = line.tag && ev.tag === line.tag;
+
+                if ((matchType || matchId || matchTag) && ev.stop === undefined && !ev.isTitle) {
                     ev.stop = autoAdvanceTime;
                 }
             });
@@ -1297,12 +1482,6 @@ function initEvents(notionId) {
     if (events.length > 0) events[events.length - 1].isLastInNotion = true;
 
     maxTime = autoAdvanceTime + 100; // S'assure que maxTime est correctement calculé basé sur le dernier événement
-
-    // On fait en sorte que chaque calcul de brouillon reste jusqu'au début du suivant
-    const bEvents = events.filter(e => e.type === 'brouillon');
-    bEvents.forEach((be, idx) => {
-        be.endAt = (idx < bEvents.length - 1) ? bEvents[idx + 1].start : maxTime;
-    });
 }
 
 function animate() {
@@ -1319,17 +1498,6 @@ function animate() {
 
     ctx.fillStyle = boardColor; ctx.fillRect(0, 0, boardWidth, boardHeight);
     
-    const currentId = getCurrentNotionId();
-    // Dessin de la zone brouillon statique (cadre et titre) durant la phase exemple
-    if (currentId === 'S3') {
-        ctx.fillStyle = 'rgba(255,255,255,0.05)';
-        ctx.fillRect(boardWidth*0.6, boardHeight*0.1, boardWidth*0.35, boardHeight*0.15);
-        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-        ctx.strokeRect(boardWidth*0.6, boardHeight*0.1, boardWidth*0.35, boardHeight*0.15);
-        ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.font = getFont(0.03, true, false);
-        ctx.fillText("BROUILLON", boardWidth*0.62, boardHeight*0.14);
-    }
-
     let currentlyWriting = false;
 
     events.forEach(ev => {
@@ -1346,8 +1514,6 @@ function animate() {
             ctx.fillStyle = ev.color || CW; ctx.font = getFont(0.045, false, false);
             ctx.fillText(ev.text, boardWidth * curX, curY * boardHeight);
             if (progress < 1) currentlyWriting = true;
-        } else if (ev.type === 'brouillon' && timer >= ev.start && timer < ev.endAt) {
-            if (DrawingLibrary.text({...ev, x: 0.62, y: 0.2, sz: 0.04})) currentlyWriting = true;
         }
     });
 
@@ -1386,7 +1552,11 @@ loadData().then(() => {
     // Pour respecter la consigne "S0 et S00 passent toujours en premier",
     // on force le démarrage à S0 à chaque chargement de la page.
     // La progression (localStorage) pourra être utilisée plus tard pour des sauts de chapitre.
-    
+    setCountdownEndCallback(() => {
+        if (!isTransitioning) {
+            transitionToNextNotion();
+        }
+    });
     setCurrentNotionId('S0');
     initEvents(); // Initialiser les événements après avoir chargé les données
     animate();
