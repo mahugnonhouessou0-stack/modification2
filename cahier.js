@@ -117,6 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         clearEditor();
         if (cahier) cahier.className = 'cahier-bulle';
+        if (window.setTableauControlsLocked) window.setTableauControlsLocked(false, 'cahier');
         if (window.mathVirtualKeyboard) window.mathVirtualKeyboard.visible = false;
     }
 
@@ -139,6 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.warn('[Cahier] Élément #cahier introuvable.');
             return;
         }
+        if (window.setTableauControlsLocked) window.setTableauControlsLocked(true, 'cahier');
         cahier.className = 'cahier-moyen';
         setTimeout(() => {
             if (formulaField) {

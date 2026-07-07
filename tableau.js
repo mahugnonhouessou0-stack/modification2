@@ -15,6 +15,36 @@ export let currentNotionId = 'S0'; // Initial notion
 export let animationSpeed = 1;
 export let eraserX = -100; // Position de l'effaceur
 
+const overlayLockState = { dialogue: false, cahier: false };
+let tableauControlsLocked = false;
+
+function applyTableauControlsState() {
+    const controls = [
+        document.getElementById('replayBtn'),
+        document.getElementById('switchBtn'),
+        document.getElementById('pausePlayBtn'),
+        document.getElementById('speedSlider')
+    ].filter(Boolean);
+
+    controls.forEach((el) => {
+        el.disabled = tableauControlsLocked;
+    });
+}
+
+window.setTableauControlsLocked = function(locked, source = 'generic') {
+    if (source === 'dialogue') overlayLockState.dialogue = Boolean(locked);
+    else if (source === 'cahier') overlayLockState.cahier = Boolean(locked);
+
+    tableauControlsLocked = overlayLockState.dialogue || overlayLockState.cahier;
+    applyTableauControlsState();
+};
+
+window.getTableauControlsLocked = function() {
+    return tableauControlsLocked;
+};
+
+applyTableauControlsState();
+
 function sizeBoard() {
     const dpr = window.devicePixelRatio || 1;
     const w = Math.min(window.innerWidth - (window.innerWidth > 768 ? 120 : 40), 940);
@@ -202,6 +232,7 @@ document.getElementById('pausePlayBtn').addEventListener('click', (e) => {
 });
 
 window.addEventListener('click', (e) => {
+    if (window.getTableauControlsLocked && window.getTableauControlsLocked()) return;
     if (document.getElementById('shell').style.display === 'block') return;
     if (!['BUTTON', 'INPUT', 'SELECT'].includes(e.target.tagName)) {
         togglePause();

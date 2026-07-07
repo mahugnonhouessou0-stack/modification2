@@ -235,6 +235,7 @@ export function appendUserMessage(text, author = 'Vous') {
 export function openDialogueBox() {
     const shell = document.getElementById('shell');
     const body = document.getElementById('dlg-body');
+    if (window.setTableauControlsLocked) window.setTableauControlsLocked(true, 'dialogue');
     if (shell) {
         shell.style.display = 'block';
         shell.classList.remove('minimized'); // S'ouvre en grand pour les nouveaux messages
@@ -254,6 +255,7 @@ export function clearDialogueHistory() {
 export function closeDialogueBox() {
     const shell = document.getElementById('shell');
     if (shell) shell.style.display = 'none';
+    if (window.setTableauControlsLocked) window.setTableauControlsLocked(false, 'dialogue');
 }
 
 export function isDialogueOpen() {

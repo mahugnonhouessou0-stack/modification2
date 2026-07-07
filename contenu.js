@@ -19,44 +19,15 @@ const S00_Events = [
 
 const S1_Events = [
     { text: 'Notion : Les diviseurs d’un nombre', y: 0.10, sz: 0.06, bold: true, color: CY, isTitle: true, compteur: 15 },
-    { text: "Imagine que vous êtes 12 dans ta classe ; le professeur te demande alors de vous diviser en groupes de 3.", y: 0.25, sz: 0.035, color: CW },
+    { text: "Imagine que vous êtes 12 dans ta classe , le professeur te demande alors de vous diviser en groupes de 3.", y: 0.25, sz: 0.035, color: CW },
     { text:"Combien de groupes de 3 pourra-t-on former ?", y: 0.30, sz: 0.035, color: CW },
 
     {
         type: 'question',
         freeAnswer: true,
-        text: "Explique en une phrase comment tu sais que 12 ÷ 3 = 4.",
+        text: "As-tu une idée ?",
         expectedAnswer: "On divise 12 par 3 pour obtenir 4"
     },
-
-    {
-        type: 'question',
-        text: "Tu as une idée de comment faire ?",
-        options: [
-            { 
-                text: "Oui", 
-                value: { 
-                    triggerNext: {
-                        text: "Génial ! Comment as-tu fait ?",
-                        
-                        choices: [
-                            { label: "J'ai fait une division", value: { isCorrect: true } },
-                            { label: "J'ai compté dans ma tête", value: { isCorrect: false } },
-                            { label: "Au hasard !", value: { isCorrect: false } }
-                        ]
-                    }   
-            
-                } 
-            },
-            { 
-                text: "Non", 
-                value: { isCorrect: false } 
-            }
-        ],
-        closeOnFail: true,
-        closeOnSuccess: true,
-    },
-    
     
     { 
         type: 'traits_groupes', 
@@ -67,13 +38,15 @@ const S1_Events = [
         yTop: 0.50, yBottom: 0.75,
         x0: 0.05
     },
-    { type: 'clear', target: 'traits_groupes' }, 
+   
     { type: 'vibrating_fraction', isSimulation: true, num: '12', den: '3', result: '4', x: 0.75, y: 0.60, sz: 0.07, color: '#f5e441', duration: 12 },
-    { type: 'clear', target: 'vibrating_fraction' }, 
+    {type:'clear', target: 'vibrating_fraction'},
+    {type:'clear', target: 'traits_groupes'},
+
     {
         type: 'question',
         isVerification: true,
-        text: "C'est maintenant claire je crois, on fera 4 groupe de 3 ! c'est bien ça non?",
+        text: "C'est maintenant claire, on fera 4 groupe de 3 ! c'est bien ça non?",
         options: [
             { text: "Oui, 3 ", isCorrect: false },
             { text: "Oui, 4 .", isCorrect: true },
@@ -106,9 +79,7 @@ const S1_Events = [
             { text: "1 groupe.", isCorrect: false },
             { text: "12 groupes.", isCorrect: true }
         ],
-        retryStart: 50,
-        closeOnFail: true,
-        closeOnSuccess: true,
+      
     },
     { 
         type: 'traits_groupes', 
@@ -127,9 +98,7 @@ const S1_Events = [
             { text: "4 groupes.", isCorrect: false },
             { text: "3 groupes.", isCorrect: true }
         ],
-        retryStart: 75,
-        closeOnFail: true,
-        closeOnSuccess: true
+        
     },
     { 
         type: 'traits_groupes', 
@@ -148,10 +117,8 @@ const S1_Events = [
             { text: "6 groupes.", isCorrect: false },
             { text: "2 groupes.", isCorrect: true }
         ],
-        retryStart: 95,
-        closeOnFail: true,
-        closeOnSuccess: true
     },
+
     { 
         type: 'traits_groupes', 
         isSimulation: true,
@@ -169,10 +136,8 @@ const S1_Events = [
             { text: "12 groupes.", isCorrect: false },
             { text: "1 groupe.", isCorrect: true }
         ],
-        retryStart: 100,
-        closeOnFail: true,
-        closeOnSuccess: true
     },
+    
     { 
         type: 'traits_groupes', 
         isSimulation: true,
@@ -190,8 +155,8 @@ const S1_Events = [
 ];
 
 const S2_Events = [
-    { text: 'Notion : Nombres Premiers', y: 0.10, sz: 0.06, bold: true, color: CY, isTitle: true },
-    { text: "Nous avons vu que certains nombres ont beaucoup de diviseurs.", y: 0.25, sz: 0.035, color: CW },
+    { text: 'Notion : Nombres Premiers', y: 0.10, sz: 0.06, bold: true, color: CY, isTitle: true,compteur: 15 },
+    { text: "Preno nons les nombres suivants : 1, 2,", y: 0.25, sz: 0.035, color: CW },
     { text: "Mais regarde le nombre 5 par exemple.", y: 0.30, sz: 0.035, color: CW },
     
     {
