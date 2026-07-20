@@ -8,9 +8,11 @@ import {
 } from './tableau.js';
 
 import { notions as staticNotions, CW, CY, CG, CB } from './contenu.js';
+import { loadCourseContent, getDefaultCourseSelection } from './contentLoader.js';
 
 // Variable globale pour stocker les leçons récupérées
 let notions = staticNotions;
+let currentCourse = null;
 
 import {
     createDialogue, updateDialogueToSuccess, openDialogueBox, closeDialogueBox, clearDialogueHistory, appendUserMessage
@@ -33,12 +35,19 @@ let pendingQuestionTimeout = null;
  */
 async function loadData() {
     try {
-        const response = await fetch('./notions.json');
-        if (response.ok) {
-            notions = await response.json();
+        const course = await loadCourseContent();
+        currentCourse = course;
+        const { notions: courseNotions, CW: courseCW, CY: courseCY, CG: courseCG, CB: courseCB, programme } = course;
+        notions = courseNotions || staticNotions;
+        if (typeof window !== 'undefined' && window.setSearchCourseContext) {
+            window.setSearchCourseContext({ notions, programme });
         }
+        if (courseCW) globalThis.COURSE_CW = courseCW;
+        if (courseCY) globalThis.COURSE_CY = courseCY;
+        if (courseCG) globalThis.COURSE_CG = courseCG;
+        if (courseCB) globalThis.COURSE_CB = courseCB;
     } catch (e) {
-        console.warn("Fichier notions.json non trouvé, utilisation du contenu statique.");
+        console.warn("Chargement du contenu de cours impossible, utilisation du contenu statique.", e);
     }
 }
 
@@ -172,7 +181,7 @@ function requestReplay() {
 window.onReplayRequest = requestReplay;
 
 // --- BIBLIOTHÈQUE DE DESSIN ---
-const DrawingLibrary = {
+    const DrawingLibrary = {
     text: (ev) => {
         const elapsed = timer - ev.start;
         const duration = ev.duration || (ev.text ? ev.text.length * 2 : 1);
@@ -189,22 +198,94 @@ const DrawingLibrary = {
         const textY = (ev.y || 0.5) * boardHeight;
         const textToDraw = ev.text.slice(0, Math.max(safeCount, progress === 1 ? ev.text.length : 0));
 
-        // Détection du marqueur ~
-        if (textToDraw.includes('~')) {
-            const parts = textToDraw.split(/(~\w+)/g);
-            let currentX = textX;
+        // --- Rendu intelligent : texte + fractions + arcs ---
+        const renderMixed = (text, startX, baseY) => {
+            const parts = [];
+            let remaining = text;
+
+            while (remaining.length > 0) {
+                const fracIdx  = remaining.indexOf('frac(');
+                const arcIdx   = remaining.search(/p\.arc\(\w+\)/);
+
+                const firstFrac = fracIdx >= 0 ? fracIdx : Infinity;
+                const firstArc  = arcIdx  >= 0 ? arcIdx  : Infinity;
+
+                if (firstFrac === Infinity && firstArc === Infinity) {
+                    parts.push({ type: 'text', content: remaining });
+                    break;
+                }
+
+                if (firstFrac < firstArc) {
+                    if (fracIdx > 0) parts.push({ type: 'text', content: remaining.slice(0, fracIdx) });
+
+                    const closeIdx = remaining.indexOf(')', fracIdx);
+                    if (closeIdx === -1) {
+                        parts.push({ type: 'text', content: remaining });
+                        break;
+                    }
+                    const inner = remaining.slice(fracIdx + 5, closeIdx);
+                    const [num, den] = inner.split(';');
+                    parts.push({ type: 'frac', num: num.trim(), den: den.trim() });
+                    remaining = remaining.slice(closeIdx + 1);
+
+                } else {
+                    if (arcIdx > 0) parts.push({ type: 'text', content: remaining.slice(0, arcIdx) });
+
+                    const arcMatch = remaining.slice(arcIdx).match(/^p\.arc\((\w+)\)/);
+                    if (arcMatch) {
+                        parts.push({ type: 'arc', letters: arcMatch[1] });
+                        remaining = remaining.slice(arcIdx + arcMatch[0].length);
+                    } else {
+                        parts.push({ type: 'text', content: remaining });
+                        break;
+                    }
+                }
+            }
+
+            // --- Dessiner les parties ---
             const fontSize = Math.round(boardHeight * (ev.sz || 0.045));
+            let currentX = startX;
 
             parts.forEach(part => {
-                if (part.startsWith('~')) {
-                    const letters = part.slice(1);
+                ctx.font = getFont(ev.sz || 0.045, ev.bold, ev.italic);
+                ctx.fillStyle = ev.color || CW;
+
+                if (part.type === 'text') {
+                    ctx.fillText(part.content, currentX, baseY);
+                    currentX += ctx.measureText(part.content).width;
+
+                } else if (part.type === 'frac') {
+                    ctx.font = getFont((ev.sz || 0.045) * 0.85, ev.bold, ev.italic);
+                    const numWidth = ctx.measureText(part.num).width;
+                    const denWidth = ctx.measureText(part.den).width;
+                    const barWidth = Math.max(numWidth, denWidth) + 4;
+                    const fracH = fontSize * 0.55;
+
+                    ctx.fillStyle = ev.color || CW;
+                    ctx.textAlign = 'center';
+                    ctx.fillText(part.num, currentX + barWidth / 2, baseY - fracH * 0.55);
+
+                    ctx.strokeStyle = ev.color || CW;
+                    ctx.lineWidth = 1.5;
+                    ctx.beginPath();
+                    ctx.moveTo(currentX, baseY - fracH * 0.10);
+                    ctx.lineTo(currentX + barWidth, baseY - fracH * 0.10);
+                    ctx.stroke();
+
+                    ctx.fillText(part.den, currentX + barWidth / 2, baseY + fracH * 0.65);
+                    ctx.textAlign = ev.align || 'left';
+
+                    currentX += barWidth + 4;
+
+                } else if (part.type === 'arc') {
+                    const letters = part.letters;
+                    ctx.font = getFont(ev.sz || 0.045, ev.bold, ev.italic);
                     const partWidth = ctx.measureText(letters).width;
 
-                    // Lettres
-                    ctx.fillText(letters, currentX, textY);
+                    ctx.fillStyle = ev.color || CW;
+                    ctx.fillText(letters, currentX, baseY);
 
-                    // Arc courbé vers le haut
-                    const arcY = textY - fontSize * 0.85;
+                    const arcY = baseY - fontSize * 0.85;
                     const arcHeight = fontSize * 0.25;
                     ctx.strokeStyle = ev.color || CW;
                     ctx.lineWidth = 1.5;
@@ -214,15 +295,11 @@ const DrawingLibrary = {
                     ctx.stroke();
 
                     currentX += partWidth;
-                } else {
-                    ctx.fillText(part, currentX, textY);
-                    currentX += ctx.measureText(part).width;
                 }
             });
-        } else {
-            ctx.fillText(textToDraw, textX, textY);
-        }
+        };
 
+        renderMixed(textToDraw, textX, textY);
         ctx.textAlign = 'left';
 
         // Gestion du soulignement
@@ -243,6 +320,7 @@ const DrawingLibrary = {
             ctx.restore();
             return uProgress < 1;
         }
+
         return progress < 1;
     },
     line: (ev) => {
@@ -1277,7 +1355,13 @@ function showQuestionBox(ev) {
                 contextEv.correctlyAnswered = true;
                 if (contextEv !== ev) { ev.answered = true; ev.correctlyAnswered = true; }
                 closeDialogueBox();
-                setPaused(false);
+                const pendingLaunchId = typeof window !== 'undefined' ? window.__pendingLaunchNotionId : null;
+                if (pendingLaunchId && pendingLaunchId !== 'S0' && pendingLaunchId !== 'S00') {
+                    delete window.__pendingLaunchNotionId;
+                    performReset(pendingLaunchId, false);
+                } else {
+                    setPaused(false);
+                }
                 return;
             }
 
