@@ -211,7 +211,6 @@ document.getElementById('replayBtn').addEventListener('click', () => {
     }
 });
 
-import { notions } from './contenu.js';
 import { openSearch, setSearchCourseContext } from './search.js';
 import { isDialogueOpen } from './dialogue.js';
 

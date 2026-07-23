@@ -2,7 +2,7 @@
 export const CW = '#f2ede4', CY = '#f5e441', CG = '#7af0a0', CB = '#8dd0f0';
 
 const S0_Events = [
-    { text: `Hi {{name}} !`, x: 0.5, y: 0.5, sz: 0.07, bold: true, color: '#f5e441', align: 'center' },
+    { text: `Bienvenue {{name}} !`, x: 0.5, y: 0.5, sz: 0.07, bold: true, color: '#f5e441', align: 'center' },
    
 ];
 const S00_Events = [
@@ -10,9 +10,9 @@ const S00_Events = [
     { text : "Tu comprends plus vite qu'elle alors tu es appelé à répondre à ses questions de compréhension.",x: 0.5, y: 0.25, sz: 0.035, color: CW, align: 'center' },
     { text : "Sa compréhension définit ta réussite ! ",x: 0.5, y: 0.35, sz: 0.035, color: CW, align: 'center' },
     { 
-        type: 'question', 
-        isIntro: true, 
-        text: "Bonjour ! Je suis Camélia. On m'a dit que je serai avec toi. Pret ?" 
+        type: 'question',
+        isIntro: true,
+        text: "Bonjour ! Je suis Camélia. On m'a dit que je serai avec toi. Pret ?"
     }, 
 ];
 
@@ -40,12 +40,11 @@ const S1_Events = [
     },
    
     { type: 'vibrating_fraction', isSimulation: true, num: '12', den: '3', result: '4', x: 0.75, y: 0.60, sz: 0.07, color: '#f5e441', duration: 12 },
-    {type:'clear', target: 'vibrating_fraction'},
-    {type:'clear', target: 'traits_groupes'},
+    
 
     {
         type: 'question',
-        isVerification: true,
+        
         text: "C'est maintenant claire, on fera 4 groupe de 3 ! c'est bien ça non?",
         options: [
             { text: "Oui, 3 ", isCorrect: false },
@@ -60,8 +59,10 @@ const S1_Events = [
                 { text: "12", isCorrect: false }
             ]
         },
-        retryStart: 4
+        
     },
+    {type:'clear', target: 'vibrating_fraction'},
+    {type:'clear', target: 'traits_groupes'},
     { 
         type: 'traits_groupes', 
         isSimulation: true,
@@ -71,16 +72,19 @@ const S1_Events = [
         yTop: 0.50, yBottom: 0.75,       
         x0: 0.05
     },
-    { type: 'clear', target: 'traits_groupes' }, 
+    { type: 'vibrating_fraction', isSimulation: true, num: '12', den: '2', result: '6', x: 0.75, y: 0.60, sz: 0.07, color: '#f5e441', duration: 12 },
+    
     {
         type: 'question',
-        text: "Et pour des groupes de 1 ? (12 ÷ 1)",
+        text: "Et pour des groupes de 1 ?",
         options: [
             { text: "1 groupe.", isCorrect: false },
             { text: "12 groupes.", isCorrect: true }
         ],
       
     },
+    {type:'clear', target: 'vibrating_fraction'},
+    {type:'clear', target: 'traits_groupes'},
     { 
         type: 'traits_groupes', 
         isSimulation: true,
@@ -90,16 +94,18 @@ const S1_Events = [
         yTop: 0.50, yBottom: 0.75,
         x0: 0.05
     },
-    { type: 'clear', target: 'traits_groupes' }, 
+    { type: 'vibrating_fraction', isSimulation: true, num: '12', den: '1', result: '12', x: 0.75, y: 0.60, sz: 0.07, color: '#f5e441', duration: 12 },
     {
         type: 'question',
-        text: "Et pour des groupes de 4 ? (12 ÷ 4)",
+        text: "Et pour des groupes de 4 ?",
         options: [
             { text: "4 groupes.", isCorrect: false },
             { text: "3 groupes.", isCorrect: true }
         ],
         
     },
+    {type:'clear', target: 'vibrating_fraction'},
+    {type:'clear', target: 'traits_groupes'},
     { 
         type: 'traits_groupes', 
         isSimulation: true,
@@ -109,16 +115,17 @@ const S1_Events = [
         yTop: 0.50, yBottom: 0.75,
         x0: 0.05
     },
-    { type: 'clear', target: 'traits_groupes' }, 
+    { type: 'vibrating_fraction', isSimulation: true, num: '12', den: '4', result: '3', x: 0.75, y: 0.60, sz: 0.07, color: '#f5e441', duration: 12 }, 
     {
         type: 'question',
-        text: "Et pour des groupes de 6 ? (12 ÷ 6)",
+        text: "Et pour des groupes de 6 ?",
         options: [
             { text: "6 groupes.", isCorrect: false },
             { text: "2 groupes.", isCorrect: true }
         ],
     },
-
+    {type:'clear', target: 'vibrating_fraction'},
+    {type:'clear', target: 'traits_groupes'},
     { 
         type: 'traits_groupes', 
         isSimulation: true,
@@ -128,16 +135,18 @@ const S1_Events = [
         yTop: 0.50, yBottom: 0.75,
         x0: 0.05
     },
-    { type: 'clear', target: 'traits_groupes' },
+    { type: 'vibrating_fraction', isSimulation: true, num: '12', den: '6', result: '2', x: 0.75, y: 0.60, sz: 0.07, color: '#f5e441', duration: 12 },
+    
     {
         type: 'question',
-        text: "Et pour un groupe de 12 ? (12 ÷ 12)",
+        text: "Et pour un groupe de 12 ?",
         options: [
             { text: "12 groupes.", isCorrect: false },
             { text: "1 groupe.", isCorrect: true }
         ],
     },
-    
+    {type:'clear', target: 'vibrating_fraction'},
+    {type:'clear', target: 'traits_groupes'},
     { 
         type: 'traits_groupes', 
         isSimulation: true,
@@ -145,12 +154,26 @@ const S1_Events = [
         groupSize: 12, 
         duration: 800,
         yTop: 0.50, yBottom: 0.75,
-        x0: 0.05
+        x0: 0.05,
+        duration: 100
     },
-    { type: 'clear', target: 'traits_groupes' },
+    { type: 'vibrating_fraction', isSimulation: true, num: '12', den: '12', result: '1', x: 0.75, y: 0.60, sz: 0.07, color: '#f5e441', duration: 50 },
 
-    { text: "En résumé : dans 12 on peut trouver 6 fois le nombre 2, 4 fois le nombre 3 etc...", y: 0.75, sz: 0.035, color: CB },
-    { text: "On peut écrire : 12/2 = 6 ; 12/3 = 4 ; 12/4 = 3 ; 12/6 = 2 ; 12/12 = 1.", y: 0.82, sz: 0.035, color: CW },
+    {type:'clear', target: 'vibrating_fraction'},
+    {type:'clear', target: 'traits_groupes'},
+
+    { text: "On peut écrire : frac(12;12) = 1", y: 0.40, sz: 0.035, color: CW },
+    { text: "frac(12;6) = 2",x: 0.20, y: 0.45, sz: 0.035, color: CW },
+    { text: "frac(12;4) = 3",x: 0.20, y: 0.50, sz: 0.035, color: CW },
+    { text: "frac(12;3) = 4",x: 0.20, y: 0.55, sz: 0.035, color: CW },
+    { text: "frac(12;2) = 6",x: 0.20, y: 0.60, sz: 0.035, color: CW },
+    { text: "frac(12;1) = 12",x: 0.20, y: 0.65, sz: 0.035, color: CW },
+    { text: "Remarque : ", y: 0.75, sz: 0.04, color: #F5e441, bold: true },
+    { text: "Les resultats des divisions sont tous des nombres entiers naturels.", x: 0.20, y: 0.75, sz: 0.04, color: CG, bold: true },
+    { text: "Résumé(à retenir) : ", y: 0.90, sz: 0.04, color: #F5e441, bold: true },
+    { text: "Un nombre entier est le diviseur d'un autre nombre si son quotient est un nombre entier naturel.", x: 0.20, y: 0.95, sz: 0.04, color: CG, bold: true },
+    { text: "Résumé(à retenir) : ", y: 0.90, sz: 0.04, color: #F5e441, bold: true },
+
     { text: "Les diviseurs de 12 sont : 1, 2, 3, 4, 6, 12.", y: 0.90, sz: 0.04, color: CG, bold: true },
 ];
 
@@ -186,14 +209,14 @@ const S2_Events = [
     },
     { 
         type: 'question',
-        isVerification: true,
+        
         text: "En effet, il reste toujours 1 trait seul. Combien de diviseurs possède alors le nombre 5 ?",
         options: [
             { text: "Seulement 2 (1 et 5)", isCorrect: true },
             { text: "Il en a 3", isCorrect: false },
             { text: "Aucun", isCorrect: false }
         ],
-        retryStart: 10
+        
     },
     { type: 'clear', target: 'traits_groupes' },
     { text: "Un nombre qui n'a que deux diviseurs (1 et lui-même) est un NOMBRE PREMIER.", y: 0.80, sz: 0.04, color: CG, bold: true },
@@ -252,13 +275,13 @@ const S3_Events = [
     { text: "54 = 2 × 3 × 3 × 3 = 2 × 3³", x: 0.4, y: 0.6, sz: 0.05, color: CG, bold: true },
     { 
         type: 'question',
-        isVerification: true,
+        
         text: "Cette écriture unique s'appelle le Théorème...",
         options: [
             { text: "...Fondamental", isCorrect: true },
             { text: "...de Pythagore", isCorrect: false }
         ],
-        retryStart: 10
+        
     },
 ];
 
@@ -982,6 +1005,45 @@ const S4_Events = [
     { type: 'text', text: '2. Chaque bissectrice est un axe de symétrie.', x: 0.05, y: 0.33, sz: 0.033, color: CW },
     { type: 'text', text: '3. Tout point sur une bissectrice est équidistant des deux droites.', x: 0.05, y: 0.38, sz: 0.033, color: CG, bold: true },
 ];
+
+export const programme = {
+    SA1: {
+        title: 'Géométrie',
+        sequences: {
+            SEQ1: {
+                title: 'Le cercle',
+                notions: [
+                    { id: 'S4', title: 'Angles au centre d\'un cercle' },
+                    { id: 'S5', title: 'La corde d\'un cercle' },
+                ]
+            },
+            SEQ2: {
+                title: 'Les droites',
+                notions: [
+                    { id: 'S6', title: 'Distance d\'un point à une droite' },
+                    { id: 'S7', title: 'Distance entre deux droites parallèles' },
+                    { id: 'S8', title: 'Points équidistants de deux droites parallèles' },
+                    { id: 'S9', title: 'Points équidistants de deux droites sécantes' },
+                    { id: 'S10', title: 'Axe de symétrie de deux droites sécantes' },
+                ]
+            }
+        }
+    },
+    SA2: {
+        title: 'Arithmétique',
+        sequences: {
+            SEQ3: {
+                title: 'Divisibilité',
+                notions: [
+                    { id: 'S1', title: 'Les diviseurs d\'un nombre' },
+                    { id: 'S2', title: 'Nombres Premiers' },
+                    { id: 'S3', title: 'Décomposition en facteurs premiers' },
+                ]
+            }
+        }
+    }
+};
+
 export const notions = {
     'S0': {
         id: 'S0',

@@ -1,4 +1,5 @@
 const DEFAULT_CLASS = '4eme';
+const DEFAULT_SERIES = '';
 const DEFAULT_SUBJECT = 'maths';
 
 function normalizeText(value) {
@@ -97,16 +98,46 @@ export function getDefaultCourseSelection() {
   const stored = readSelectionFromStorage();
   return {
     className: normalizeClassName(stored.className || DEFAULT_CLASS),
-    series: normalizeSeries(stored.series || ''),
+    series: normalizeSeries(stored.series || DEFAULT_SERIES),
     subject: normalizeSubject(stored.subject || DEFAULT_SUBJECT)
   };
 }
 
+export function setDefaultCourseSelection(selection = {}) {
+  const nextSelection = {
+    className: normalizeClassName(selection.className || DEFAULT_CLASS),
+    series: normalizeSeries(selection.series || DEFAULT_SERIES),
+    subject: normalizeSubject(selection.subject || DEFAULT_SUBJECT)
+  };
+
+  if (typeof window !== 'undefined' && window.localStorage) {
+    window.localStorage.setItem('selectedClass', nextSelection.className);
+    window.localStorage.setItem('selectedSeries', nextSelection.series || '');
+    window.localStorage.setItem('selectedSubject', nextSelection.subject || '');
+  }
+
+  return nextSelection;
+}
+
+export function resetDefaultCourseSelection() {
+  return setDefaultCourseSelection({
+    className: DEFAULT_CLASS,
+    series: DEFAULT_SERIES,
+    subject: DEFAULT_SUBJECT
+  });
+}
+
 export async function loadCourseContent(preferredClass = '', preferredSeries = '', preferredSubject = '') {
-  const selection = getDefaultCourseSelection();
-  const className = normalizeClassName(preferredClass || selection.className || DEFAULT_CLASS);
-  const series = normalizeSeries(preferredSeries || selection.series || '');
-  const subject = normalizeSubject(preferredSubject || selection.subject || DEFAULT_SUBJECT);
+  const currentSelection = getDefaultCourseSelection();
+  const selection = setDefaultCourseSelection({
+    className: preferredClass || currentSelection.className,
+    series: preferredSeries || currentSelection.series,
+    subject: preferredSubject || currentSelection.subject
+  });
+
+  const className = normalizeClassName(selection.className || DEFAULT_CLASS);
+  const series = normalizeSeries(selection.series || DEFAULT_SERIES);
+  const subject = normalizeSubject(selection.subject || DEFAULT_SUBJECT);
   const folderName = getFolderName(className, series);
 
   const module = await import(`./classes/${folderName}/${subject}.js`);
@@ -117,4 +148,10 @@ export async function loadCourseContent(preferredClass = '', preferredSeries = '
     subject,
     modulePath: `./classes/${folderName}/${subject}.js`
   };
+}
+
+if (typeof window !== 'undefined') {
+  window.setDefaultCourseSelection = setDefaultCourseSelection;
+  window.getDefaultCourseSelection = getDefaultCourseSelection;
+  window.resetDefaultCourseSelection = resetDefaultCourseSelection;
 }

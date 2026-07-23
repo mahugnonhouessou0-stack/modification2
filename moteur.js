@@ -7,11 +7,10 @@ import {
     startNotionCountdown, setCountdownEndCallback
 } from './tableau.js';
 
-import { notions as staticNotions, CW, CY, CG, CB } from './contenu.js';
 import { loadCourseContent, getDefaultCourseSelection } from './contentLoader.js';
 
 // Variable globale pour stocker les leçons récupérées
-let notions = staticNotions;
+let notions = {};
 let currentCourse = null;
 
 import {
@@ -29,6 +28,36 @@ export function dwell(event, pauseDuration) {
 let timer = 0, events = [], maxTime = 0;
 let pendingQuestionTimeout = null;
 
+function buildNotionsFromProgramme(programmeData = {}, fallbackNotions = {}) {
+    const builtNotions = { ...(fallbackNotions || {}) };
+
+    const addNotion = (notion) => {
+        if (!notion) return;
+        const notionId = typeof notion === 'string' ? notion : notion.id;
+        if (!notionId) return;
+
+        if (typeof notion === 'string') {
+            if (!builtNotions[notionId] && (fallbackNotions || {})[notionId]) {
+                builtNotions[notionId] = fallbackNotions[notionId];
+            }
+            return;
+        }
+
+        builtNotions[notionId] = {
+            ...(fallbackNotions[notionId] || {}),
+            ...notion,
+        };
+    };
+
+    Object.values(programmeData || {}).forEach((saData) => {
+        Object.values(saData?.sequences || {}).forEach((seqData) => {
+            (seqData?.notions || []).forEach(addNotion);
+        });
+    });
+
+    return builtNotions;
+}
+
 /**
  * Simule un appel API pour charger les notions
  * C'est le contournement gratuit : on charge un fichier JSON local
@@ -38,7 +67,7 @@ async function loadData() {
         const course = await loadCourseContent();
         currentCourse = course;
         const { notions: courseNotions, CW: courseCW, CY: courseCY, CG: courseCG, CB: courseCB, programme } = course;
-        notions = courseNotions || staticNotions;
+        notions = buildNotionsFromProgramme(programme, courseNotions || {});
         if (typeof window !== 'undefined' && window.setSearchCourseContext) {
             window.setSearchCourseContext({ notions, programme });
         }
@@ -1386,6 +1415,22 @@ function showQuestionBox(ev) {
                 if (correct) {
                     return "Ok. Merci beaucoup.";
                 }
+
+                if (context && context.proposedAnswer) {
+                    return context.proposedAnswer;
+                }
+
+                if (context && context.expectedAnswer) {
+                    return `J'ai un doute, voyons voir ce qui est fait au tableau. La bonne réponse est : ${context.expectedAnswer}`;
+                }
+
+                if (context && context.options) {
+                    const correctOption = context.options.find(opt => opt.isCorrect);
+                    if (correctOption) {
+                        return `J'ai un doute, voyons voir ce qui est fait au tableau. La bonne réponse est : ${correctOption.text}`;
+                    }
+                }
+
                 return "J'ai un doute, voyons voir ce qui est fait au tableau.";
             };
 
@@ -1396,6 +1441,44 @@ function showQuestionBox(ev) {
                     choices: [{ label: 'Continuer', value: 'cont' }],
                     onChoice: () => { closeDialogueBox(); if (onContinue && typeof onContinue === 'function') onContinue(); else setPaused(false); }
                 });
+                openDialogueBox();
+            };
+
+            const showNextQuestion = (nextEvent) => {
+                if (!nextEvent) {
+                    setPaused(false);
+                    return;
+                }
+
+                let dialogueChoices = nextEvent.freeAnswer ? [] : (nextEvent.options ? nextEvent.options.map(opt => ({ 
+                    label: opt.text, 
+                    value: opt.value ? { ...opt.value, _label: opt.text } : { isCorrect: opt.isCorrect, _label: opt.text } 
+                })) : (nextEvent.isIntro ? [{ label: "C'est parti !", value: 'next' }] : [{ label: "Continuer", value: 'next' }]));
+
+                if (nextEvent.addOther && !nextEvent.freeAnswer) {
+                    dialogueChoices.push({ label: "Autre...", value: { useCahier: true } });
+                }
+
+                const dialogueData = {
+                    text: nextEvent.text,
+                    author: nextEvent.author || 'Camélia',
+                    choices: dialogueChoices,
+                    onChoice: (c) => handleChoice(c, nextEvent)
+                };
+
+                if (nextEvent.freeAnswer) {
+                    dialogueData.input = {
+                        label: 'Écris ta réponse',
+                        placeholder: 'Écris ton texte ici...',
+                        buttonLabel: 'Envoyer',
+                        rows: 4
+                    };
+                    dialogueData.onSubmit = async (value) => {
+                        handleChoice(value, nextEvent);
+                    };
+                }
+
+                createDialogue(dialogueData);
                 openDialogueBox();
             };
 
@@ -1422,32 +1505,31 @@ function showQuestionBox(ev) {
                 if (isCorrect && !(label === 'non' && isNoIdeaQuestion)) {
                     contextEv.answered = true; contextEv.correctlyAnswered = true;
                     if (contextEv !== ev) { ev.answered = true; ev.correctlyAnswered = true; }
-                    
-                    showContinueDialogue(getFeedbackText(true, contextEv), () => {
-                        if (contextEv.nextQuestion) {
-                            createDialogue({
-                                text: contextEv.nextQuestion.text,
-                                author: 'Camélia',
-                                choices: (contextEv.nextQuestion.options || []).map(opt => ({ 
-                                    label: opt.text, 
-                                    value: opt.value ? { ...opt.value, _label: opt.text } : { isCorrect: opt.isCorrect, _label: opt.text } 
-                                })),
-                                onChoice: (c) => handleChoice(c, contextEv.nextQuestion)
-                            });
-                            openDialogueBox();
-                        } else {
-                            setPaused(false);
-                        }
-                    });
+
+                    if (contextEv.nextQuestion) {
+                        showNextQuestion(contextEv.nextQuestion);
+                    } else {
+                        showContinueDialogue(getFeedbackText(true, contextEv), () => setPaused(false));
+                    }
                 } else {
                     contextEv.answered = true; contextEv.correctlyAnswered = false;
-                    showContinueDialogue(getFeedbackText(false, contextEv), () => {
-                        if (contextEv.retryStart !== undefined && contextEv.isVerification) {
-                            performReset(getCurrentNotionId(), true);
-                        } else {
+
+                    // Si une question suivante est alignée, afficher le feedback
+                    // puis enchaîner directement sur la question suivante.
+                    if (contextEv.nextQuestion) {
+                        createDialogue({
+                            text: getFeedbackText(false, contextEv),
+                            author: 'Camélia',
+                            choices: []
+                        });
+                        openDialogueBox();
+                        // Petit délai pour laisser le feedback s'afficher avant la suivante
+                        setTimeout(() => showNextQuestion(contextEv.nextQuestion), 600);
+                    } else {
+                        showContinueDialogue(getFeedbackText(false, contextEv), () => {
                             setPaused(false);
-                        }
-                    });
+                        });
+                    }
                 }
             }
         };

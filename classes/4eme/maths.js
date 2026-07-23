@@ -19,8 +19,8 @@ const S00_Events = [
 
 const S1_Events = [
     { text: 'Notion : Les diviseurs d’un nombre', y: 0.10, sz: 0.06, bold: true, color: CY, isTitle: true, compteur: 15 },
-    { text: "Imagine que vous êtes 12 dans ta classe , le professeur te demande alors de vous diviser en groupes de 3.", y: 0.25, sz: 0.035, color: CW },
-    { text:"Combien de groupes de 3 pourra-t-on former ?", y: 0.30, sz: 0.035, color: CW },
+    { text: "Imagine que vous êtes 12 dans ta classe , le professeur te demande alors de vous diviser en groupes de 3.", id:'groupe_a_effacer',y: 0.25, sz: 0.035, color: CW },
+    { text:"Combien de groupes de 3 pourra-t-on former ?", id:'groupe_a_effacer',y: 0.30, sz: 0.035, color: CW },
 
     {
         type: 'question',
@@ -44,7 +44,7 @@ const S1_Events = [
 
     {
         type: 'question',
-        isVerification: true,
+        
         text: "C'est maintenant claire, on fera 4 groupe de 3 ! c'est bien ça non?",
         options: [
             { text: "Oui, 3 ", isCorrect: false },
@@ -59,7 +59,7 @@ const S1_Events = [
                 { text: "12", isCorrect: false }
             ]
         },
-        retryStart: 4
+        
     },
     {type:'clear', target: 'vibrating_fraction'},
     {type:'clear', target: 'traits_groupes'},
@@ -157,85 +157,93 @@ const S1_Events = [
         x0: 0.05,
         duration: 100
     },
-    { type: 'vibrating_fraction', isSimulation: true, num: '12', den: '12', result: '1', x: 0.75, y: 0.60, sz: 0.07, color: '#f5e441', duration: 50 },
-
+    {type: 'vibrating_fraction', isSimulation: true, num: '12', den: '12', result: '1', x: 0.75, y: 0.60, sz: 0.07, color: '#f5e441', duration: 50 },
+    {
+        type: 'question',
+        text: "Et pour un groupe de 5 ?",
+        options: [
+            { text: "12 groupes.", isCorrect: false },
+            { text: "2.4 groupes.", isCorrect: true }
+        ],
+    },
     {type:'clear', target: 'vibrating_fraction'},
     {type:'clear', target: 'traits_groupes'},
-
-    { text: "On peut écrire : frac(12;12) = 1", y: 0.40, sz: 0.035, color: CW },
-    { text: "frac(12;6) = 2",x: 0.20, y: 0.45, sz: 0.035, color: CW },
-    { text: "frac(12;4) = 3",x: 0.20, y: 0.50, sz: 0.035, color: CW },
-    { text: "frac(12;3) = 4",x: 0.20, y: 0.55, sz: 0.035, color: CW },
-    { text: "frac(12;2) = 6",x: 0.20, y: 0.60, sz: 0.035, color: CW },
-    { text: "frac(12;1) = 12",x: 0.20, y: 0.65, sz: 0.035, color: CW },
-    { text: "Remarque : ", y: 0.75, sz: 0.04, color: #F5e441, bold: true },
-    { text: "Les resultats des divisions sont tous des nombres entiers naturels.", x: 0.20, y: 0.75, sz: 0.04, color: CG, bold: true },
-    { text: "Résumé(à retenir) : ", y: 0.90, sz: 0.04, color: #F5e441, bold: true },
-    { text: "Un nombre entier est le diviseur d'un autre nombre si son quotient est un nombre entier naturel.", x: 0.20, y: 0.95, sz: 0.04, color: CG, bold: true },
-
-    { text: "Les diviseurs de 12 sont : 1, 2, 3, 4, 6, 12.", y: 0.90, sz: 0.04, color: CG, bold: true },
+    { 
+        type: 'traits_groupes', 
+        isSimulation: true,
+        nTraits: 12, 
+        groupSize: 5, 
+        duration: 800,
+        yTop: 0.50, yBottom: 0.75,
+        x0: 0.05,
+        duration: 100
+    },
+    { type: 'vibrating_fraction', isSimulation: true, num: '12', den: '5', result: '2.4', x: 0.75, y: 0.60, sz: 0.07, color: '#f5e441', duration: 50 },
+    {type:'clear', id:'groupe_a_effacer'},
+    { text: "Remarque : ", y: 0.20, sz: 0.04, color: '#F5e441', bold: true },
+    { text: "5 ne divise pas 12 en une ou plusieurs parties égales.", x: 0.20, y: 0.20, sz: 0.035, color: CW},
+    { text: "Mais 12,1,2,3,4,6 le font. Ils sont appelés pour ce fait les diviseurs de 12.", x: 0.20, y: 0.25, sz: 0.035, color: CW},
+    {type:'clear', target: 'vibrating_fraction'},
+    {type:'clear', target: 'traits_groupes'},
+    { text: "Résumé(à retenir) : ", y: 0.30, sz: 0.04, color: '#F5e441', bold: true },
+    { text: "a est le diviseur de b si frac(b;a) donne un nombre entier naturel.", x: 0.27, y: 0.30, sz: 0.035, color: CW},
+    { text: "En pratique : ", y: 0.35, sz: 0.04, color: '#F5e441', bold: true },
+    { text: "On fait la division frac(b;a) sur la calculatrice et si la reponse", x: 0.21, y: 0.35, sz: 0.035, color: CW },
+    { text: " n'est pas un nombre à virgule alors b est un diviseur de a.", x: 0.20, y: 0.40, sz: 0.035, color: CW },
+    { text: "frac(12;12) = 1",x:20, y: 0.45, sz: 0.035, color: CW },
+    { text: "frac(12;6) = 2",x: 0.20, y: 0.50, sz: 0.035, color: CW },
+    { text: "frac(12;4) = 3",x: 0.20, y: 0.55, sz: 0.035, color: CW },
+    { text: "frac(12;3) = 4",x: 0.20, y: 0.60, sz: 0.035, color: CW },
+    { text: "frac(12;2) = 6",x: 0.20, y: 0.65, sz: 0.035, color: CW },
+    { text: "frac(12;1) = 12",x: 0.20, y: 0.70, sz: 0.035, color: CW },
+    { text: "frac(12;5) = 2.4",x: 0.20, y: 0.75, sz: 0.035, color: CW },
+    { text: "5 n'est donc pas un diviseur de 12.", y: 0.80, sz: 0.04, color: CW},
 ];
 
 const S2_Events = [
     { text: 'Notion : Nombres Premiers', y: 0.10, sz: 0.06, bold: true, color: CY, isTitle: true,compteur: 15 },
-    { text: "Prenons les nombres suivants : 1, 2,", y: 0.25, sz: 0.035, color: CW },
-    { text: "Mais regarde le nombre 5 par exemple.", y: 0.30, sz: 0.035, color: CW },
+    { text: "5 a combien de diviseurs ?", y: 0.25, sz: 0.035, color: CW },   
     
-    {
-    type: 'question',
-    text: "Quelle est la formule de l'aire d'un disque de rayon r ?",
-    freeAnswer: true,
-    expectedAnswer: "Pi fois r au carré",
-    // Texte libre dans la boîte de dialogue de Camélia
-    },
     { 
         type: 'question',
-        text: "Peux-tu diviser 5 en plusieurs groupes égaux (plus grands que 1) ?",
-        options: [
-            { text: "Oui, on peut faire des groupes.", isCorrect: false },
-            { text: "Oui, 2 groupes", isCorrect: true }
-        ],
-        addOther: true,
-        expectedAnswer: "Non, c'est impossible !"
+        text: "As-tu une idée ?",
+        freeAnswer: true,
+        expectedAnswer: "2 diviseurs"
     },
-    { 
-        type: 'traits_groupes', 
-        isSimulation: true,
-        nTraits: 5, 
-        groupSize: 2, 
-        duration: 600,
-        yTop: 0.50, yBottom: 0.70, x0: 0.35
-    },
+    { text: "frac(5;1) = 5", y: 0.35, sz: 0.035, color: CW },
+    { text: "frac(5;2) = 2.5", y: 0.40, sz: 0.035, color: CW },
+    { text: "frac(5;3) = 1.67", y: 0.45, sz: 0.035, color: CW },
+    { text: "frac(5;4) = 1.25", y: 0.50, sz: 0.035, color: CW },
+    { text: "frac(5;5) = 1", y: 0.55, sz: 0.035, color: CW },
+    { text: "5 a donc 2 diviseurs : 1 et 5.", y: 0.65, sz: 0.035, color: CW },
+    { text: "Tout nombre n'ayant que deux diviseurs, c'est-à-dire 1 et lui-même, est un NOMBRE PREMIER.", y: 0.70, sz: 0.035, color: CW },
+    { text: "", y: 0.30, sz: 0.035, color: CW },
     { 
         type: 'question',
-        isVerification: true,
-        text: "En effet, il reste toujours 1 trait seul. Combien de diviseurs possède alors le nombre 5 ?",
-        options: [
-            { text: "Seulement 2 (1 et 5)", isCorrect: true },
-            { text: "Il en a 3", isCorrect: false },
-            { text: "Aucun", isCorrect: false }
-        ],
-        retryStart: 10
+        text: " Si je comprends bien 5 est donc un nombre premier ?",
+        freeAnswer: true,
+        expectedAnswer: "Oui",
+        proposedAnswer: "Oui",
+        nextQuestion: {
+            text: "Et 4 ?",
+            freeAnswer: true,
+            expectedAnswer: "Non",
+            proposedAnswer: "Non, car il a trois diviseurs : 1, 2 et 4",
+            nextQuestion: {
+                text: "Et 7 ?",
+                freeAnswer: true,
+                expectedAnswer: "Oui",
+                proposedAnswer: "Oui, car il a deux diviseurs : 1 et 7",
+                nextQuestion: {
+                    text: "Et 19 ?",
+                    freeAnswer: true,
+                    expectedAnswer: "Oui",
+                    proposedAnswer: "Oui, car il a deux diviseurs : 1 et 19"
+                }
+            }
+        }
     },
-    { type: 'clear', target: 'traits_groupes' },
-    { text: "Un nombre qui n'a que deux diviseurs (1 et lui-même) est un NOMBRE PREMIER.", y: 0.80, sz: 0.04, color: CG, bold: true },
-    { 
-        type: 'question',
-        text: "Est-ce que le nombre 9 est un nombre premier d'après toi ?",
-        options: [
-            { text: "Oui, il est premier.", isCorrect: false },
-            { text: "Non, car 3 x 3 = 9 !", isCorrect: true }
-        ],
-    },
-    { 
-        type: 'traits_groupes', 
-        isSimulation: true,
-        nTraits: 9, 
-        groupSize: 3, 
-        duration: 600,
-        yTop: 0.45, yBottom: 0.60, x0: 0.35
-    },
-    { text: "9 n'est pas premier car il est divisible par 1, 3 et 9.", y: 0.90, sz: 0.035, color: CB },
+      
 ];
 
 const S3_Events = [
@@ -274,13 +282,13 @@ const S3_Events = [
     { text: "54 = 2 × 3 × 3 × 3 = 2 × 3³", x: 0.4, y: 0.6, sz: 0.05, color: CG, bold: true },
     { 
         type: 'question',
-        isVerification: true,
+        
         text: "Cette écriture unique s'appelle le Théorème...",
         options: [
             { text: "...Fondamental", isCorrect: true },
             { text: "...de Pythagore", isCorrect: false }
         ],
-        retryStart: 10
+        
     },
 ];
 
@@ -1006,24 +1014,36 @@ const S4_Events = [
 ];
 
 export const programme = {
+    SA0: {
+        title: 'Introduction',
+        sequences: {
+            SEQ0: {
+                title: 'Introduction',
+                notions: [
+                    { id: 'S0', title: 'Bienvenue', events: S0_Events, nextNotionId: 'S00' },
+                    { id: 'S00', title: 'Introduction Camélia', events: S00_Events, nextNotionId: 'S1' },
+                ]
+            }
+        }
+    },
     SA1: {
         title: 'Géométrie',
         sequences: {
             SEQ1: {
                 title: 'Le cercle',
                 notions: [
-                    { id: 'S4', title: 'Angles au centre d\'un cercle' },
-                    { id: 'S5', title: 'La corde d\'un cercle' },
+                    { id: 'S4', title: 'Angles au centre d\'un cercle', events: S4_Events, nextNotionId: 'S5' },
+                    { id: 'S5', title: 'La corde d\'un cercle', events: S5_Events, nextNotionId: 'S6' },
                 ]
             },
             SEQ2: {
                 title: 'Les droites',
                 notions: [
-                    { id: 'S6', title: 'Distance d\'un point à une droite' },
-                    { id: 'S7', title: 'Distance entre deux droites parallèles' },
-                    { id: 'S8', title: 'Points équidistants de deux droites parallèles' },
-                    { id: 'S9', title: 'Points équidistants de deux droites sécantes' },
-                    { id: 'S10', title: 'Axe de symétrie de deux droites sécantes' },
+                    { id: 'S6', title: 'Distance d\'un point à une droite', events: S6_Events, nextNotionId: 'S7' },
+                    { id: 'S7', title: 'Distance entre deux droites parallèles', events: S7_Events, nextNotionId: 'S8' },
+                    { id: 'S8', title: 'Points équidistants de deux droites parallèles', events: S8_Events, nextNotionId: 'S9' },
+                    { id: 'S9', title: 'Points équidistants de deux droites sécantes', events: S9_Events, nextNotionId: 'S10' },
+                    { id: 'S10', title: 'Axe de symétrie de deux droites sécantes', events: S10_Events, nextNotionId: 'S1' },
                 ]
             }
         }
@@ -1034,86 +1054,11 @@ export const programme = {
             SEQ3: {
                 title: 'Divisibilité',
                 notions: [
-                    { id: 'S1', title: 'Les diviseurs d\'un nombre' },
-                    { id: 'S2', title: 'Nombres Premiers' },
-                    { id: 'S3', title: 'Décomposition en facteurs premiers' },
+                    { id: 'S1', title: 'Les diviseurs d\'un nombre', events: S1_Events, nextNotionId: 'S2' },
+                    { id: 'S2', title: 'Nombres Premiers', events: S2_Events, nextNotionId: 'S3' },
+                    { id: 'S3', title: 'Décomposition en facteurs premiers', events: S3_Events, nextNotionId: 'S4' },
                 ]
             }
         }
     }
-};
-
-export const notions = {
-    'S0': {
-        id: 'S0',
-        title: 'Bienvenue'  ,
-        events: S0_Events,
-        nextNotionId: 'S00'
-    },
-    'S00': {
-        id: 'S00',
-        title: 'Introduction Camélia',
-        events: S00_Events,
-        nextNotionId: 'S1'
-    },
-    'S1': {
-        id: 'S1',
-        title: 'Les diviseurs',
-        events: S1_Events,
-        nextNotionId: 'S2'
-    },
-    'S2': {
-        id: 'S2',
-        title: 'Nombres Premiers',
-        events: S2_Events,
-        nextNotionId: 'S3'
-    },
-    'S3': {
-        id: 'S3',
-        title: 'Décomposition',
-        events: S3_Events,
-        nextNotionId: 'S4'
-    },
-    'S4': {
-        id: 'S4',
-        title: 'Le Cercle',
-        events: S4_Events,
-        nextNotionId: 'S5'
-    },
-    'S5': {
-    id: 'S5',
-    title: 'La corde',
-    events: S5_Events,
-    nextNotionId: 'S6'
-    },
-     'S6': {
-    id: 'S6',
-    title: 'Distance d\'un point à une droite',
-    events: S6_Events,
-    nextNotionId: 'S7'  // ou la notion suivante
-   },
-    'S7': {
-    id: 'S7',
-    title: 'Distance entre deux droites parallèles',
-    events: S7_Events,
-    nextNotionId: 'S8'
-   },
-   'S8': {
-    id: 'S8',
-    title: 'Points équidistants de deux droites parallèles',
-    events: S8_Events,
-    nextNotionId: 'S9'
-    },
-    'S9': {
-    id: 'S9',
-    title: 'Points équidistants de deux droites sécantes',
-    events: S9_Events,
-    nextNotionId: 'S10'
-    },
-    'S10': {
-    id: 'S10',
-    title: 'Axe de symétrie de deux droites sécantes',
-    events: S10_Events,
-    nextNotionId: 'S1'
-    },
 };

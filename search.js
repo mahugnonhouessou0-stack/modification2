@@ -32,6 +32,12 @@ function normalize(str) {
         .trim();
 }
 
+function isIntroTitle(title) {
+    if (!title) return false;
+    const t = String(title).toLowerCase().trim();
+    return t === 'introduction' || t.startsWith('introd') || t.includes('introduction');
+}
+
 function highlight(text, query) {
     if (!query || !text) return text;
     const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -142,6 +148,8 @@ function renderStep2(type) {
 
     if (type === 'sa') {
         Object.entries(currentProgramme).forEach(([saKey, saData]) => {
+            // Exclude SA titles that are introductions
+            if (isIntroTitle(saData?.title)) return;
             const option = document.createElement('button');
             option.type = 'button';
             option.textContent = saData?.title || saKey;
@@ -154,7 +162,11 @@ function renderStep2(type) {
     }
     if (type === 'sequence') {
         Object.entries(currentProgramme).forEach(([saKey, saData]) => {
+            // Skip sequences under SA introduction titles
+            if (isIntroTitle(saData?.title)) return;
             Object.entries(saData.sequences || {}).forEach(([seqKey, seqData]) => {
+                // Exclude sequences whose title looks like an introduction
+                if (isIntroTitle(seqData?.title)) return;
                 const option = document.createElement('button');
                 option.type = 'button';
                 option.textContent = `${seqData?.title || seqKey} — ${saData.title || saKey}`;
@@ -198,6 +210,8 @@ function openFilterPanel() {
     filterPanel.classList.add('visible');
     filterPanel.setAttribute('aria-hidden', 'false');
     isDropdownOpen = true;
+    updateFilterChips();
+    renderResults(searchInput?.value || '');
 }
 
 function closeFilterPanel() {
@@ -227,6 +241,14 @@ function updateActiveFilters() {
         });
     }
     activeFilters = [...new Set(activeFilters)];
+}
+
+function resetSearchState() {
+    selectedSa = '';
+    selectedSequence = '';
+    activeFilters = [];
+    updateFilterChips();
+    renderResults(searchInput?.value || '');
 }
 
 function renderResults(query) {
@@ -321,7 +343,12 @@ function goToNotion(notionId) {
 export function setSearchCourseContext(context = {}) {
     currentNotions = context.notions || {};
     currentProgramme = context.programme || null;
+    selectedSa = '';
+    selectedSequence = '';
+    activeFilters = [];
     renderFilters();
+    updateFilterChips();
+    renderResults(searchInput?.value || '');
 }
 
 function clearChips() {
@@ -423,6 +450,12 @@ filterToggleBtn?.addEventListener('click', (e) => {
 searchClose?.addEventListener('click', () => {
     closeSearch();
     filterPanel?.classList.remove('visible');
+});
+
+searchInput?.addEventListener('focus', () => {
+    if (!searchBox?.classList.contains('open')) {
+        openSearch();
+    }
 });
 
 document.addEventListener('click', (e) => {
