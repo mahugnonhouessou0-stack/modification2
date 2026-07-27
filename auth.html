@@ -494,6 +494,19 @@
             localStorage.setItem('welcomeUser', displayName);
         }
 
+        const className = document.getElementById('classeSelect')?.value || '';
+        const seriesName = document.getElementById('serieSelect')?.value || '';
+        const subjectName = document.getElementById('ensMatiere')?.value || '';
+        if (className) {
+            localStorage.setItem('selectedClass', className);
+        }
+        if (seriesName) {
+            localStorage.setItem('selectedSeries', seriesName);
+        }
+        if (subjectName) {
+            localStorage.setItem('selectedSubject', subjectName);
+        }
+
         window.location.href = 'index.html';
     }
 </script>

@@ -7,10 +7,11 @@ import {
     startNotionCountdown, setCountdownEndCallback
 } from './tableau.js';
 
-import { notions as staticNotions, CW, CY, CG, CB } from './contenu.js';
+import { loadCourseContent, getDefaultCourseSelection } from './contentLoader.js';
 
 // Variable globale pour stocker les leçons récupérées
-let notions = staticNotions;
+let notions = {};
+let currentCourse = null;
 
 import {
     createDialogue, updateDialogueToSuccess, openDialogueBox, closeDialogueBox, clearDialogueHistory, appendUserMessage
@@ -27,18 +28,55 @@ export function dwell(event, pauseDuration) {
 let timer = 0, events = [], maxTime = 0;
 let pendingQuestionTimeout = null;
 
+function buildNotionsFromProgramme(programmeData = {}, fallbackNotions = {}) {
+    const builtNotions = { ...(fallbackNotions || {}) };
+
+    const addNotion = (notion) => {
+        if (!notion) return;
+        const notionId = typeof notion === 'string' ? notion : notion.id;
+        if (!notionId) return;
+
+        if (typeof notion === 'string') {
+            if (!builtNotions[notionId] && (fallbackNotions || {})[notionId]) {
+                builtNotions[notionId] = fallbackNotions[notionId];
+            }
+            return;
+        }
+
+        builtNotions[notionId] = {
+            ...(fallbackNotions[notionId] || {}),
+            ...notion,
+        };
+    };
+
+    Object.values(programmeData || {}).forEach((saData) => {
+        Object.values(saData?.sequences || {}).forEach((seqData) => {
+            (seqData?.notions || []).forEach(addNotion);
+        });
+    });
+
+    return builtNotions;
+}
+
 /**
  * Simule un appel API pour charger les notions
  * C'est le contournement gratuit : on charge un fichier JSON local
  */
 async function loadData() {
     try {
-        const response = await fetch('./notions.json');
-        if (response.ok) {
-            notions = await response.json();
+        const course = await loadCourseContent();
+        currentCourse = course;
+        const { notions: courseNotions, CW: courseCW, CY: courseCY, CG: courseCG, CB: courseCB, programme } = course;
+        notions = buildNotionsFromProgramme(programme, courseNotions || {});
+        if (typeof window !== 'undefined' && window.setSearchCourseContext) {
+            window.setSearchCourseContext({ notions, programme });
         }
+        if (courseCW) globalThis.COURSE_CW = courseCW;
+        if (courseCY) globalThis.COURSE_CY = courseCY;
+        if (courseCG) globalThis.COURSE_CG = courseCG;
+        if (courseCB) globalThis.COURSE_CB = courseCB;
     } catch (e) {
-        console.warn("Fichier notions.json non trouvé, utilisation du contenu statique.");
+        console.warn("Chargement du contenu de cours impossible, utilisation du contenu statique.", e);
     }
 }
 
@@ -172,7 +210,7 @@ function requestReplay() {
 window.onReplayRequest = requestReplay;
 
 // --- BIBLIOTHÈQUE DE DESSIN ---
-const DrawingLibrary = {
+    const DrawingLibrary = {
     text: (ev) => {
         const elapsed = timer - ev.start;
         const duration = ev.duration || (ev.text ? ev.text.length * 2 : 1);
@@ -189,22 +227,94 @@ const DrawingLibrary = {
         const textY = (ev.y || 0.5) * boardHeight;
         const textToDraw = ev.text.slice(0, Math.max(safeCount, progress === 1 ? ev.text.length : 0));
 
-        // Détection du marqueur ~
-        if (textToDraw.includes('~')) {
-            const parts = textToDraw.split(/(~\w+)/g);
-            let currentX = textX;
+        // --- Rendu intelligent : texte + fractions + arcs ---
+        const renderMixed = (text, startX, baseY) => {
+            const parts = [];
+            let remaining = text;
+
+            while (remaining.length > 0) {
+                const fracIdx  = remaining.indexOf('frac(');
+                const arcIdx   = remaining.search(/p\.arc\(\w+\)/);
+
+                const firstFrac = fracIdx >= 0 ? fracIdx : Infinity;
+                const firstArc  = arcIdx  >= 0 ? arcIdx  : Infinity;
+
+                if (firstFrac === Infinity && firstArc === Infinity) {
+                    parts.push({ type: 'text', content: remaining });
+                    break;
+                }
+
+                if (firstFrac < firstArc) {
+                    if (fracIdx > 0) parts.push({ type: 'text', content: remaining.slice(0, fracIdx) });
+
+                    const closeIdx = remaining.indexOf(')', fracIdx);
+                    if (closeIdx === -1) {
+                        parts.push({ type: 'text', content: remaining });
+                        break;
+                    }
+                    const inner = remaining.slice(fracIdx + 5, closeIdx);
+                    const [num, den] = inner.split(';');
+                    parts.push({ type: 'frac', num: num.trim(), den: den.trim() });
+                    remaining = remaining.slice(closeIdx + 1);
+
+                } else {
+                    if (arcIdx > 0) parts.push({ type: 'text', content: remaining.slice(0, arcIdx) });
+
+                    const arcMatch = remaining.slice(arcIdx).match(/^p\.arc\((\w+)\)/);
+                    if (arcMatch) {
+                        parts.push({ type: 'arc', letters: arcMatch[1] });
+                        remaining = remaining.slice(arcIdx + arcMatch[0].length);
+                    } else {
+                        parts.push({ type: 'text', content: remaining });
+                        break;
+                    }
+                }
+            }
+
+            // --- Dessiner les parties ---
             const fontSize = Math.round(boardHeight * (ev.sz || 0.045));
+            let currentX = startX;
 
             parts.forEach(part => {
-                if (part.startsWith('~')) {
-                    const letters = part.slice(1);
+                ctx.font = getFont(ev.sz || 0.045, ev.bold, ev.italic);
+                ctx.fillStyle = ev.color || CW;
+
+                if (part.type === 'text') {
+                    ctx.fillText(part.content, currentX, baseY);
+                    currentX += ctx.measureText(part.content).width;
+
+                } else if (part.type === 'frac') {
+                    ctx.font = getFont((ev.sz || 0.045) * 0.85, ev.bold, ev.italic);
+                    const numWidth = ctx.measureText(part.num).width;
+                    const denWidth = ctx.measureText(part.den).width;
+                    const barWidth = Math.max(numWidth, denWidth) + 4;
+                    const fracH = fontSize * 0.55;
+
+                    ctx.fillStyle = ev.color || CW;
+                    ctx.textAlign = 'center';
+                    ctx.fillText(part.num, currentX + barWidth / 2, baseY - fracH * 0.55);
+
+                    ctx.strokeStyle = ev.color || CW;
+                    ctx.lineWidth = 1.5;
+                    ctx.beginPath();
+                    ctx.moveTo(currentX, baseY - fracH * 0.10);
+                    ctx.lineTo(currentX + barWidth, baseY - fracH * 0.10);
+                    ctx.stroke();
+
+                    ctx.fillText(part.den, currentX + barWidth / 2, baseY + fracH * 0.65);
+                    ctx.textAlign = ev.align || 'left';
+
+                    currentX += barWidth + 4;
+
+                } else if (part.type === 'arc') {
+                    const letters = part.letters;
+                    ctx.font = getFont(ev.sz || 0.045, ev.bold, ev.italic);
                     const partWidth = ctx.measureText(letters).width;
 
-                    // Lettres
-                    ctx.fillText(letters, currentX, textY);
+                    ctx.fillStyle = ev.color || CW;
+                    ctx.fillText(letters, currentX, baseY);
 
-                    // Arc courbé vers le haut
-                    const arcY = textY - fontSize * 0.85;
+                    const arcY = baseY - fontSize * 0.85;
                     const arcHeight = fontSize * 0.25;
                     ctx.strokeStyle = ev.color || CW;
                     ctx.lineWidth = 1.5;
@@ -214,15 +324,11 @@ const DrawingLibrary = {
                     ctx.stroke();
 
                     currentX += partWidth;
-                } else {
-                    ctx.fillText(part, currentX, textY);
-                    currentX += ctx.measureText(part).width;
                 }
             });
-        } else {
-            ctx.fillText(textToDraw, textX, textY);
-        }
+        };
 
+        renderMixed(textToDraw, textX, textY);
         ctx.textAlign = 'left';
 
         // Gestion du soulignement
@@ -243,6 +349,7 @@ const DrawingLibrary = {
             ctx.restore();
             return uProgress < 1;
         }
+
         return progress < 1;
     },
     line: (ev) => {
@@ -1277,7 +1384,13 @@ function showQuestionBox(ev) {
                 contextEv.correctlyAnswered = true;
                 if (contextEv !== ev) { ev.answered = true; ev.correctlyAnswered = true; }
                 closeDialogueBox();
-                setPaused(false);
+                const pendingLaunchId = typeof window !== 'undefined' ? window.__pendingLaunchNotionId : null;
+                if (pendingLaunchId && pendingLaunchId !== 'S0' && pendingLaunchId !== 'S00') {
+                    delete window.__pendingLaunchNotionId;
+                    performReset(pendingLaunchId, false);
+                } else {
+                    setPaused(false);
+                }
                 return;
             }
 
@@ -1302,6 +1415,22 @@ function showQuestionBox(ev) {
                 if (correct) {
                     return "Ok. Merci beaucoup.";
                 }
+
+                if (context && context.proposedAnswer) {
+                    return context.proposedAnswer;
+                }
+
+                if (context && context.expectedAnswer) {
+                    return `J'ai un doute, voyons voir ce qui est fait au tableau. La bonne réponse est : ${context.expectedAnswer}`;
+                }
+
+                if (context && context.options) {
+                    const correctOption = context.options.find(opt => opt.isCorrect);
+                    if (correctOption) {
+                        return `J'ai un doute, voyons voir ce qui est fait au tableau. La bonne réponse est : ${correctOption.text}`;
+                    }
+                }
+
                 return "J'ai un doute, voyons voir ce qui est fait au tableau.";
             };
 
@@ -1312,6 +1441,44 @@ function showQuestionBox(ev) {
                     choices: [{ label: 'Continuer', value: 'cont' }],
                     onChoice: () => { closeDialogueBox(); if (onContinue && typeof onContinue === 'function') onContinue(); else setPaused(false); }
                 });
+                openDialogueBox();
+            };
+
+            const showNextQuestion = (nextEvent) => {
+                if (!nextEvent) {
+                    setPaused(false);
+                    return;
+                }
+
+                let dialogueChoices = nextEvent.freeAnswer ? [] : (nextEvent.options ? nextEvent.options.map(opt => ({ 
+                    label: opt.text, 
+                    value: opt.value ? { ...opt.value, _label: opt.text } : { isCorrect: opt.isCorrect, _label: opt.text } 
+                })) : (nextEvent.isIntro ? [{ label: "C'est parti !", value: 'next' }] : [{ label: "Continuer", value: 'next' }]));
+
+                if (nextEvent.addOther && !nextEvent.freeAnswer) {
+                    dialogueChoices.push({ label: "Autre...", value: { useCahier: true } });
+                }
+
+                const dialogueData = {
+                    text: nextEvent.text,
+                    author: nextEvent.author || 'Camélia',
+                    choices: dialogueChoices,
+                    onChoice: (c) => handleChoice(c, nextEvent)
+                };
+
+                if (nextEvent.freeAnswer) {
+                    dialogueData.input = {
+                        label: 'Écris ta réponse',
+                        placeholder: 'Écris ton texte ici...',
+                        buttonLabel: 'Envoyer',
+                        rows: 4
+                    };
+                    dialogueData.onSubmit = async (value) => {
+                        handleChoice(value, nextEvent);
+                    };
+                }
+
+                createDialogue(dialogueData);
                 openDialogueBox();
             };
 
@@ -1338,32 +1505,31 @@ function showQuestionBox(ev) {
                 if (isCorrect && !(label === 'non' && isNoIdeaQuestion)) {
                     contextEv.answered = true; contextEv.correctlyAnswered = true;
                     if (contextEv !== ev) { ev.answered = true; ev.correctlyAnswered = true; }
-                    
-                    showContinueDialogue(getFeedbackText(true, contextEv), () => {
-                        if (contextEv.nextQuestion) {
-                            createDialogue({
-                                text: contextEv.nextQuestion.text,
-                                author: 'Camélia',
-                                choices: (contextEv.nextQuestion.options || []).map(opt => ({ 
-                                    label: opt.text, 
-                                    value: opt.value ? { ...opt.value, _label: opt.text } : { isCorrect: opt.isCorrect, _label: opt.text } 
-                                })),
-                                onChoice: (c) => handleChoice(c, contextEv.nextQuestion)
-                            });
-                            openDialogueBox();
-                        } else {
-                            setPaused(false);
-                        }
-                    });
+
+                    if (contextEv.nextQuestion) {
+                        showNextQuestion(contextEv.nextQuestion);
+                    } else {
+                        showContinueDialogue(getFeedbackText(true, contextEv), () => setPaused(false));
+                    }
                 } else {
                     contextEv.answered = true; contextEv.correctlyAnswered = false;
-                    showContinueDialogue(getFeedbackText(false, contextEv), () => {
-                        if (contextEv.retryStart !== undefined && contextEv.isVerification) {
-                            performReset(getCurrentNotionId(), true);
-                        } else {
+
+                    // Si une question suivante est alignée, afficher le feedback
+                    // puis enchaîner directement sur la question suivante.
+                    if (contextEv.nextQuestion) {
+                        createDialogue({
+                            text: getFeedbackText(false, contextEv),
+                            author: 'Camélia',
+                            choices: []
+                        });
+                        openDialogueBox();
+                        // Petit délai pour laisser le feedback s'afficher avant la suivante
+                        setTimeout(() => showNextQuestion(contextEv.nextQuestion), 600);
+                    } else {
+                        showContinueDialogue(getFeedbackText(false, contextEv), () => {
                             setPaused(false);
-                        }
-                    });
+                        });
+                    }
                 }
             }
         };

@@ -21,12 +21,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    if (window.mf) {
-        mf.mathVirtualKeyboardPolicy = 'manual';
-        if (window.MathfieldElement) window.MathfieldElement.computeEngine = null;
+    const mathLiveAvailable = Boolean(window.MathLive || window.mf || window.MathfieldElement);
+    if (mathLiveAvailable) {
+        if (window.mf) {
+            mf.mathVirtualKeyboardPolicy = 'manual';
+            if (window.MathfieldElement) window.MathfieldElement.computeEngine = null;
 
-        // Configuration des layouts personnalisés (Collège à Terminale)
-        mf.virtualKeyboardLayouts = [
+            // Configuration des layouts personnalisés (Collège à Terminale)
+            mf.virtualKeyboardLayouts = [
             {
                 label: 'Maths Générale',
                 rows: [
@@ -45,9 +47,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     ['\\sin', '\\cos', '\\tan', '\\dots', '\\cdot']
                 ]
             }
-        ];
+            ];
+        }
     } else {
-        console.warn('[Cahier] MathLive non chargé, clavier mathématique désactivé.');
+        console.info('[Cahier] Clavier mathématique non disponible, mode texte activé.');
     }
 
     // --- Tailles ---
