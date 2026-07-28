@@ -982,6 +982,938 @@ const S4_Events = [
     { type: 'text', text: '2. Chaque bissectrice est un axe de symétrie.', x: 0.05, y: 0.33, sz: 0.033, color: CW },
     { type: 'text', text: '3. Tout point sur une bissectrice est équidistant des deux droites.', x: 0.05, y: 0.38, sz: 0.033, color: CG, bold: true },
 ];
+
+const S11_Events = [
+  {
+    text: "Notion : Propriétés des triangles particuliers",
+    y: 0.08,
+    sz: 0.05,
+    bold: true,
+    color: CY,
+    isTitle: true,
+  },
+
+  // ================== PARTIE 0 : RAPPEL DES DÉFINITIONS ==================
+  {
+    text: "Rappel : depuis un sommet, on peut tracer 4 droites différentes.",
+    y: 0.16,
+    sz: 0.032,
+    color: CW,
+  },
+
+  // Triangle quelconque, décalé à GAUCHE pour laisser la droite libre
+  { type: "line", x1: 0.25, y1: 0.28, x2: 0.08, y2: 0.68, color: CW, duration: 60 },
+  { type: "line", x1: 0.25, y1: 0.28, x2: 0.42, y2: 0.66, color: CW, duration: 60 },
+  { type: "line", x1: 0.08, y1: 0.68, x2: 0.42, y2: 0.66, color: CW, duration: 60 },
+  { text: "A", x: 0.245, y: 0.24, sz: 0.032, bold: true, color: CY },
+  { text: "B", x: 0.05, y: 0.71, sz: 0.032, bold: true, color: CY },
+  { text: "C", x: 0.43, y: 0.7, sz: 0.032, bold: true, color: CY },
+
+  // Textes à DROITE du triangle (zone libre, jamais cachée)
+  { text: "1. Médiane : va du sommet au milieu du côté opposé.", x: 0.5, y: 0.28, sz: 0.026, color: CG, pause: 300 },
+  { type: "line", x1: 0.25, y1: 0.28, x2: 0.25, y2: 0.665, color: CG, duration: 60, pause: 150 },
+
+  { text: "2. Hauteur : forme un angle droit avec le côté opposé.", x: 0.5, y: 0.36, sz: 0.026, color: CB, pause: 300 },
+  { type: "line", x1: 0.25, y1: 0.28, x2: 0.2, y2: 0.67, color: CB, duration: 60, pause: 150 },
+
+  { text: "3. Bissectrice : partage l'angle du sommet en deux.", x: 0.5, y: 0.44, sz: 0.026, color: "#ff9900", pause: 300 },
+  { type: "line", x1: 0.25, y1: 0.28, x2: 0.3, y2: 0.665, color: "#ff9900", duration: 60, pause: 150 },
+
+  { text: "4. Médiatrice : coupe un côté en son milieu, à angle droit.", x: 0.5, y: 0.52, sz: 0.026, color: "#ee1717", pause: 300 },
+  { type: "line", x1: 0.15, y1: 0.8, x2: 0.32, y2: 0.55, color: "#ee1717", duration: 60, pause: 150 },
+
+  {
+    text: "Sur un triangle quelconque, ces 4 droites sont bien différentes.",
+    x: 0.5,
+    y: 0.62,
+    sz: 0.028,
+    color: CW,
+  },
+
+  {
+    type: "question",
+    text: "As-tu bien compris la différence entre ces 4 droites ?",
+    options: [
+      { text: "Oui, c'est clair", isCorrect: true },
+      { text: "Pas encore bien", isCorrect: false },
+    ],
+  },
+
+  { type: "SEP" },
+
+  // ================== PARTIE 1 : TRIANGLE ISOCÈLE ==================
+  {
+    text: "Dans un triangle isocèle, la bissectrice du sommet principal a une propriété étonnante...",
+    y: 0.16,
+    sz: 0.03,
+    color: CW,
+  },
+
+  { type: "line", x1: 0.25, y1: 0.28, x2: 0.08, y2: 0.68, color: CW, duration: 60 },
+  { type: "line", x1: 0.25, y1: 0.28, x2: 0.42, y2: 0.68, color: CW, duration: 60 },
+  { type: "line", x1: 0.08, y1: 0.68, x2: 0.42, y2: 0.68, color: CW, duration: 60 },
+  { text: "A", x: 0.245, y: 0.24, sz: 0.032, bold: true, color: CY },
+  { text: "B", x: 0.05, y: 0.71, sz: 0.032, bold: true, color: CY },
+  { text: "C", x: 0.43, y: 0.71, sz: 0.032, bold: true, color: CY },
+
+  {
+    text: "Ce triangle est isocèle en A : donc AB = AC.",
+    x: 0.5,
+    y: 0.25,
+    sz: 0.028,
+    color: CW,
+  },
+
+  {
+    type: "question",
+    text: "Si on trace le segment issu de A vers le milieu de [BC], que représente-t-il ?",
+    options: [
+      { text: "Juste une médiane", isCorrect: false },
+      { text: "Juste une hauteur", isCorrect: false },
+      { text: "Il est à la fois hauteur, médiane, bissectrice ET médiatrice !", isCorrect: true },
+    ],
+  },
+
+  { type: "line", x1: 0.25, y1: 0.28, x2: 0.25, y2: 0.68, color: CY, duration: 60, pause: 200 },
+  { text: "M", x: 0.26, y: 0.71, sz: 0.03, color: CY },
+
+  { text: "Le segment [AM] est en même temps :", x: 0.5, y: 0.35, sz: 0.028, color: CY, bold: true, pause: 300 },
+  { text: "• la hauteur", x: 0.5, y: 0.42, sz: 0.026, color: CW, pause: 200 },
+  { text: "• la médiane", x: 0.5, y: 0.48, sz: 0.026, color: CW, pause: 200 },
+  { text: "• la bissectrice", x: 0.5, y: 0.54, sz: 0.026, color: CW, pause: 200 },
+  { text: "• la médiatrice de [BC]", x: 0.5, y: 0.6, sz: 0.026, color: CW, pause: 200 },
+
+  {
+    type: "question",
+    isVerification: true,
+    text: "Cette propriété concerne quel sommet du triangle isocèle ?",
+    options: [
+      { text: "Un sommet quelconque", isCorrect: false },
+      { text: "Le sommet principal (entre les 2 côtés égaux)", isCorrect: true },
+      { text: "Un sommet de la base", isCorrect: false },
+    ],
+    retryStart: 10,
+  },
+
+  { type: "SEP" },
+
+  // ================== PARTIE 2 : TRIANGLE ÉQUILATÉRAL ==================
+  {
+    text: "Et dans un triangle équilatéral ? Il est isocèle en chacun de ses 3 sommets à la fois !",
+    y: 0.16,
+    sz: 0.03,
+    color: CW,
+  },
+
+  { type: "line", x1: 0.25, y1: 0.28, x2: 0.08, y2: 0.68, color: CW, duration: 60 },
+  { type: "line", x1: 0.25, y1: 0.28, x2: 0.42, y2: 0.68, color: CW, duration: 60 },
+  { type: "line", x1: 0.08, y1: 0.68, x2: 0.42, y2: 0.68, color: CW, duration: 60 },
+  { text: "A", x: 0.245, y: 0.24, sz: 0.032, bold: true, color: CY },
+  { text: "B", x: 0.05, y: 0.71, sz: 0.032, bold: true, color: CY },
+  { text: "C", x: 0.43, y: 0.71, sz: 0.032, bold: true, color: CY },
+
+  {
+    type: "question",
+    text: "Si c'est vrai pour un sommet, penses-tu que ce sera vrai pour les 3 sommets en même temps ?",
+    options: [
+      { text: "Oui, sûrement !", isCorrect: true },
+      { text: "Non, ça m'étonnerait", isCorrect: false },
+    ],
+  },
+
+  { type: "line", x1: 0.25, y1: 0.28, x2: 0.25, y2: 0.68, color: CY, duration: 60, pause: 150 },
+  { type: "line", x1: 0.08, y1: 0.68, x2: 0.34, y2: 0.35, color: CG, duration: 60, pause: 150 },
+  { type: "line", x1: 0.42, y1: 0.68, x2: 0.16, y2: 0.35, color: CB, duration: 60, pause: 150 },
+
+  {
+    text: "Les 3 segments se coupent au même point !",
+    x: 0.5,
+    y: 0.28,
+    sz: 0.028,
+    color: CW,
+  },
+  {
+    text: "Ce point est le centre de gravité, l'orthocentre, et le centre des cercles inscrit et circonscrit.",
+    x: 0.5,
+    y: 0.38,
+    sz: 0.024,
+    color: CG,
+    bold: true,
+  },
+
+  {
+    type: "question",
+    isVerification: true,
+    text: "Dans un triangle équilatéral, chaque médiatrice est aussi :",
+    options: [
+      { text: "Seulement une hauteur", isCorrect: false },
+      { text: "Médiane, bissectrice ET hauteur en même temps", isCorrect: true },
+      { text: "Rien de particulier", isCorrect: false },
+    ],
+    nextQuestion: {
+      text: "Et le point où elles se croisent, comment s'appelle-t-il aussi ?",
+      options: [
+        { text: " Un sommet", isCorrect: false },
+        { text: " L'orthocentre (entre autres)", isCorrect: true },
+        { text: " Un milieu", isCorrect: false },
+      ],
+    },
+    retryStart: 30,
+  },
+];
+
+// ============================================================
+// Notion S12 : Puissances de 10 à exposants entiers relatifs
+// ============================================================
+const S12_Events = [
+  {
+    text: "Notion : Puissances de 10 à exposants entiers relatifs",
+    y: 0.1,
+    sz: 0.055,
+    bold: true,
+    color: CY,
+    isTitle: true,
+  },
+  {
+    text: "Nous avons déjà vu les puissances POSITIVES de 10.",
+    y: 0.2,
+    sz: 0.035,
+    color: CW,
+  },
+  {
+    text: "10³ = 10 × 10 × 10 = 1 000",
+    x: 0.08,
+    y: 0.3,
+    sz: 0.04,
+    color: CW,
+  },
+  {
+    text: "10² = 10 × 10 = 100",
+    x: 0.08,
+    y: 0.38,
+    sz: 0.04,
+    color: CW,
+  },
+  {
+    text: "10¹ = 10",
+    x: 0.08,
+    y: 0.46,
+    sz: 0.04,
+    color: CW,
+  },
+  {
+    text: "10⁰ = 1",
+    x: 0.08,
+    y: 0.54,
+    sz: 0.04,
+    color: CG,
+    bold: true,
+  },
+  {
+    type: "SEP",
+  },
+  {
+    text: "Maintenant, découvrons les puissances NÉGATIVES.",
+    y: 0.15,
+    sz: 0.04,
+    color: CY,
+    bold: true,
+  },
+  {
+    text: "Par définition :",
+    x: 0.08,
+    y: 0.26,
+    sz: 0.035,
+    color: CW,
+  },
+  {
+    text: "10⁻ⁿ = 1 / 10ⁿ",
+    x: 0.08,
+    y: 0.34,
+    sz: 0.05,
+    color: CG,
+    bold: true,
+  },
+  {
+    type: "question",
+    text: "Selon cette règle, que vaut 10⁻¹ ?",
+    options: [
+      { text: "10⁻¹ = 1/10 = 0,1", isCorrect: true },
+      { text: "10⁻¹ = -10", isCorrect: false },
+      { text: "10⁻¹ = 10", isCorrect: false },
+    ],
+  },
+  {
+    type: "vibrating_fraction",
+    isSimulation: true,
+    num: "1",
+    den: "10",
+    result: "0,1",
+    x: 0.72,
+    y: 0.55,
+    sz: 0.07,
+    color: CY,
+    duration: 12,
+  },
+  { type: "clear", target: "vibrating_fraction" },
+  {
+    type: "question",
+    isVerification: true,
+    text: "Et 10⁻² alors ?",
+    options: [
+      { text: "10⁻² = 1/100 = 0,01", isCorrect: true },
+      { text: "10⁻² = -20", isCorrect: false },
+      { text: "10⁻² = -100", isCorrect: false },
+    ],
+    retryStart: 10,
+  },
+  {
+    type: "vibrating_fraction",
+    isSimulation: true,
+    num: "1",
+    den: "100",
+    result: "0,01",
+    x: 0.72,
+    y: 0.55,
+    sz: 0.07,
+    color: CY,
+    duration: 12,
+  },
+  { type: "clear", target: "vibrating_fraction" },
+  {
+    type: "SEP",
+  },
+  {
+    text: "Règle à retenir :",
+    y: 0.15,
+    sz: 0.04,
+    color: CY,
+    bold: true,
+  },
+  {
+    text: "10⁻ⁿ = 0,00...01",
+    x: 0.08,
+    y: 0.25,
+    sz: 0.045,
+    color: CG,
+    bold: true,
+  },
+  {
+    text: "(avec n chiffres après la virgule)",
+    x: 0.08,
+    y: 0.33,
+    sz: 0.035,
+    color: CW,
+  },
+  {
+    type: "question",
+    text: "Vérifions : que vaut 10³ ?",
+    options: [
+      { text: "0,001", isCorrect: true },
+      { text: "0,01", isCorrect: false },
+      { text: "0,1", isCorrect: false },
+    ],
+    retryStart: 10,
+  },
+  {
+    type: "question",
+    isVerification: true,
+    text: "Et 10⁻⁴ ?",
+    options: [
+      { text: "0,0001", isCorrect: true },
+      { text: "0,001", isCorrect: false },
+      { text: "0,01", isCorrect: false },
+    ],
+    retryStart: 15,
+  },
+  {
+    text: "Bravo ! Tu maîtrises les puissances négatives de 10.",
+    y: 0.85,
+    sz: 0.04,
+    color: CG,
+    bold: true,
+  },
+];
+
+// ============================================================
+// Notion S13 : Produit de puissances de 10
+// ============================================================
+const S13_Events = [
+  {
+    text: "Notion : Produit 10 × 10ⁿ",
+    y: 0.1,
+    sz: 0.055,
+    bold: true,
+    color: CY,
+    isTitle: true,
+  },
+  {
+    text: "Calculons le produit de deux puissances de 10.",
+    y: 0.2,
+    sz: 0.035,
+    color: CW,
+  },
+  {
+    text: "Exemple : 10³ × 10²",
+    x: 0.08,
+    y: 0.3,
+    sz: 0.045,
+    color: CW,
+  },
+  {
+    type: "question",
+    text: "Comment calculer 10³ × 10² ?",
+    options: [
+      { text: "10³ × 10² = 10⁵", isCorrect: true },
+      { text: "10³ × 10² = 10⁶", isCorrect: false },
+      { text: "10³ × 10² = 20", isCorrect: false },
+    ],
+  },
+  {
+    text: "10³ × 10² = (10×10×10) × (10×10) = 10⁵",
+    x: 0.08,
+    y: 0.42,
+    sz: 0.038,
+    color: CG,
+  },
+  {
+    text: "Règle : 10ᵐ × 10ⁿ = 10ᵐ⁺ⁿ",
+    x: 0.08,
+    y: 0.52,
+    sz: 0.048,
+    color: CY,
+    bold: true,
+  },
+  {
+    type: "SEP",
+  },
+  {
+    text: "Appliquons avec des exposants négatifs.",
+    y: 0.15,
+    sz: 0.038,
+    color: CW,
+  },
+  {
+    type: "question",
+    text: "Que vaut 10³ × 10⁻³ ?",
+    options: [
+      { text: "10⁰ = 1", isCorrect: true },
+      { text: "10⁶", isCorrect: false },
+      { text: "10⁻⁹", isCorrect: false },
+    ],
+  },
+  {
+    text: "10³ × 10⁻³ = 10³⁻³ = 10⁰ = 1",
+    x: 0.08,
+    y: 0.4,
+    sz: 0.042,
+    color: CG,
+    bold: true,
+  },
+  {
+    type: "vibrating_fraction",
+    isSimulation: true,
+    num: "10³",
+    den: "10³",
+    result: "1",
+    x: 0.72,
+    y: 0.55,
+    sz: 0.07,
+    color: CY,
+    duration: 12,
+  },
+  { type: "clear", target: "vibrating_fraction" },
+  {
+    type: "SEP",
+  },
+  {
+    text: "Entraînons-nous !",
+    y: 0.15,
+    sz: 0.04,
+    color: CY,
+    bold: true,
+  },
+  {
+    type: "question",
+    text: "Calcule : 10⁵ × 10⁻²",
+    options: [
+      { text: "10³", isCorrect: true },
+      { text: "10⁷", isCorrect: false },
+      { text: "10⁻¹⁰", isCorrect: false },
+    ],
+    retryStart: 10,
+  },
+  {
+    type: "question",
+    text: "Calcule : 10⁻⁴ × 10⁻²",
+    options: [
+      { text: "10⁻⁶", isCorrect: true },
+      { text: "10⁻⁸", isCorrect: false },
+      { text: "10⁶", isCorrect: false },
+    ],
+    retryStart: 15,
+  },
+  {
+    type: "question",
+    isVerification: true,
+    text: "Calcule : 10² × 10⁻²",
+    options: [
+      { text: "1", isCorrect: true },
+      { text: "10⁴", isCorrect: false },
+      { text: "10⁻⁴", isCorrect: false },
+    ],
+    retryStart: 20,
+  },
+  {
+    text: "Formule : 10ᵐ × 10 = 10ᵐ⁺ⁿ",
+    x: 0.08,
+    y: 0.85,
+    sz: 0.042,
+    color: CG,
+    bold: true,
+  },
+];
+
+// ============================================================
+// Notion S14 : Écriture d'un nombre décimal sous la forme a×10ⁿ
+// ============================================================
+const S14_Events = [
+  {
+    text: "Notion : Écriture a × 10ⁿ",
+    y: 0.1,
+    sz: 0.055,
+    bold: true,
+    color: CY,
+    isTitle: true,
+  },
+  {
+    text: "Tout nombre décimal peut s'écrire sous la forme a × 10ⁿ",
+    y: 0.2,
+    sz: 0.035,
+    color: CW,
+  },
+  {
+    text: "où a ∈ ℤ et n ∈ ℤ",
+    y: 0.27,
+    sz: 0.035,
+    color: CW,
+  },
+  {
+    type: "SEP",
+  },
+  {
+    text: "Exemple 1 : Écrivons 3 500",
+    x: 0.08,
+    y: 0.18,
+    sz: 0.04,
+    color: CW,
+  },
+  {
+    type: "question",
+    text: "3 500 = ? × 10ⁿ",
+    options: [
+      { text: "3,5 × 10³", isCorrect: true },
+      { text: "35 × 10²", isCorrect: false },
+      { text: "350 × 10¹", isCorrect: false },
+    ],
+  },
+  {
+    text: "3 500 = 3,5 × 1 000 = 3,5 × 10³",
+    x: 0.08,
+    y: 0.45,
+    sz: 0.04,
+    color: CG,
+  },
+  {
+    type: "SEP",
+  },
+  {
+    text: "Exemple 2 : Écrivons 0,0042",
+    x: 0.08,
+    y: 0.18,
+    sz: 0.04,
+    color: CW,
+  },
+  {
+    type: "question",
+    text: "0,0042 = ? × 10ⁿ",
+    options: [
+      { text: "4,2 × 10⁻³", isCorrect: true },
+      { text: "42 × 10⁻⁴", isCorrect: false },
+      { text: "0,42 × 10⁻²", isCorrect: false },
+    ],
+  },
+  {
+    text: "0,0042 = 4,2 × 0,001 = 4,2 × 10⁻³",
+    x: 0.08,
+    y: 0.45,
+    sz: 0.04,
+    color: CG,
+  },
+  {
+    type: "SEP",
+  },
+  {
+    text: "Méthode :",
+    x: 0.08,
+    y: 0.15,
+    sz: 0.04,
+    color: CY,
+    bold: true,
+  },
+  {
+    text: "1. Déplacer la virgule pour avoir un nombre entre 1 et 10",
+    x: 0.08,
+    y: 0.24,
+    sz: 0.03,
+    color: CW,
+  },
+  {
+    text: "2. Compter le nombre de déplacements = exposant n",
+    x: 0.08,
+    y: 0.31,
+    sz: 0.03,
+    color: CW,
+  },
+  {
+    text: "3. Vers la gauche → n positif ; Vers la droite → n négatif",
+    x: 0.08,
+    y: 0.38,
+    sz: 0.03,
+    color: CW,
+  },
+  {
+    type: "SEP",
+  },
+  {
+    text: "À toi de jouer !",
+    y: 0.15,
+    sz: 0.04,
+    color: CY,
+    bold: true,
+  },
+  {
+    type: "question",
+    text: "Écris 7 200 sous la forme a × 10ⁿ",
+    options: [
+      { text: "7,2 × 10³", isCorrect: true },
+      { text: "72 × 10²", isCorrect: false },
+      { text: "0,72 × 10⁴", isCorrect: false },
+    ],
+    retryStart: 10,
+  },
+  {
+    type: "question",
+    text: "Écris 0,00056 sous la forme a × 10ⁿ",
+    options: [
+      { text: "5,6 × 10⁻", isCorrect: true },
+      { text: "56 × 10⁻⁵", isCorrect: false },
+      { text: "0,56 × 10⁻³", isCorrect: false },
+    ],
+    retryStart: 15,
+  },
+  {
+    type: "question",
+    isVerification: true,
+    text: "Écris 125 sous la forme a × 10ⁿ",
+    options: [
+      { text: "1,25 × 10²", isCorrect: true },
+      { text: "12,5 × 10¹", isCorrect: false },
+      { text: "125 × 10", isCorrect: false },
+    ],
+    retryStart: 20,
+  },
+];
+
+// ============================================================
+// Notion S15 : Produit de deux nombres décimaux en notation scientifique
+// ============================================================
+const S15_Events = [
+  {
+    text: "Notion : Produit (a × 10ⁿ) × (b × 10ᵐ)",
+    y: 0.1,
+    sz: 0.05,
+    bold: true,
+    color: CY,
+    isTitle: true,
+  },
+  {
+    text: "Calculons le produit de deux nombres en notation scientifique.",
+    y: 0.2,
+    sz: 0.035,
+    color: CW,
+  },
+  {
+    text: "Formule : (a × 10ⁿ) × (b × 10ᵐ) = (a × b) × 10ⁿ⁺",
+    x: 0.08,
+    y: 0.3,
+    sz: 0.042,
+    color: CG,
+    bold: true,
+  },
+  {
+    type: "SEP",
+  },
+  {
+    text: "Exemple : (3 × 10⁴) × (2 × 10³)",
+    x: 0.08,
+    y: 0.18,
+    sz: 0.04,
+    color: CW,
+  },
+  {
+    type: "question",
+    text: "Comment calculer ce produit ?",
+    options: [
+      { text: "(3×2) × 10⁴⁺³ = 6 × 10⁷", isCorrect: true },
+      { text: "(3+2) × 10⁴⁺³ = 5 × 10⁷", isCorrect: false },
+      { text: "(3×2) × 10⁻³ = 6 × 10¹", isCorrect: false },
+    ],
+  },
+  {
+    text: "(3 × 10⁴) × (2 × 10³) = 6 × 10⁷",
+    x: 0.08,
+    y: 0.45,
+    sz: 0.04,
+    color: CG,
+  },
+  {
+    type: "SEP",
+  },
+  {
+    text: "Avec des exposants négatifs :",
+    x: 0.08,
+    y: 0.18,
+    sz: 0.04,
+    color: CW,
+  },
+  {
+    type: "question",
+    text: "Calcule : (4 × 10²) × (5 × 10⁻³)",
+    options: [
+      { text: "20 × 10⁻⁵", isCorrect: true },
+      { text: "9 × 10⁻⁵", isCorrect: false },
+      { text: "20 × 10⁶", isCorrect: false },
+    ],
+  },
+  {
+    text: "(4 × 10⁻²) × (5 × 10⁻³) = 20 × 10⁻⁵",
+    x: 0.08,
+    y: 0.45,
+    sz: 0.04,
+    color: CG,
+  },
+  {
+    type: "SEP",
+  },
+  {
+    text: "Entraînement !",
+    y: 0.15,
+    sz: 0.04,
+    color: CY,
+    bold: true,
+  },
+  {
+    type: "question",
+    text: "Calcule : (2 × 10³) × (3 × 10⁵)",
+    options: [
+      { text: "6 × 10⁸", isCorrect: true },
+      { text: "5 × 10⁸", isCorrect: false },
+      { text: "6 × 10¹", isCorrect: false },
+    ],
+    retryStart: 10,
+  },
+  {
+    type: "question",
+    text: "Calcule : (7 × 10²) × (4 × 10⁻⁵)",
+    options: [
+      { text: "28 × 10⁻³", isCorrect: true },
+      { text: "11 × 10³", isCorrect: false },
+      { text: "28 × 10⁷", isCorrect: false },
+    ],
+    retryStart: 15,
+  },
+  {
+    type: "question",
+    isVerification: true,
+    text: "Calcule : (5 × 10⁻⁴) × (6 × 10⁻²)",
+    options: [
+      { text: "30 × 10⁻⁶", isCorrect: true },
+      { text: "11 × 10⁻⁶", isCorrect: false },
+      { text: "30 × 10⁸", isCorrect: false },
+    ],
+    retryStart: 20,
+  },
+  {
+    text: "Formule : (a×10ⁿ)×(b×10) = (a×b)×10ⁿ⁺ᵐ",
+    x: 0.08,
+    y: 0.85,
+    sz: 0.04,
+    color: CG,
+    bold: true,
+  },
+];
+
+// ============================================================
+// Notion S16 : Encadrement d'un nombre décimal
+// ============================================================
+const S16_Events = [
+  {
+    text: "Notion : Encadrement par deux puissances de 10",
+    y: 0.1,
+    sz: 0.05,
+    bold: true,
+    color: CY,
+    isTitle: true,
+  },
+  {
+    text: "Encadrons un nombre décimal par deux puissances de 10 consécutives.",
+    y: 0.2,
+    sz: 0.033,
+    color: CW,
+  },
+  {
+    type: "SEP",
+  },
+  {
+    text: "Exemple : Encadrons 8 × 10⁻⁷",
+    x: 0.08,
+    y: 0.15,
+    sz: 0.04,
+    color: CW,
+  },
+  {
+    type: "question",
+    text: "Entre quelles puissances de 10 se trouve 8 × 10⁻⁷ ?",
+    options: [
+      { text: "10⁻⁷ < 8×10⁷ < 10⁻⁶", isCorrect: true },
+      { text: "10⁻⁸ < 8×10⁷ < 10⁻⁷", isCorrect: false },
+      { text: "10⁻⁶ < 8×10⁷ < 10⁻⁵", isCorrect: false },
+    ],
+  },
+  {
+    text: "Méthode :",
+    x: 0.08,
+    y: 0.42,
+    sz: 0.038,
+    color: CY,
+    bold: true,
+  },
+  {
+    text: "1 < 8 < 10",
+    x: 0.08,
+    y: 0.5,
+    sz: 0.04,
+    color: CG,
+  },
+  {
+    text: "1 × 10⁻⁷ < 8 × 10⁻⁷ < 10 × 10⁻⁷",
+    x: 0.08,
+    y: 0.58,
+    sz: 0.035,
+    color: CW,
+  },
+  {
+    text: "10⁷ < 8 × 10⁻⁷ < 10⁻⁶",
+    x: 0.08,
+    y: 0.66,
+    sz: 0.04,
+    color: CG,
+    bold: true,
+  },
+  {
+    type: "SEP",
+  },
+  {
+    text: "Autre exemple : Encadrons 3,5 × 10⁴",
+    x: 0.08,
+    y: 0.15,
+    sz: 0.04,
+    color: CW,
+  },
+  {
+    type: "question",
+    text: "Quel est l'encadrement correct ?",
+    options: [
+      { text: "10⁴ < 3,5×10⁴ < 10⁵", isCorrect: true },
+      { text: "10³ < 3,5×10⁴ < 10⁴", isCorrect: false },
+      { text: "10⁵ < 3,5×10⁴ < 10", isCorrect: false },
+    ],
+  },
+  {
+    text: "1 < 3,5 < 10",
+    x: 0.08,
+    y: 0.42,
+    sz: 0.04,
+    color: CG,
+  },
+  {
+    text: "1 × 10⁴ < 3,5 × 10⁴ < 10 × 10⁴",
+    x: 0.08,
+    y: 0.5,
+    sz: 0.035,
+    color: CW,
+  },
+  {
+    text: "10⁴ < 3,5 × 10⁴ < 10⁵",
+    x: 0.08,
+    y: 0.58,
+    sz: 0.04,
+    color: CG,
+    bold: true,
+  },
+  {
+    type: "SEP",
+  },
+  {
+    text: "À toi !",
+    y: 0.15,
+    sz: 0.04,
+    color: CY,
+    bold: true,
+  },
+  {
+    type: "question",
+    text: "Encadre 6 × 10⁻³",
+    options: [
+      { text: "10⁻³ < 6×10⁻³ < 10⁻²", isCorrect: true },
+      { text: "10⁻⁴ < 6×10⁻³ < 10⁻³", isCorrect: false },
+      { text: "10⁻² < 6×10⁻³ < 10⁻¹", isCorrect: false },
+    ],
+    retryStart: 10,
+  },
+  {
+    type: "question",
+    text: "Encadre 2,7 × 10⁵",
+    options: [
+      { text: "10⁵ < 2,7×10⁵ < 10⁶", isCorrect: true },
+      { text: "10⁴ < 2,7×10⁵ < 10⁵", isCorrect: false },
+      { text: "10⁶ < 2,7×10⁵ < 10⁷", isCorrect: false },
+    ],
+    retryStart: 15,
+  },
+  {
+    type: "question",
+    isVerification: true,
+    text: "Encadre 9 × 10⁻⁵",
+    options: [
+      { text: "10⁻⁵ < 9×10⁵ < 10⁻⁴", isCorrect: true },
+      { text: "10⁻⁶ < 9×10⁵ < 10⁻⁵", isCorrect: false },
+      { text: "10⁻⁴ < 9×10⁵ < 10⁻³", isCorrect: false },
+    ],
+    retryStart: 20,
+  },
+  {
+    text: "Bravo ! Tu sais encadrer un nombre par deux puissances de 10.",
+    y: 0.85,
+    sz: 0.038,
+    color: CG,
+    bold: true,
+  },
+];
+
+
+
 export const notions = {
     'S0': {
         id: 'S0',
@@ -1053,6 +1985,46 @@ export const notions = {
     id: 'S10',
     title: 'Axe de symétrie de deux droites sécantes',
     events: S10_Events,
-    nextNotionId: 'S1'
+    nextNotionId: 'S11'
     },
+
+
+
+    'S11': {
+    id: "S11",
+    title: "Propriétés des triangles",
+    events: S11_Events,
+    nextNotionId: "S1", // ou la suite que tu prévois
+    }, 
+
+  S12: {
+    id: "S12",
+    title: "Puissances de 10 (exposants relatifs)",
+    events: S12_Events,
+    nextNotionId: "S13",
+  },
+  S13: {
+    id: "S13",
+    title: "Produit de puissances de 10",
+    events: S13_Events,
+    nextNotionId: "S14",
+  },
+  S14: {
+    id: "S14",
+    title: "Écriture scientifique a × 10ⁿ",
+    events: S14_Events,
+    nextNotionId: "S15",
+  },
+  S15: {
+    id: "S15",
+    title: "Produit en notation scientifique",
+    events: S15_Events,
+    nextNotionId: "S16",
+  },
+  S16: {
+    id: "S16",
+    title: "Encadrement par puissances de 10",
+    events: S16_Events,
+    nextNotionId: "S17",
+  },
 };
