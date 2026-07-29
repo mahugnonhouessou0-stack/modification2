@@ -3,22 +3,35 @@
 // ============================================================
 
 let renderer, scene, camera, animFrameId;
-const canvas2D = document.getElementById('boardCanvas');
-const canvas3D = document.getElementById('threeCanvas');
+let canvas2D = null;
+let canvas3D = null;
+
+function getCanvasRefs() {
+    if (typeof document === 'undefined') return { canvas2D: null, canvas3D: null };
+    if (!canvas2D) canvas2D = document.getElementById('boardCanvas');
+    if (!canvas3D) canvas3D = document.getElementById('threeCanvas');
+    return { canvas2D, canvas3D };
+}
 
 function initThree() {
-    // Synchroniser la taille avec le canvas 2D
-    const w = canvas2D.clientWidth;
-    const h = canvas2D.clientHeight;
+    const refs = getCanvasRefs();
+    const { canvas2D: boardCanvas, canvas3D: threeCanvas } = refs;
+    if (!boardCanvas || !threeCanvas || typeof window === 'undefined' || typeof window.THREE === 'undefined') {
+        return false;
+    }
+
+    const w = boardCanvas.clientWidth;
+    const h = boardCanvas.clientHeight;
+    const THREE = window.THREE;
 
     renderer = new THREE.WebGLRenderer({ 
-        canvas: canvas3D, 
+        canvas: threeCanvas, 
         alpha: true,        // fond transparent → on voit le tableau derrière
         antialias: true 
     });
     renderer.setSize(w, h);
     renderer.setPixelRatio(window.devicePixelRatio);
-    canvas3D.style.display = 'block';
+    threeCanvas.style.display = 'block';
 
     scene  = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
@@ -39,14 +52,17 @@ function disposeThree() {
     scene = null;
     camera = null;
     renderer = null;
-    canvas3D.style.display = 'none';
+    if (canvas3D) canvas3D.style.display = 'none';
 }
 
 // ============================================================
 // SCÈNE : Corde à sauter entre deux poteaux
 // ============================================================
 export function sceneCordeSaut(onDone) {
-    initThree();
+    if (!initThree()) {
+        if (typeof onDone === 'function') onDone();
+        return;
+    }
 
     // --- Sol ---
     const solGeo = new THREE.PlaneGeometry(12, 6);

@@ -211,15 +211,13 @@ document.getElementById('replayBtn').addEventListener('click', () => {
     }
 });
 
-import { notions } from './contenu.js';
+import { openSearch, setSearchCourseContext } from './search.js';
+import { isDialogueOpen } from './dialogue.js';
 
-document.getElementById('switchBtn').addEventListener('click', () => {
-    setIsTransitioning(true);
-    setPaused(false);
-    const notionIds = Object.keys(notions);
-    const currentIndex = notionIds.indexOf(currentNotionId);
-    const nextIndex = (currentIndex + 1) % notionIds.length;
-    setNextPhase(notionIds[nextIndex]);
+document.getElementById('switchBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (isDialogueOpen()) return;
+    openSearch();
 });
 
 document.getElementById('speedSlider').addEventListener('input', (event) => {
