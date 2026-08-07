@@ -1713,17 +1713,26 @@ function animate() {
     requestAnimationFrame(animate);
 }
 
-// Lancement du projet
+// =====================================================================
+// LANCEMENT DU PROJET (GO LIVE) — VERSION CORRIGÉE
+// =====================================================================
 loadData().then(() => {
-    // Pour respecter la consigne "S0 et S00 passent toujours en premier",
-    // on force le démarrage à S0 à chaque chargement de la page.
-    // La progression (localStorage) pourra être utilisée plus tard pour des sauts de chapitre.
-    setCountdownEndCallback(() => {
-        if (!isTransitioning) {
-            transitionToNextNotion();
-        }
-    });
-    setCurrentNotionId('S0');
-    initEvents(); // Initialiser les événements après avoir chargé les données
+    // 1) FINI le "Bienvenue l'ami" forcé au démarrage :
+    //    on démarre sur la dernière notion jouée (ou S1), jamais sur S0/S00.
+    const saved = localStorage.getItem('user_progress');
+    setCurrentNotionId(saved && saved !== 'S0' && saved !== 'S00' ? saved : 'S1');
+    initEvents();
     animate();
+
+    // 2) La barre de navigation/recherche s'ouvre TOUTE SEULE au go live,
+    //    exactement comme si l'enseignant cliquait sur "Changer de scène".
+    setTimeout(() => {
+        // Si search.js possède une fonction d'ouverture, on l'utilise :
+        if (typeof window.openSearch === 'function')   { window.openSearch();   return; }
+        if (typeof window.toggleSearch === 'function') { window.toggleSearch(); return; }
+        // Sinon, on simule un clic sur le bouton "Changer de scène" :
+        const btn = [...document.querySelectorAll('button, [onclick], [role="button"]')]
+            .find(el => (el.textContent || '').trim().toLowerCase().includes('changer de scène'));
+        if (btn) btn.click();
+    }, 300);
 });
