@@ -1,5 +1,19 @@
 <!DOCTYPE html>
 <html lang="fr">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#f5e441">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="icon-512.png">
+<style>
+  /* ===== Tableau AUSSI GRAND QUE POSSIBLE sans déborder ===== */
+  canvas {
+    display: block;
+    margin: 0 auto;      /* centré */
+    width: 98vw;         /* presque toute la largeur de l'écran */
+    height: 82vh;        /* presque toute la hauteur (place pour les boutons) */
+    object-fit: contain; /* rentre dans la fenêtre SANS se déformer */
+  }
+</style>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">

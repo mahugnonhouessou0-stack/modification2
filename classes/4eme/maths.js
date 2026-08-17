@@ -1016,1108 +1016,884 @@ const S4_Events = [
 // =====================================================================
 // Notion S11 : Propriétés dans un triangle
 // =====================================================================
-
 const S11_Events = [
-    // ---------- Titre ----------
-    { text: "Notion_S11 : Propriétés dans un triangle", y: 0.07, sz: 0.042, bold: true, color: CY, isTitle: true },
+    { text: 'Notion : Propriétés dans un triangle', y: 0.10, sz: 0.06, bold: true, color: CY, isTitle: true },
 
-    // ================= PARTIE 1 : LA DROITE DES MILIEUX =================
-    { type: "SEP" },
-    { text: "Partie 1 : La droite des milieux", y: 0.19, sz: 0.032, bold: true, color: CY },
+    // ---------- INTRO (y=0.25) : consigne + question, tout en QCM ----------
+    { text: "Traçons un triangle ABC tel que AB = AC.", id: 'consigne', y: 0.25, sz: 0.035, color: CW },
+    { text: "Comment appelle-t-on ce triangle ?", id: 'question', y: 0.30, sz: 0.035, color: CW },
+    { type: 'question', text: "As-tu une idée ?", options: [
+        { text: "Un triangle isocèle en A", isCorrect: true },
+        { text: "Un triangle équilatéral", isCorrect: false },
+        { text: "Un triangle quelconque", isCorrect: false } ] },
 
-    // Situation réelle (arpentage)
-    { text: "Situation : un géomètre doit mesurer la largeur d'un lac.", y: 0.29, sz: 0.03, color: CW },
-    { text: "Il ne peut pas traverser l'eau avec son décamètre.", y: 0.37, sz: 0.03, color: CW },
-    { text: "Il plante un piquet A sur la berge, puis deux autres B et C", y: 0.45, sz: 0.03, color: CW },
-    { text: "de chaque côté du lac, de sorte que A voit B et C.", y: 0.53, sz: 0.03, color: CW },
-    { text: "Il repère les milieux B' et C' des segments [AB] et [AC],", y: 0.61, sz: 0.03, color: CW },
-    { text: "puis mesure la distance B'C' = 15 m.", y: 0.69, sz: 0.03, color: CW },
+   
+    // ---------- ÉTAPE 1 : figure propre ----------
+    { type: 'point', x: 0.25, y: 0.38, label: 'A', labelPos: 'top', color: '#ffffff', duration: 60 },
+    { type: 'point', x: 0.13, y: 0.74, label: 'B', labelPos: 'left', color: '#ffffff', duration: 60 },
+    { type: 'point', x: 0.37, y: 0.74, label: 'C', labelPos: 'right', color: '#ffffff', duration: 60 },
+    { type: 'line', x1: 0.25, y1: 0.38, x2: 0.13, y2: 0.74, color: '#ffffff', duration: 80 },
+    { type: 'line', x1: 0.13, y1: 0.74, x2: 0.37, y2: 0.74, color: '#ffffff', duration: 80 },
+    { type: 'line', x1: 0.37, y1: 0.74, x2: 0.25, y2: 0.38, color: '#ffffff', duration: 80 },
+    { type: 'line', x1: 0.1838, y1: 0.5517, x2: 0.1963, y2: 0.5683, color: '#f5e5e5', duration: 40 },
+    { type: 'line', x1: 0.3163, y1: 0.5517, x2: 0.3038, y2: 0.5683, color: '#f5e5e5', duration: 40 },
 
-    { type: "question", text: "Tu as une idée pour trouver la largeur BC du lac ?", options: [
-        { text: "Oui", value: { triggerNext: { text: "Génial ! Partage ton idée :", choices: [
-            { label: "BC = 30 m (le double)", value: { isCorrect: true } },
-            { label: "BC = 15 m (la même)", value: { isCorrect: false } },
-            { label: "BC = 7,5 m (la moitié)", value: { isCorrect: false } },
-        ]}}},
-        { text: "Non", value: { isCorrect: false } },
-    ]},
+    // ---------- ÉTAPE 2 : consigne effacée → remplacée AU MÊME ENDROIT ----------
+    { type: 'clear', id: 'consigne' },
+    { type: 'clear', id: 'question' },
+    { text: "Traçons la bissectrice de l'angle BAC.", y: 0.25, sz: 0.035, color: CW },
+    { type: 'line', x1: 0.25, y1: 0.38, x2: 0.25, y2: 0.74, color: '#7af0a0', duration: 80 },
+    { type: 'point', x: 0.25, y: 0.74, label: 'K', labelPos: 'bottom', color: '#f5e441', duration: 60 },
+    { type: 'line', x1: 0.25, y1: 0.71, x2: 0.265, y2: 0.71, color: '#ff4444', duration: 40 },
+    { type: 'line', x1: 0.265, y1: 0.71, x2: 0.265, y2: 0.74, color: '#ff4444', duration: 40 },
+    { type: 'line', x1: 0.19, y1: 0.72, x2: 0.19, y2: 0.76, color: '#f5e5e5', duration: 40 },
+    { type: 'line', x1: 0.31, y1: 0.72, x2: 0.31, y2: 0.76, color: '#f5e5e5', duration: 40 },
 
-    // ---------- Construction de la figure ----------
-    { type: "SEP" },
-    { text: "Construisons la figure", y: 0.19, sz: 0.032, bold: true, color: CY },
-    // Triangle ABC
-    { type: "line", x1: 0.25, y1: 0.28, x2: 0.10, y2: 0.68, color: CW, duration: 60 },
-    { type: "line", x1: 0.10, y1: 0.68, x2: 0.45, y2: 0.68, color: CW, duration: 60 },
-    { type: "line", x1: 0.45, y1: 0.68, x2: 0.25, y2: 0.28, color: CW, duration: 60 },
-    { text: "A", x: 0.24, y: 0.25, sz: 0.028, bold: true, color: CW },
-    { text: "B", x: 0.07, y: 0.72, sz: 0.028, bold: true, color: CW },
-    { text: "C", x: 0.47, y: 0.72, sz: 0.028, bold: true, color: CW },
-    // Milieux C' et B'
-    { text: "C'", x: 0.14, y: 0.48, sz: 0.026, bold: true, color: CG },
-    { text: "B'", x: 0.36, y: 0.48, sz: 0.026, bold: true, color: CG },
-    // Segment des milieux (parallèle à BC)
-    { type: "line", x1: 0.175, y1: 0.48, x2: 0.35, y2: 0.48, color: CG, duration: 60 },
-    // Explications à droite
-    { text: "C' est le milieu de [AB] : AC' = C'B.", x: 0.55, y: 0.3, sz: 0.03, color: CW },
-    { text: "B' est le milieu de [AC] : AB' = B'C.", x: 0.55, y: 0.38, sz: 0.03, color: CW },
-    { text: "On trace le segment [C'B'] (en vert).", x: 0.55, y: 0.48, sz: 0.03, color: CG },
-    { text: "Il est parallèle à (BC) et moitié plus court.", x: 0.55, y: 0.58, sz: 0.03, color: CG },
-    { type: "question", isVerification: true, text: "Donc C'B' est bien parallèle à BC, c'est bien ça ?", options: [
-        { text: "Oui, les deux droites ne se coupent jamais.", isCorrect: true },
-        { text: "Non, elles vont se croiser.", isCorrect: false },
-    ]},
-    { text: "Résultat : (C'B') // (BC) et C'B' = ½ × BC. ✓", x: 0.55, y: 0.68, sz: 0.03, color: CG },
+     // ---------- Séparation AU DÉBUT (sous l'intro, au-dessus des questions) ----------
+    { type: 'line', x1: 0.43, y1: 0.17, x2: 0.43, y2: 0.90, color: '#ffffff', duration: 40 },
 
-    // ---------- Énoncé des 3 propriétés ----------
-    { type: "SEP" },
-    { text: "Les 3 propriétés de la droite des milieux", y: 0.19, sz: 0.032, bold: true, color: CY },
-    { text: "Propriété 1 : si une droite passe par les milieux", y: 0.29, sz: 0.03, color: CW },
-    { text: "de deux côtés d'un triangle, elle est parallèle", y: 0.37, sz: 0.03, color: CW },
-    { text: "au troisième côté.", y: 0.45, sz: 0.03, color: CW },
-    { text: "Propriété 2 : le segment joignant les milieux", y: 0.55, sz: 0.03, color: CW },
-    { text: "de deux côtés mesure la moitié du troisième.", y: 0.63, sz: 0.03, color: CW },
-    { text: "Propriété 3 : si une droite passe par le milieu d'un côté", y: 0.73, sz: 0.03, color: CW },
+    // ---------- ÉTAPE 3 : questions EN BAS, en QCM, justifications à droite ----------
+    { text: "(AK) est part de A et est perpendiculaire à (BC).", id: 'qA', x: 0.46, y: 0.25, sz: 0.035, color: CW },
+    { text: "Que représente-t-elle ?", id: 'qA', x: 0.46, y: 0.30, sz: 0.035, color: CW },
+    { type: 'question', text: "As-tu une idée ?", options: [
+        { text: "La hauteur", isCorrect: true },
+        { text: "La médiane", isCorrect: false },
+        { text: "La médiatrice", isCorrect: false } ] },
+    
+    { type: 'text', text: "Il s'agit de la hauteur de ABC :", id: 'justificationA', x: 0.46, y: 0.35, sz: 0.035, color: CW },
+    { type: 'text', text: "car (AK) est issue de A et ⊥ à (BC).", id: 'justificationA2', x: 0.50, y: 0.40, sz: 0.035, color: CW, pause: 400 },
 
-    { type: "SEP" },
-    { text: "(suite de la propriété 3)", y: 0.19, sz: 0.028, italic: true, color: CY },
-    { text: "et est parallèle à un deuxième côté,", y: 0.27, sz: 0.03, color: CW },
-    { text: "alors elle coupe le troisième côté en son milieu.", y: 0.35, sz: 0.03, color: CW },
-    { text: "Attention : cette propriété 3 est la réciproque de la 1.", y: 0.47, sz: 0.028, bold: true, color: CY },
-    { text: "Elle sert à prouver qu'un point est un milieu,", y: 0.57, sz: 0.03, color: CW },
-    { text: "alors que la 1 sert à prouver qu'une droite est parallèle.", y: 0.65, sz: 0.03, color: CW },
-    { type: "question", isVerification: true, text: "Donc la propriété 3 sert à trouver un milieu, pas un parallélisme. C'est ça ?", options: [
-        { text: "Oui, exactement.", isCorrect: true },
-        { text: "Non, c'est la même chose.", isCorrect: false },
-    ]},
-    { text: "Résultat : P1 → prouve le parallélisme ; P3 → prouve le milieu. ✓", y: 0.73, sz: 0.03, color: CG },
+    { type: 'clear', id: 'qA' },
+    { type: 'clear', id: 'justificationA' },
+    { type: 'clear', id: 'justificationA2' },
+    { text: "(AK) joint le sommet A au milieu K de [BC]. ", id: 'qB', x: 0.46, y: 0.25, sz: 0.035, color: CW },
+    { text: "Que représente-t-elle ?", id: 'qB', x: 0.46, y: 0.30, sz: 0.035, color: CW },
+    { type: 'question', text: "As-tu une idée ?", options: [
+        { text: "La médiane", isCorrect: true },
+        { text: "La hauteur", isCorrect: false },
+        { text: "La médiatrice", isCorrect: false } ] },
+    
+    { type: 'text', text: "Il s'agit de la médiane de ABC :", id: 'justificationB', x: 0.46, y: 0.35, sz: 0.035, color: CW },
+    { type: 'text', text: "car (AK) joint A au milieu K.", id: 'justificationB2', x: 0.46, y: 0.40, sz: 0.035, color: CW, pause: 400 },
 
-    // ---------- Résolution du problème du lac ----------
-    { type: "SEP" },
-    { text: "Résolution du problème du lac", y: 0.19, sz: 0.032, bold: true, color: CY },
-    { text: "Dans le triangle ABC :", y: 0.29, sz: 0.03, color: CW },
-    { text: "• B' est le milieu de [AC] (par construction du géomètre)", y: 0.39, sz: 0.03, color: CW },
-    { text: "• C' est le milieu de [AB] (par construction du géomètre)", y: 0.47, sz: 0.03, color: CW },
-    { text: "D'après la propriété 2 : B'C' = ½ × BC.", y: 0.57, sz: 0.03, color: CW },
-    { text: "Donc BC = 2 × B'C' = 2 × 15 = 30.", y: 0.65, sz: 0.03, color: CW },
-    { text: "Résultat : La largeur du lac est 30 m. ✓", y: 0.75, sz: 0.03, bold: true, color: CG },
+    { type: 'clear', id: 'qB' },
+    { type: 'clear', id: 'justificationB' },
+    { type: 'clear', id: 'justificationB2' },
+    { text: "Enfin, (AK) est perpendiculaire à [BC] en son milieu K. ", id: 'qC', x: 0.46, y: 0.25, sz: 0.035, color: CW },
+    { text: "Que représente-t-elle ?", id: 'qC', x: 0.46, y: 0.30, sz: 0.035, color: CW },
+    { type: 'question', text: "As-tu une idée ?", options: [
+        { text: "La médiatrice", isCorrect: true },
+        { text: "La hauteur", isCorrect: false },
+        { text: "La médiane", isCorrect: false } ] },
+    
+    { type: 'text', text: "Il s'agit de la médiatrice de [BC] :", id: 'justificationC', x: 0.46, y: 0.35, sz: 0.035, color: CW },
+    { type: 'text', text: "car (AK) est ⊥ à [BC] en son milieu.", id: 'justificationC2', x: 0.46, y: 0.40, sz: 0.035, color: CW, pause: 250 },
 
-    // ================= PARTIE 2 : L'ORTHOCENTRE =================
-    { type: "SEP" },
-    { text: "Partie 2 : L'orthocentre", y: 0.19, sz: 0.032, bold: true, color: CY },
-    { text: "Situation : un charpentier construit un toit triangulaire.", y: 0.29, sz: 0.03, color: CW },
-    { text: "Il veut poser un poteau perpendiculaire à chaque mur,", y: 0.37, sz: 0.03, color: CW },
-    { text: "en partant du sommet opposé. Où se croiseront-ils ?", y: 0.45, sz: 0.03, color: CW },
+    { type: 'clear', id: 'qC' },
+    { type: 'clear', id: 'justificationC' },
+    { type: 'clear', id: 'justificationC2' },
+    { type: 'text', text: "Une seule droite, trois rôles !", id: 'justificationC3', x: 0.46, y: 0.25, sz: 0.035, bold: true, color: CW, pause: 250 },
+    { type: 'text', text: "Dans le triangle isocèle ABC, la bissectrice de  ", id: 'justificationC4', x: 0.46, y: 0.30, sz: 0.035, bold: true, color: CW },
+    { type: 'text', text: "l'angle enA est hauteur, médiane et médiatrice.", id: 'justificationC5', x: 0.46, y: 0.35, sz: 0.035, bold: true, color: CW, pause: 250 },
 
-    { type: "question", text: "Les 3 poteaux (hauteurs) vont-ils se croiser ?", options: [
-        { text: "Oui, en un seul point", value: { isCorrect: true } },
-        { text: "Non, ils forment un petit triangle", value: { isCorrect: false } },
-        { text: "Je ne sais pas", value: { isCorrect: false } },
-    ]},
+        // ================= TRIANGLE ÉQUILATÉRAL : MÊME MÉTHODE =================
+    { type: 'SEP' },
+    { text: "Triangle équilatéral", x: 0.05, y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "Traçons un triangle équilatéral ABC.", id: 'consigneE', y: 0.25, sz: 0.035, color: CW },
+    { text: "Que peut-on dire de ses trois côtés ?", id: 'questionE', y: 0.30, sz: 0.035, color: CW },
+    { type: 'question', text: "As-tu une idée ?", options: [
+        { text: "Ils sont tous égaux", isCorrect: true },
+        { text: "Deux seulement sont égaux", isCorrect: false } ] },
+   
+    // Figure à gauche
+    { type: 'point', x: 0.25, y: 0.38, label: 'A', labelPos: 'top', color: '#ffffff', duration: 60 },
+    { type: 'point', x: 0.13, y: 0.74, label: 'B', labelPos: 'left', color: '#ffffff', duration: 60 },
+    { type: 'point', x: 0.37, y: 0.74, label: 'C', labelPos: 'right', color: '#ffffff', duration: 60 },
+    { type: 'line', x1: 0.25, y1: 0.38, x2: 0.13, y2: 0.74, color: '#ffffff', duration: 80 },
+    { type: 'line', x1: 0.13, y1: 0.74, x2: 0.37, y2: 0.74, color: '#ffffff', duration: 80 },
+    { type: 'line', x1: 0.37, y1: 0.74, x2: 0.25, y2: 0.38, color: '#ffffff', duration: 80 },
+    { type: 'line', x1: 0.1838, y1: 0.5517, x2: 0.1963, y2: 0.5683, color: '#f5e5e5', duration: 40 },
+    { type: 'line', x1: 0.3163, y1: 0.5517, x2: 0.3038, y2: 0.5683, color: '#f5e5e5', duration: 40 },
+    { type: 'line', x1: 0.25, y1: 0.727, x2: 0.25, y2: 0.753, color: '#f5e5e5', duration: 40 },
+    // Consigne effacée → remplacée AU MÊME ENDROIT ; on trace la médiane
+    { type: 'clear', id: 'consigneE' },
+    { type: 'clear', id: 'questionE' },
+    { text: "Traçons la médiane (AK) issue de A.", y: 0.25, sz: 0.035, color: CW },
+    { type: 'line', x1: 0.25, y1: 0.38, x2: 0.25, y2: 0.74, color: '#7af0a0', duration: 80 },
+    { type: 'point', x: 0.25, y: 0.74, label: 'K', labelPos: 'bottom', color: '#f5e441', duration: 60 },
+    { type: 'line', x1: 0.25, y1: 0.71, x2: 0.265, y2: 0.71, color: '#ff4444', duration: 40 },
+    { type: 'line', x1: 0.265, y1: 0.71, x2: 0.265, y2: 0.74, color: '#ff4444', duration: 40 },
 
-    // ---------- Figure : triangle + les 3 VRAIES hauteurs ----------
-    { type: "SEP" },
-    { text: "Construction des 3 hauteurs", y: 0.19, sz: 0.032, bold: true, color: CY },
-    // Triangle ABC
-    { type: "line", x1: 0.25, y1: 0.28, x2: 0.10, y2: 0.68, color: CW, duration: 60 },
-    { type: "line", x1: 0.10, y1: 0.68, x2: 0.45, y2: 0.68, color: CW, duration: 60 },
-    { type: "line", x1: 0.45, y1: 0.68, x2: 0.25, y2: 0.28, color: CW, duration: 60 },
-    { text: "A", x: 0.24, y: 0.25, sz: 0.028, bold: true, color: CW },
-    { text: "B", x: 0.07, y: 0.72, sz: 0.028, bold: true, color: CW },
-    { text: "C", x: 0.47, y: 0.72, sz: 0.028, bold: true, color: CW },
-    // Les 3 VRAIES hauteurs (vert) : perpendiculaires aux côtés, concourantes en H
-    { type: "line", x1: 0.25, y1: 0.28, x2: 0.25, y2: 0.68, color: CG, duration: 60 },
-    { type: "line", x1: 0.10, y1: 0.68, x2: 0.275, y2: 0.33, color: CG, duration: 60 },
-    { type: "line", x1: 0.45, y1: 0.68, x2: 0.226, y2: 0.344, color: CG, duration: 60 },
-    // Symboles de l'angle droit (petits carrés jaunes) aux 3 pieds
-    { type: "line", x1: 0.2675, y1: 0.68, x2: 0.2675, y2: 0.645, color: CY, duration: 20 },
-    { type: "line", x1: 0.2675, y1: 0.645, x2: 0.25, y2: 0.645, color: CY, duration: 20 },
-    { type: "line", x1: 0.2874, y1: 0.3548, x2: 0.275, y2: 0.3795, color: CY, duration: 20 },
-    { type: "line", x1: 0.275, y1: 0.3795, x2: 0.2626, y2: 0.3548, color: CY, duration: 20 },
-    { type: "line", x1: 0.2155, y1: 0.372, x2: 0.2295, y2: 0.393, color: CY, duration: 20 },
-    { type: "line", x1: 0.2295, y1: 0.393, x2: 0.24, y2: 0.365, color: CY, duration: 20 },
-    { text: "H", x: 0.26, y: 0.39, sz: 0.024, bold: true, color: CY },
-    // Explications
-    { text: "Chaque hauteur part d'un sommet", x: 0.55, y: 0.3, sz: 0.03, color: CW },
-    { text: "et tombe perpendiculairement sur le côté opposé.", x: 0.55, y: 0.38, sz: 0.03, color: CW },
-    { text: "Les 3 hauteurs (vert) se croisent en un seul point H.", x: 0.55, y: 0.5, sz: 0.03, color: CG },
-    { text: "Ce point H s'appelle l'ORTHOCENTRE du triangle.", x: 0.55, y: 0.6, sz: 0.03, bold: true, color: CY },
-    { type: "question", isVerification: true, text: "Donc l'orthocentre est le point de concours des 3 hauteurs. C'est ça ?", options: [
-        { text: "Oui, exactement.", isCorrect: true },
-        { text: "Non, c'est celui des médianes.", isCorrect: false },
-    ]},
-    { text: "Résultat : Les 3 hauteurs sont concourantes en H (orthocentre). ✓", x: 0.55, y: 0.7, sz: 0.03, color: CG },
+     // Séparation AU DÉBUT, comme l'isocèle
+    { type: 'line', x1: 0.43, y1: 0.17, x2: 0.43, y2: 0.90, color: '#ffffff', duration: 40 },
+    // Cycle 1 → médiane
+    { text: "(AK) joint A au milieu K de [BC].", id: 'qE1', x: 0.46, y: 0.25, sz: 0.035, color: CW },
+    { text: "Que représente-t-elle ?", id: 'qE1', x: 0.46, y: 0.30, sz: 0.035, color: CW },
+    { type: 'question', text: "As-tu une idée ?", options: [
+        { text: "La médiane", isCorrect: true },
+        { text: "La hauteur", isCorrect: false },
+        { text: "La médiatrice", isCorrect: false } ] },
+    { type: 'text', text: "Il s'agit de la médiane de ABC :", id: 'justificationE1', x: 0.46, y: 0.35, sz: 0.035, color: CW },
+    { type: 'text', text: "car (AK) joint A au milieu K.", id: 'justificationE2', x: 0.46, y: 0.40, sz: 0.035, color: CW, pause: 400 },
+    { type: 'clear', id: 'qE1' },
+    { type: 'clear', id: 'justificationE1' },
+    { type: 'clear', id: 'justificationE2' },
 
-    // ---------- Position selon le type de triangle ----------
-    { type: "SEP" },
-    { text: "Position de l'orthocentre selon le triangle", y: 0.19, sz: 0.032, bold: true, color: CY },
-    { text: "• Triangle acutangle (angles aigus) :", y: 0.29, sz: 0.03, color: CW },
-    { text: "l'orthocentre est à l'intérieur du triangle.", y: 0.37, sz: 0.03, color: CG },
-    { text: "• Triangle rectangle :", y: 0.47, sz: 0.03, color: CW },
-    { text: "l'orthocentre est au sommet de l'angle droit.", y: 0.55, sz: 0.03, color: CG },
-    { text: "• Triangle obtusangle (un angle obtus) :", y: 0.65, sz: 0.03, color: CW },
-    { text: "l'orthocentre est à l'extérieur du triangle.", y: 0.73, sz: 0.03, color: CG },
+    // Cycle 2 → hauteur
+    { text: "(AK) est aussi perpendiculaire à (BC).", id: 'qE2', x: 0.46, y: 0.25, sz: 0.035, color: CW },
+    { text: "Que représente-t-elle ?", id: 'qE2', x: 0.46, y: 0.30, sz: 0.035, color: CW },
+    { type: 'question', text: "As-tu une idée ?", options: [
+        { text: "La hauteur", isCorrect: true },
+        { text: "La médiane", isCorrect: false },
+        { text: "La bissectrice", isCorrect: false } ] },
+    { type: 'text', text: "Il s'agit de la hauteur de ABC :", id: 'justificationE3', x: 0.46, y: 0.35, sz: 0.035, color: CW },
+    { type: 'text', text: "car (AK) est issue de A et ⊥ à (BC).", id: 'justificationE4', x: 0.46, y: 0.40, sz: 0.035, color: CW, pause: 400 },
+    { type: 'clear', id: 'qE2' },
+    { type: 'clear', id: 'justificationE3' },
+    { type: 'clear', id: 'justificationE4' },
 
-    { type: "SEP" },
-    { text: "(suite)", y: 0.19, sz: 0.028, italic: true, color: CY },
-    { text: "Pourquoi à l'extérieur dans le cas obtusangle ?", y: 0.27, sz: 0.03, color: CW },
-    { text: "Parce que les hauteurs issues des sommets aigus", y: 0.37, sz: 0.03, color: CW },
-    { text: "tombent sur les prolongements des côtés opposés.", y: 0.45, sz: 0.03, color: CW },
-    { text: "Il faut donc prolonger les côtés pour tracer les hauteurs.", y: 0.55, sz: 0.03, color: CW },
-    { text: "Le point d'intersection se retrouve alors hors du triangle.", y: 0.65, sz: 0.03, bold: true, color: CY },
-    { type: "question", isVerification: true, text: "Donc un triangle rectangle a son orthocentre sur un sommet. C'est ça ?", options: [
-        { text: "Oui, sur le sommet de l'angle droit.", isCorrect: true },
-        { text: "Non, il est toujours à l'intérieur.", isCorrect: false },
-    ]},
-    { text: "Résultat : Rectangle → orthocentre au sommet de l'angle droit. ✓", y: 0.73, sz: 0.03, color: CG },
+    // Cycle 3 → médiatrice + bissectrice
+    { text: "Enfin,(AK) est ⊥ à [BC] en son milieu K.", id: 'qE3', x: 0.46, y: 0.25, sz: 0.035, color: CW },
+    { text: "Que représente-t-elle encore ?", id: 'qE3', x: 0.46, y: 0.30, sz: 0.035, color: CW },
+    { type: 'question', text: "As-tu une idée ?", options: [
+        { text: "La médiatrice", isCorrect: true },
+        { text: "La médiane", isCorrect: false } ] },
+    { type: 'text', text: "C'est aussi la médiatrice de [BC],", id: 'justificationE5', x: 0.46, y: 0.35, sz: 0.035, color: CW, pause: 400 },
+    { type: 'text', text: "et la bissectrice de l'angle en A.", id: 'justificationE6', x: 0.46, y: 0.40, sz: 0.035, color: CW, pause: 400 },
+    { type: 'clear', id: 'qE3' },
+    { type: 'clear', id: 'justificationE5' },
+    { type: 'clear', id: 'justificationE6' },
 
-    // ---------- Résolution du problème du toit ----------
-    { type: "SEP" },
-    { text: "Résolution du problème du toit", y: 0.19, sz: 0.032, bold: true, color: CY },
-    { text: "Les 3 poteaux sont les 3 hauteurs du triangle du toit.", y: 0.29, sz: 0.03, color: CW },
-    { text: "Elles sont concourantes en un seul point : l'orthocentre H.", y: 0.39, sz: 0.03, color: CW },
-    { text: "Le charpentier peut donc poser un poteau central en H", y: 0.49, sz: 0.03, color: CW },
-    { text: "pour soutenir tout le toit.", y: 0.57, sz: 0.03, color: CW },
-    { text: "Résultat : Le poteau central se place en H (orthocentre). ✓", y: 0.69, sz: 0.03, bold: true, color: CG },
+    // Cycle 4 → les angles
+    { text: "Combien mesure chaque angle", id: 'qE4', x: 0.46, y: 0.25, sz: 0.035, color: CW },
+    { text: "de ce triangle équilatéral ?", id: 'qE4', x: 0.46, y: 0.30, sz: 0.035, color: CW },
+    { type: 'question', text: "As-tu une idée ?", options: [
+        { text: "60°", isCorrect: true },
+        { text: "90°", isCorrect: false },
+        { text: "45°", isCorrect: false } ] },
+    { type: 'text', text: "60° chacun : 180° ÷ 3.", id: 'justificationE7', x: 0.46, y: 0.35, sz: 0.035, color: CW, pause: 400 },
+    { type: 'clear', id: 'qE4' },
+    { type: 'clear', id: 'justificationE7' },
+    { type: 'clear', id: 'justificationE8' },
 
-    // ================= PARTIE 3 : LE CENTRE DE GRAVITÉ =================
-    { type: "SEP" },
-    { text: "Partie 3 : Le centre de gravité", y: 0.19, sz: 0.032, bold: true, color: CY },
-    { text: "Situation : un sculpteur découpe une plaque triangulaire", y: 0.29, sz: 0.03, color: CW },
-    { text: "en bois massif. Il veut la poser en équilibre sur un seul", y: 0.37, sz: 0.03, color: CW },
-    { text: "doigt. Où faut-il poser le doigt ?", y: 0.45, sz: 0.03, color: CW },
+    // Conclusion en gras à droite
+    { type: 'text', text: "Une médiane = quatre rôles !", x: 0.46, y: 0.25, sz: 0.035, bold: true, color: CW, pause: 400 },
+    { type: 'text', text: "Chaque angle vaut 60°.", x: 0.46, y: 0.30, sz: 0.035, bold: true, color: CW, pause: 400 },
+   
 
-    { type: "question", text: "Où placer le doigt pour que la plaque tienne ?", options: [
-        { text: "Au point où se coupent les médianes", value: { isCorrect: true } },
-        { text: "Au milieu d'un côté", value: { isCorrect: false } },
-        { text: "À n'importe quel endroit", value: { isCorrect: false } },
-    ]},
-
-    // ---------- Figure : les 3 médianes ----------
-    { type: "SEP" },
-    { text: "Construction des 3 médianes", y: 0.19, sz: 0.032, bold: true, color: CY },
-    // Triangle ABC
-    { type: "line", x1: 0.25, y1: 0.28, x2: 0.10, y2: 0.68, color: CW, duration: 60 },
-    { type: "line", x1: 0.10, y1: 0.68, x2: 0.45, y2: 0.68, color: CW, duration: 60 },
-    { type: "line", x1: 0.45, y1: 0.68, x2: 0.25, y2: 0.28, color: CW, duration: 60 },
-    { text: "A", x: 0.24, y: 0.25, sz: 0.028, bold: true, color: CW },
-    { text: "B", x: 0.07, y: 0.72, sz: 0.028, bold: true, color: CW },
-    { text: "C", x: 0.47, y: 0.72, sz: 0.028, bold: true, color: CW },
-    // Milieux A', B', C'
-    { text: "A'", x: 0.27, y: 0.72, sz: 0.026, bold: true, color: CB },
-    { text: "B'", x: 0.36, y: 0.48, sz: 0.026, bold: true, color: CB },
-    { text: "C'", x: 0.16, y: 0.48, sz: 0.026, bold: true, color: CB },
-    // Les 3 médianes (bleu), concourantes en G
-    { type: "line", x1: 0.25, y1: 0.28, x2: 0.275, y2: 0.68, color: CB, duration: 60 },
-    { type: "line", x1: 0.10, y1: 0.68, x2: 0.35, y2: 0.48, color: CB, duration: 60 },
-    { type: "line", x1: 0.45, y1: 0.68, x2: 0.175, y2: 0.48, color: CB, duration: 60 },
-    { text: "G", x: 0.28, y: 0.51, sz: 0.025, bold: true, color: CY },
-    // Explications
-    { text: "Chaque médiane joint un sommet", x: 0.55, y: 0.3, sz: 0.03, color: CW },
-    { text: "au milieu du côté opposé.", x: 0.55, y: 0.38, sz: 0.03, color: CW },
-    { text: "Les 3 médianes (bleu) se coupent en un seul point G.", x: 0.55, y: 0.5, sz: 0.03, color: CB },
-    { text: "Ce point G s'appelle le CENTRE DE GRAVITÉ.", x: 0.55, y: 0.6, sz: 0.03, bold: true, color: CY },
-    { type: "question", isVerification: true, text: "Donc le centre de gravité est le point de concours des 3 médianes. C'est ça ?", options: [
-        { text: "Oui, exactement.", isCorrect: true },
-        { text: "Non, c'est celui des hauteurs.", isCorrect: false },
-    ]},
-    { text: "Résultat : Les 3 médianes sont concourantes en G. ✓", x: 0.55, y: 0.7, sz: 0.03, color: CG },
-
-    // ---------- La règle des 2/3 ----------
-    { type: "SEP" },
-    { text: "Propriété fondamentale : la règle des 2/3", y: 0.19, sz: 0.032, bold: true, color: CY },
-    { text: "Le centre de gravité G se situe aux 2/3 de chaque médiane", y: 0.29, sz: 0.03, color: CW },
-    { text: "à partir du sommet.", y: 0.37, sz: 0.03, color: CW },
-    { text: "Formellement, pour la médiane [AA'] :", y: 0.47, sz: 0.03, color: CW },
-    // Fraction 2/3 construite (la barre ne coupe pas le texte)
-    { text: "AG =", x: 0.25, y: 0.58, sz: 0.034, color: CG },
-    { text: "2", x: 0.34, align: "center", y: 0.53, sz: 0.03, color: CG },
-    { type: "line", x1: 0.315, y1: 0.575, x2: 0.365, y2: 0.575, color: CG, duration: 30 },
-    { text: "3", x: 0.34, align: "center", y: 0.64, sz: 0.03, color: CG },
-    { text: "× AA'", x: 0.4, y: 0.58, sz: 0.034, color: CG },
-    { text: "et  GA' = 1/3 × AA'.", y: 0.72, sz: 0.03, color: CG },
-
-    { type: "SEP" },
-    { text: "(suite de la règle des 2/3)", y: 0.19, sz: 0.028, italic: true, color: CY },
-    { text: "Pourquoi cette règle est-elle vraie ?", y: 0.27, sz: 0.03, color: CW },
-    { text: "Imaginons que le triangle est fait d'une matière uniforme.", y: 0.37, sz: 0.03, color: CW },
-    { text: "Son poids est réparti également sur toute la surface.", y: 0.47, sz: 0.03, color: CW },
-    { text: "Le point d'équilibre (centre de gravité physique)", y: 0.57, sz: 0.03, color: CW },
-    { text: "coïncide avec le point de concours des médianes.", y: 0.65, sz: 0.03, color: CW },
-    { text: "C'est une propriété mathématique remarquable.", y: 0.73, sz: 0.028, bold: true, color: CY },
-
-    { type: "question", isVerification: true, text: "Donc G est aux 2/3 de la médiane en partant du sommet. C'est ça ?", options: [
-        { text: "Oui, 2/3 du côté du sommet, 1/3 du côté du milieu.", isCorrect: true },
-        { text: "Non, c'est l'inverse : 1/3 du sommet.", isCorrect: false },
-    ]},
-    { text: "Résultat : G est aux 2/3 de la médiane depuis le sommet. ✓", y: 0.76, sz: 0.03, color: CG },
-
-    // ---------- Résolution du problème du sculpteur ----------
-    { type: "SEP" },
-    { text: "Résolution du problème du sculpteur", y: 0.19, sz: 0.032, bold: true, color: CY },
-    { text: "Pour que la plaque tienne en équilibre sur un doigt,", y: 0.29, sz: 0.03, color: CW },
-    { text: "il faut la poser sur son centre de gravité G.", y: 0.39, sz: 0.03, color: CW },
-    { text: "Pour trouver G, le sculpteur trace les 3 médianes :", y: 0.49, sz: 0.03, color: CW },
-    { text: "il joint chaque sommet au milieu du côté opposé.", y: 0.57, sz: 0.03, color: CW },
-    { text: "Les 3 médianes se coupent en G : il pose son doigt là.", y: 0.65, sz: 0.03, color: CW },
-    { text: "Résultat : La plaque tient en équilibre sur G. ✓", y: 0.75, sz: 0.03, bold: true, color: CG },
-
-    // ================= PARTIE 4 : TRIANGLES ISOCÈLE & ÉQUILATÉRAL =================
-    { type: "SEP" },
-    { text: "Partie 4 : Triangles isocèle et équilatéral", y: 0.19, sz: 0.032, bold: true, color: CY },
-    { text: "Situation : un chevalet en forme de A a deux pieds égaux.", y: 0.29, sz: 0.03, color: CW },
-    { text: "C'est un triangle isocèle. Sa barre du milieu", y: 0.37, sz: 0.03, color: CW },
-    { text: "est à la fois hauteur, médiane et bissectrice !", y: 0.45, sz: 0.03, color: CW },
-
-    // ---------- Figure triangle isocèle (traits d'égalité + angle droit) ----------
-    { type: "SEP" },
-    { text: "Triangle isocèle en A", y: 0.19, sz: 0.032, bold: true, color: CY },
-    // Triangle ABC isocèle en A
-    { type: "line", x1: 0.25, y1: 0.35, x2: 0.13, y2: 0.68, color: CW, duration: 60 },
-    { type: "line", x1: 0.13, y1: 0.68, x2: 0.37, y2: 0.68, color: CW, duration: 60 },
-    { type: "line", x1: 0.37, y1: 0.68, x2: 0.25, y2: 0.35, color: CW, duration: 60 },
-    // Axe de symétrie (vert)
-    { type: "line", x1: 0.25, y1: 0.35, x2: 0.25, y2: 0.68, color: CG, duration: 60 },
-    // Marques d'égalité : AB = AC (petits traits jaunes)
-    { type: "line", x1: 0.1819, y1: 0.5032, x2: 0.1981, y2: 0.5268, color: CY, duration: 20 },
-    { type: "line", x1: 0.3019, y1: 0.5268, x2: 0.3181, y2: 0.5032, color: CY, duration: 20 },
-    // Angle droit en I (petit carré jaune)
-    { type: "line", x1: 0.265, y1: 0.68, x2: 0.265, y2: 0.65, color: CY, duration: 20 },
-    { type: "line", x1: 0.265, y1: 0.65, x2: 0.25, y2: 0.65, color: CY, duration: 20 },
-    { text: "A", x: 0.24, y: 0.32, sz: 0.026, bold: true, color: CW },
-    { text: "B", x: 0.10, y: 0.72, sz: 0.026, bold: true, color: CW },
-    { text: "C", x: 0.39, y: 0.72, sz: 0.026, bold: true, color: CW },
-    { text: "I", x: 0.255, y: 0.72, sz: 0.026, bold: true, color: CG },
-    // Explications
-    { text: "Triangle isocèle en A : AB = AC.", x: 0.55, y: 0.35, sz: 0.03, color: CW },
-    { text: "La droite (AI) issue de A, perpendiculaire à [BC],", x: 0.55, y: 0.45, sz: 0.03, color: CW },
-    { text: "est à la fois :", x: 0.55, y: 0.55, sz: 0.03, color: CW },
-    { text: "• HAUTEUR (perpendiculaire à BC)", x: 0.55, y: 0.63, sz: 0.028, color: CG },
-    { text: "• MÉDIANE (I est le milieu de BC)", x: 0.55, y: 0.71, sz: 0.028, color: CG },
-
-    { type: "SEP" },
-    { text: "(suite)", y: 0.19, sz: 0.028, italic: true, color: CY },
-    { text: "• BISECTRICE (partage l'angle A en 2 angles égaux)", y: 0.27, sz: 0.028, color: CG },
-    { text: "• MÉDIATRICE de [BC] (perpendiculaire passant par le milieu)", y: 0.35, sz: 0.028, color: CG },
-    { text: "(AI) est donc un axe de symétrie du triangle.", y: 0.47, sz: 0.03, bold: true, color: CY },
-    { text: "C'est pourquoi un triangle isocèle est parfaitement", y: 0.57, sz: 0.03, color: CW },
-    { text: "symétrique : les angles à la base sont égaux (B̂ = Ĉ).", y: 0.65, sz: 0.03, color: CW },
-    { type: "question", isVerification: true, text: "Donc dans un triangle isocèle, la hauteur issue du sommet principal est aussi médiane. C'est ça ?", options: [
-        { text: "Oui, et aussi bissectrice et médiatrice.", isCorrect: true },
-        { text: "Non, seulement hauteur.", isCorrect: false },
-    ]},
-    { text: "Résultat : isocèle en A → (AI) = hauteur = médiane = bissectrice = médiatrice. ✓", y: 0.73, sz: 0.028, color: CG },
-
-    // ---------- Triangle équilatéral ----------
-    { type: "SEP" },
-    { text: "Triangle équilatéral", y: 0.19, sz: 0.032, bold: true, color: CY },
-    { text: "Définition : un triangle dont les 3 côtés sont égaux.", y: 0.29, sz: 0.03, color: CW },
-    { text: "C'est un cas particulier de triangle isocèle :", y: 0.39, sz: 0.03, color: CW },
-    { text: "il est isocèle en chaque sommet !", y: 0.47, sz: 0.03, color: CW },
-    { text: "Conséquence : chaque médiane est aussi hauteur,", y: 0.59, sz: 0.03, color: CW },
-    { text: "bissectrice et médiatrice.", y: 0.67, sz: 0.03, color: CW },
-    { text: "Résultat : dans un équilatéral, les 4 centres", y: 0.75, sz: 0.028, bold: true, color: CY },
-
-    // ---------- Figure équilatéral avec 3 traits d'égalité ----------
-    { type: "SEP" },
-    { text: "Figure : triangle équilatéral", y: 0.19, sz: 0.032, bold: true, color: CY },
-    { type: "line", x1: 0.25, y1: 0.35, x2: 0.13, y2: 0.68, color: CW, duration: 60 },
-    { type: "line", x1: 0.13, y1: 0.68, x2: 0.37, y2: 0.68, color: CW, duration: 60 },
-    { type: "line", x1: 0.37, y1: 0.68, x2: 0.25, y2: 0.35, color: CW, duration: 60 },
-    // Même trait sur les 3 côtés : AB = AC = BC
-    { type: "line", x1: 0.1819, y1: 0.5032, x2: 0.1981, y2: 0.5268, color: CY, duration: 20 },
-    { type: "line", x1: 0.3019, y1: 0.5268, x2: 0.3181, y2: 0.5032, color: CY, duration: 20 },
-    { type: "line", x1: 0.25, y1: 0.66, x2: 0.25, y2: 0.7, color: CY, duration: 20 },
-    { text: "A", x: 0.24, y: 0.32, sz: 0.026, bold: true, color: CW },
-    { text: "B", x: 0.10, y: 0.72, sz: 0.026, bold: true, color: CW },
-    { text: "C", x: 0.39, y: 0.72, sz: 0.026, bold: true, color: CW },
-    { text: "Même trait sur les 3 côtés :", x: 0.55, y: 0.4, sz: 0.03, color: CW },
-    { text: "AB = AC = BC.", x: 0.55, y: 0.5, sz: 0.03, bold: true, color: CG },
-
-    { type: "SEP" },
-    { text: "(fin du triangle équilatéral)", y: 0.19, sz: 0.028, italic: true, color: CY },
-    { text: "(orthocentre, centre de gravité, centre du cercle inscrit", y: 0.27, sz: 0.03, color: CW },
-    { text: "et centre du cercle circonscrit) sont CONFONDUS.", y: 0.35, sz: 0.03, color: CW },
-    { text: "C'est le triangle le plus symétrique qui existe.", y: 0.47, sz: 0.03, bold: true, color: CG },
-    { text: "Ses 3 angles valent 60° chacun.", y: 0.57, sz: 0.03, color: CW },
-    { text: "Propriété réciproque :", y: 0.69, sz: 0.03, bold: true, color: CY },
-    { text: "si dans un triangle, deux droites spéciales (médiane,", y: 0.75, sz: 0.028, color: CW },
-
-    { type: "SEP" },
-    { text: "(fin de la propriété réciproque)", y: 0.19, sz: 0.028, italic: true, color: CY },
-    { text: "hauteur, bissectrice ou médiatrice) coïncident,", y: 0.27, sz: 0.03, color: CW },
-    { text: "alors le triangle est isocèle.", y: 0.35, sz: 0.03, bold: true, color: CG },
-    { text: "Exemple : si la médiane issue de A est aussi hauteur,", y: 0.47, sz: 0.03, color: CW },
-    { text: "alors AB = AC et le triangle est isocèle en A.", y: 0.57, sz: 0.03, color: CW },
-    { type: "question", isVerification: true, text: "Donc si la médiane d'un sommet est aussi la hauteur, le triangle est isocèle. C'est ça ?", options: [
-        { text: "Oui, c'est la réciproque de la propriété.", isCorrect: true },
-        { text: "Non, on ne peut rien conclure.", isCorrect: false },
-    ]},
-    { text: "Résultat : médiane = hauteur → triangle isocèle. ✓", y: 0.73, sz: 0.03, color: CG },
-
-    // ================= EXERCICES D'APPLICATION (SITUATIONS-PROBLÈMES) =================
-    { type: "SEP" },
-    { text: "Exercices d'application", y: 0.19, sz: 0.032, bold: true, color: CY },
-
-    // Exercice 1 : Situation-problème d'arpentage
-    { text: "Exercice 1 : L'arpenteur et la rivière", y: 0.29, sz: 0.03, bold: true, color: CY },
-    { text: "Un arpenteur veut mesurer la largeur AB d'une rivière.", y: 0.37, sz: 0.03, color: CW },
-    { text: "Il place un point C sur sa rive. Il mesure [AC] = 40 m.", y: 0.45, sz: 0.03, color: CW },
-    { text: "Il trouve le milieu M de [AC], et depuis M, il mesure", y: 0.53, sz: 0.03, color: CW },
-    { text: "la distance jusqu'au point N, milieu de [BC] : MN = 18 m.", y: 0.61, sz: 0.03, color: CW },
-    { text: "Combien mesure la largeur AB de la rivière ?", y: 0.69, sz: 0.03, bold: true, color: CY },
-
-    { type: "question", isVerification: true, text: "AB = 36 m (car MN = AB/2). C'est bien ça ?", options: [
-        { text: "Oui, d'après la propriété 2 (droite des milieux).", isCorrect: true },
-        { text: "Non, AB = 18 m.", isCorrect: false },
-        { text: "Non, AB = 72 m.", isCorrect: false },
-    ]},
-    { type: "SEP" },
-    { text: "Résolution de l'exercice 1", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "Dans le triangle ABC, M est milieu de [AC]", y: 0.29, sz: 0.028, color: CW },
-    { text: "et N est milieu de [BC]. D'après P2 : MN = AB/2.", y: 0.37, sz: 0.028, color: CW },
-    { text: "Donc AB = 2 × 18 = 36 m. ✓", y: 0.47, sz: 0.028, color: CG },
-
-    // Exercice 2 : Situation-problème de physique/géométrie
-    { type: "SEP" },
-    { text: "Exercice 2 : La plaque triangulaire en équilibre", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "Une plaque triangulaire métallique ABC a pour médiane [AA']", y: 0.29, sz: 0.03, color: CW },
-    { text: "de longueur 12 cm. On la pose sur un clou en G.", y: 0.37, sz: 0.03, color: CW },
-    { text: "a) Calcule la distance AG.", y: 0.47, sz: 0.03, color: CW },
-    { text: "b) Calcule la distance GA'.", y: 0.55, sz: 0.03, color: CW },
-    { text: "c) Justifie pourquoi la plaque tient en équilibre sur G.", y: 0.63, sz: 0.03, color: CW },
-
-    { type: "question", isVerification: true, text: "a) AG = 8 cm et b) GA' = 4 cm. C'est bien ça ?", options: [
-        { text: "Oui, car AG = 2/3 × 12 = 8 et GA' = 1/3 × 12 = 4.", isCorrect: true },
-        { text: "Non, AG = 4 et GA' = 8.", isCorrect: false },
-        { text: "Non, AG = GA' = 6.", isCorrect: false },
-    ]},
-    { type: "SEP" },
-    { text: "Résolution de l'exercice 2", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "G est le centre de gravité (point d'équilibre).", y: 0.29, sz: 0.028, color: CW },
-    { text: "AG = (2/3) × AA' = (2/3) × 12 = 8 cm.", y: 0.37, sz: 0.028, color: CW },
-    { text: "GA' = (1/3) × 12 = 4 cm.", y: 0.45, sz: 0.028, color: CW },
-    { text: "La plaque tient car G répartit parfaitement le poids. ✓", y: 0.55, sz: 0.028, color: CG },
-
-    // Exercice 3 : Situation-problème de construction
-    { type: "SEP" },
-    { text: "Exercice 3 : La ferme triangulaire", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "Dans une ferme triangulaire ABC, on sait que :", y: 0.29, sz: 0.03, color: CW },
-    { text: "• La médiane issue de A est aussi hauteur.", y: 0.37, sz: 0.03, color: CW },
-    { text: "a) Que peut-on dire du triangle ABC ?", y: 0.47, sz: 0.03, color: CW },
-    { text: "b) L'orthocentre H et le centre de gravité G", y: 0.55, sz: 0.03, color: CW },
-    { text: "sont-ils sur la médiane [AA'] ? Justifie.", y: 0.63, sz: 0.03, color: CW },
-
-    { type: "question", isVerification: true, text: "a) ABC est isocèle en A ; b) H et G sont sur [AA']. C'est bien ça ?", options: [
-        { text: "Oui : médiane = hauteur → isocèle. Donc H et G sont sur l'axe.", isCorrect: true },
-        { text: "Non, le triangle est équilatéral.", isCorrect: false },
-        { text: "Non, H et G ne sont pas alignés.", isCorrect: false },
-    ]},
-    { type: "SEP" },
-    { text: "Résolution de l'exercice 3", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "a) D'après la réciproque, médiane = hauteur", y: 0.29, sz: 0.028, color: CW },
-    { text: "implique AB = AC, donc triangle isocèle en A.", y: 0.37, sz: 0.028, color: CW },
-    { text: "b) Dans un triangle isocèle en A, l'axe de symétrie (AA')", y: 0.47, sz: 0.028, color: CW },
-    { text: "porte à la fois H, G, médiane et hauteur. ✓", y: 0.55, sz: 0.028, color: CG },
-
-    // Exercice 4 : Problème de synthèse
-    { type: "SEP" },
-    { text: "Exercice 4 : Problème de synthèse", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "Dans un triangle ABC, on sait que :", y: 0.29, sz: 0.03, color: CW },
-    { text: "• H (orthocentre), G (centre de gravité) et O (centre", y: 0.37, sz: 0.03, color: CW },
-    { text: "du cercle circonscrit) sont alignés.", y: 0.45, sz: 0.03, color: CW },
-    { text: "Cette droite s'appelle la DROITE D'EULER.", y: 0.55, sz: 0.03, bold: true, color: CY },
-    { text: "De plus, on a toujours : GH = 2 × GO.", y: 0.65, sz: 0.03, color: CW },
-    { text: "Si GO = 5 cm, que vaut GH ? Et OH ?", y: 0.73, sz: 0.03, color: CW },
-
-    { type: "question", isVerification: true, text: "GH = 10 cm et OH = 15 cm. C'est bien ça ?", options: [
-        { text: "Oui : GH = 2 × 5 = 10 et OH = GO + GH = 15.", isCorrect: true },
-        { text: "Non, GH = 2,5 cm.", isCorrect: false },
-        { text: "Non, OH = 5 cm.", isCorrect: false },
-    ]},
-    { type: "SEP" },
-    { text: "Résolution de l'exercice 4", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "GH = 2 × GO = 2 × 5 = 10 cm.", y: 0.29, sz: 0.028, color: CW },
-    { text: "O, G et H étant alignés dans cet ordre :", y: 0.37, sz: 0.028, color: CW },
-    { text: "OH = OG + GH = 5 + 10 = 15 cm. ✓", y: 0.45, sz: 0.028, color: CG },
-    { text: "Bonus : cette droite d'Euler existe dans TOUT triangle.", y: 0.57, sz: 0.028, bold: true, color: CY },
+        // ================= FIN : REMARQUE puis EN RÉSUMÉ =================
+    { type: 'SEP' },
+    { text: "Remarque : ", x: 0.05, y: 0.20, sz: 0.035, bold: true, color: CY },
+    { text: "Dans le triangle isocèle ABC, la bissectrice de l'angle au sommet ", x: 0.20, y: 0.20, sz: 0.035, color: CW },
+    { text: "est aussi la médiane du côté opposé, ainsi que sa médiatrice.", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "En résumé (à retenir) : ", x: 0.05, y: 0.35, sz: 0.035, bold: true, color: CY },
+    { text: "1. Dans un triangle isocèle, la bissectrice qui passe par le sommet principal est à la fois", x: 0.05, y: 0.40, sz: 0.035, color: CW },  
+    { text:"hauteur, médiane et médiatrice.", x: 0.05, y: 0.45, sz: 0.035, color: CW },
+    { text: "2. Réciproque :Dans un triangle, si la bissectrice d'un angle est aussi la médiane relative au côté", x: 0.05, y: 0.50, sz: 0.035, color: CW },  
+    { text:"opposé de cet angle, alors ce triangle est isocèle.", x: 0.05, y: 0.55, sz: 0.035, color: CW },
+    { text: "3. Dans un triangle équilatéral, chaque médiatrice est à la fois médiane", x: 0.05, y: 0.60, sz: 0.035, color: CW },  
+    { text:"bissectrice et hauteur.", x: 0.05, y: 0.65, sz: 0.035, color: CW },
 ];
-
-// =====================================================================
+    // =====================================================================
 // Notion S12 : Puissances de 10 à exposants entiers relatifs (10⁻ⁿ)
 // =====================================================================
+// =====================================================================
+// S12 — Puissances de 10 à exposants entiers relatifs
+// =====================================================================
 const S12_Events = [
-    // ---------- Titre ----------
-    { text: "Notion_S12 : Puissances de 10 à exposants entiers relatifs", y: 0.07, sz: 0.042, bold: true, color: CY, isTitle: true },
+    { text: 'Notion : Puissances de 10 à exposants entiers relatifs', y: 0.10, sz: 0.06, bold: true, color: CY, isTitle: true },
 
-    // ========== PHASE 1 : Situation réelle de la vie ==========
-    { text: "Situation : ", x: 0.05, y: 0.19, sz: 0.03, color: CY },
-    { text: "Le diamètre d'un cheveu mesure environ 0,0001 m.", x: 0.17, y: 0.19, sz: 0.03, color: CW },
-    { text: "La distance Terre-Soleil est d'environ 150 000 000 000 m.", x: 0.17, y: 0.27, sz: 0.03, color: CW },
-    { text: "Problème : ", x: 0.05, y: 0.35, sz: 0.03, color: CY },
-    { text: "Comment écrire 0,0001 simplement avec une puissance de 10 ?", x: 0.17, y: 0.35, sz: 0.03, color: CW },
+    // ---------- Fait réel + question (y=0.25, marge 0.15) ----------
+    { text: "Le diamètre d'un cheveu mesure environ 0,0001 m.", id: 'intro1', y: 0.25, sz: 0.035, color: CW },
+    { text: "La distance Terre-Soleil : 150 000 000 000 m.", id: 'intro2', y: 0.30, sz: 0.035, color: CW },
+    { text: "Comment écrire 0,0001 simplement avec une puissance de 10 ?", y: 0.35, sz: 0.035, color: CW },
+    { type: 'question', text: "As-tu une idée ?", options: [
+        { text: "0,0001 = 10⁻⁴", isCorrect: true },
+        { text: "0,0001 = 10⁴", isCorrect: false },
+        { text: "0,0001 = 10⁻³", isCorrect: false } ] },
 
-    { type: "question", text: "Tu as une idée ?", options: [
-        { text: "Oui", value: { triggerNext: { text: "Génial ! Partage ton idée :", choices: [
-            { label: "0,0001 = 10⁻⁴", value: { isCorrect: true } },
-            { label: "0,0001 = 10⁴", value: { isCorrect: false } },
-            { label: "0,0001 = 10⁻³", value: { isCorrect: false } },
-        ]}}},
-        { text: "Non", value: { isCorrect: false } },
-    ]},
+    // ---------- Pré-requis basique : puissances positives ----------
+    { type: 'SEP' },
+    { text: "Rappel : les puissances positives de 10", x: 0.05, y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "10¹ = 10", id: 'p1', x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "10² = 10 × 10 = 100", id: 'p2', x: 0.05, y: 0.30, sz: 0.035, color: CW },
+    { text: "10³ = 10 × 10 × 10 = 1 000", id: 'p3', x: 0.05, y: 0.35, sz: 0.035, color: CW },
+    { text: "10⁴ = 10 000 (1 suivi de 4 zéros)", id: 'p4', x: 0.05, y: 0.40, sz: 0.035, color: CW },
+    { text: "10⁵ = 100 000 (1 suivi de 5 zéros)", id: 'p5', x: 0.05, y: 0.45, sz: 0.035, color: CW },
+    { text: "L'exposant indique le nombre de zéros après le 1.", id: 'regle', x: 0.05, y: 0.55, sz: 0.035, bold: true, color: CW },
+    { text: "Question : 10⁶, c'est bien 1 000 000 ?", id: 'qR', x: 0.05, y: 0.65, sz: 0.035, color: CW },
+    { type: 'question', text: "As-tu une idée ?", options: [
+        { text: "Oui, un 1 suivi de 6 zéros", isCorrect: true },
+        { text: "Non, 10⁶ = 60", isCorrect: false },
+        { text: "Non, 10⁶ = 106", isCorrect: false } ] },
+    { type: 'text', text: "Oui : 10⁶ = 1 000 000.", x: 0.05, y: 0.70, sz: 0.035, color: CW, pause: 400 },
 
-    // ========== PHASE 2 : Rappel détaillé des puissances positives ==========
-    { type: "SEP" },
-    { text: "Rappel : ce qu'on connaît déjà", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "10¹ = 10", y: 0.29, sz: 0.03, color: CW },
-    { text: "10² = 10 × 10 = 100", y: 0.37, sz: 0.03, color: CW },
-    { text: "10³ = 10 × 10 × 10 = 1 000", y: 0.45, sz: 0.03, color: CW },
-    { text: "10⁴ = 10 × 10 × 10 × 10 = 10 000", y: 0.53, sz: 0.03, color: CW },
-    { text: "10⁵ = 100 000 (un 1 suivi de 5 zéros)", y: 0.61, sz: 0.03, color: CW },
-    { text: "Règle : l'exposant indique le nombre de zéros après le 1.", y: 0.69, sz: 0.028, bold: true, color: CY },
-
-    { type: "question", isVerification: true, text: "Alors 10⁶, c'est bien 1 000 000 ?", options: [
-        { text: "Oui, un 1 suivi de 6 zéros.", isCorrect: true },
-        { text: "Non, 10⁶ = 60.", isCorrect: false },
-        { text: "Non, 10⁶ = 106.", isCorrect: false },
-    ]},
-    { text: "Résultat : 10⁶ = 1 000 000 ✓", y: 0.5, sz: 0.03, color: CG },
-
-    // ========== PHASE 3 : Observation du pattern en descendant ==========
-    { type: "SEP" },
-    { text: "Observons ce qui se passe quand on DIVISE par 10", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "10⁴ = 10 000", y: 0.29, sz: 0.03, color: CW },
-    { text: "10³ = 1 000  (on enlève un zéro)", y: 0.37, sz: 0.03, color: CW },
-    { text: "10² = 100  (on enlève encore un zéro)", y: 0.45, sz: 0.03, color: CW },
-    { text: "10¹ = 10  (on enlève encore un zéro)", y: 0.53, sz: 0.03, color: CW },
-    { text: "Et si on continue à diviser par 10 ?", y: 0.63, sz: 0.028, color: CY },
-
-    { type: "question", isVerification: true, text: "10¹ ÷ 10 = 10 ÷ 10, ça donne combien ?", options: [
+    // ---------- Pattern en descendant (consigne effacée/remplacée) ----------
+    { type: 'SEP' },
+    { text: "Observons : que se passe-t-il quand on divise par 10 ?", id: 'consigne', y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "10⁴ = 10 000", id: 'd1', x: 0.05, y: 0.30, sz: 0.035, color: CW },
+    { text: "10³ = 1 000  (on enlève un zéro)", id: 'd2', x: 0.05, y: 0.35, sz: 0.035, color: CW },
+    { text: "10² = 100  (on enlève encore un zéro)", id: 'd3', x: 0.05, y: 0.40, sz: 0.035, color: CW },
+    { text: "10¹ = 10  (on enlève encore un zéro)", id: 'd4', x: 0.05, y: 0.45, sz: 0.035, color: CW },
+    { type: 'clear', id: 'consigne' },
+    { type: 'clear', id: 'd1' },
+    { type: 'clear', id: 'd2' },
+    { type: 'clear', id: 'd3' },
+    { type: 'clear', id: 'd4' },
+    { text: "Et si on continue à diviser par 10 ?", y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "10¹ ÷ 10 = 10 ÷ 10 = 1", x: 0.05, y: 0.30, sz: 0.035, color: CW },
+    { text: "Question : 10⁰, ça donne combien ?", id: 'q0', x: 0.05, y: 0.40, sz: 0.035, color: CW },
+    { type: 'question', text: "As-tu une idée ?", options: [
         { text: "1", isCorrect: true },
         { text: "0", isCorrect: false },
-        { text: "10", isCorrect: false },
-    ]},
-    { text: "Résultat : 10¹ ÷ 10 = 10 ÷ 10 = 1", y: 0.5, sz: 0.03, color: CG },
+        { text: "10", isCorrect: false } ] },
+    { type: 'text', text: "10⁰ = 1. C'est la règle.", x: 0.05, y: 0.55, sz: 0.035, color: CW, pause: 400 },
 
-    // ========== PHASE 4 : Introduction de 10⁰ puis 10⁻ⁿ ==========
-    { type: "SEP" },
-    { text: "Donc : 10⁰ = 1", y: 0.19, sz: 0.032, bold: true, color: CG },
-    { text: "Continuons à diviser par 10 :", y: 0.3, sz: 0.03, color: CW },
-    { text: "10⁻¹ = 1 ÷ 10 = 0,1", y: 0.4, sz: 0.03, color: CW },
-    { text: "10⁻² = 0,1 ÷ 10 = 0,01", y: 0.48, sz: 0.03, color: CW },
-    { text: "10⁻³ = 0,01 ÷ 10 = 0,001", y: 0.56, sz: 0.03, color: CW },
-    { text: "10⁻⁴ = 0,001 ÷ 10 = 0,0001", y: 0.64, sz: 0.03, bold: true, color: CG },
+    // ---------- Introduction des exposants négatifs ----------
+    { type: 'SEP' },
+    { text: "Continuons à diviser par 10", id: 'consigneN', y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "10⁻¹ = 1 ÷ 10 = 0,1", id: 'n1', x: 0.05, y: 0.30, sz: 0.035, color: CW },
+    { text: "10⁻² = 0,1 ÷ 10 = 0,01", id: 'n2', x: 0.05, y: 0.35, sz: 0.035, color: CW },
+    { text: "10⁻³ = 0,01 ÷ 10 = 0,001", id: 'n3', x: 0.05, y: 0.40, sz: 0.035, color: CW },
+    { text: "10⁻⁴ = 0,001 ÷ 10 = 0,0001", id: 'n4', x: 0.05, y: 0.45, sz: 0.035, bold: true, color: CG },
+    { type: 'clear', id: 'consigneN' },
+    { type: 'clear', id: 'n1' },
+    { type: 'clear', id: 'n2' },
+    { type: 'clear', id: 'n3' },
+    { type: 'clear', id: 'n4' },
+    { text: "À chaque exposant −1, on divise par 10.", y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "L'exposant négatif = nombre de chiffres après la virgule.", y: 0.25, sz: 0.035, color: CW },
+    { text: "Question : combien de chiffres après la virgule dans 10⁻⁵ ?", id: 'qN', x: 0.05, y: 0.35, sz: 0.035, color: CW },
+    { type: 'question', text: "As-tu une idée ?", options: [
+        { text: "5 chiffres", isCorrect: true },
+        { text: "−5 chiffres", isCorrect: false },
+        { text: "50 chiffres", isCorrect: false } ] },
+    { type: 'text', text: " On a 5 chiffres : 10⁻⁵ = 0,00001.", x: 0.05, y: 0.55, sz: 0.035, color: CW, pause: 400 },
 
-    { type: "question", isVerification: true, text: "Si j'ai bien compris, on continue à diviser par 10 à chaque fois ?", options: [
-        { text: "Oui, c'est exactement ça.", isCorrect: true },
-        { text: "Non, on multiplie.", isCorrect: false },
-    ]},
-    { text: "Résultat : À chaque exposant −1, on divise par 10. ✓", y: 0.5, sz: 0.03, color: CG },
+    // ---------- Définition formelle ----------
+    { type: 'SEP' },
+    { text: "Définition : 10⁻ⁿ = 1 / 10ⁿ", x: 0.05, y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "Pour tout entier positif n :", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "10⁻ⁿ est l'inverse de 10ⁿ.", x: 0.05, y: 0.30, sz: 0.035, color: CW },
+    { text: "En décimal : 0,00…01 avec n chiffres après la virgule.", x: 0.05, y: 0.35, sz: 0.035, color: CW },
+    { text: "Exemples : ", x: 0.05, y: 0.45, sz: 0.035, bold: true, color: CW },
+    { text: "10⁻¹ = 0,1", x: 0.05, y: 0.50, sz: 0.035, color: CW },
+    { text: "10⁻² = 0,01", x: 0.05, y: 0.55, sz: 0.035, color: CW },
+    { text: "10⁻³ = 0,001", x: 0.05, y: 0.60, sz: 0.035, color: CW },
+    { text: "10⁻⁶ = 0,000 001", x: 0.05, y: 0.65, sz: 0.035, color: CW },
 
-    // ========== PHASE 5 : Définition formelle ==========
-    { type: "SEP" },
-    { text: "Définition : ", x: 0.05, y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "Pour tout entier positif n :", y: 0.28, sz: 0.03, color: CW },
-    { text: "10⁻ⁿ =", x: 0.19, y: 0.41, sz: 0.034, color: CG },
-    { text: "1", x: 0.32, align: "center", y: 0.36, sz: 0.03, color: CG },
-    { type: "line", x1: 0.295, y1: 0.405, x2: 0.345, y2: 0.405, color: CG, duration: 30 },
-    { text: "10ⁿ", x: 0.32, align: "center", y: 0.47, sz: 0.03, color: CG },
-    { text: "C'est l'inverse de 10ⁿ.", x: 0.38, y: 0.415, sz: 0.028, color: CW },
-    { text: "En décimal : 0,00…01 (avec n chiffres après la virgule).", y: 0.57, sz: 0.028, color: CW },
-    { type: "line", x1: 0.14, y1: 0.61, x2: 0.56, y2: 0.61, color: CW, duration: 30 },
-    { text: "n chiffres après la virgule", x: 0.19, y: 0.67, sz: 0.024, color: CW },
+    // ---------- Résolution du problème ----------
+    { type: 'SEP' },
+    { text: "Résolution : 0,0001 = ?", x: 0.05, y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "0,0001 a 4 chiffres après la virgule.", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "Donc l'exposant est −4.", x: 0.05, y: 0.30, sz: 0.035, color: CW },
+    { text: "0,0001 = 10⁻⁴.", x: 0.05, y: 0.35, sz: 0.035, bold: true, color: CG },
+    { text: "Le diamètre du cheveu s'écrit 10⁻⁴ m.", x: 0.05, y: 0.40, sz: 0.035, color: CW },
 
-    // ========== PHASE 6 : Plusieurs exemples ==========
-    { type: "SEP" },
-    { text: "Exemples : ", x: 0.05, y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "10⁻¹ = 0,1  (1 chiffre après la virgule)", y: 0.29, sz: 0.03, color: CW },
-    { text: "10⁻² = 0,01  (2 chiffres après la virgule)", y: 0.37, sz: 0.03, color: CW },
-    { text: "10⁻³ = 0,001  (3 chiffres après la virgule)", y: 0.45, sz: 0.03, color: CW },
-    { text: "10⁻⁶ = 0,000 001  (6 chiffres après la virgule)", y: 0.53, sz: 0.03, color: CW },
-    { text: "Astuce : l'exposant négatif = le nombre de chiffres après la virgule.", y: 0.63, sz: 0.028, bold: true, color: CY },
-
-    // ========== PHASE 7 : Résolution du problème initial ==========
-    { type: "SEP" },
-    { text: "Reprenons le problème : 0,0001 = ?", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "0,0001 a 4 chiffres après la virgule.", y: 0.29, sz: 0.03, color: CW },
-    { text: "Donc l'exposant est −4.", y: 0.37, sz: 0.03, color: CW },
-    { text: "10⁻⁴ = 0,0001", y: 0.47, sz: 0.034, bold: true, color: CG },
-    { text: "Résultat : Le diamètre du cheveu s'écrit 10⁻⁴ m. ✓", y: 0.57, sz: 0.032, bold: true, color: CG },
-
-    // ========== EXERCICES D'APPLICATION ==========
-    { type: "SEP" },
-    { text: "Exercices d'application", y: 0.19, sz: 0.032, bold: true, color: CY, isTitle: false },
-    { text: "Exercice 1 : Écris 0,001 sous la forme 10ⁿ.", y: 0.29, sz: 0.03, color: CW },
-    { type: "question", isVerification: true, text: "0,001 = 10⁻³, c'est bien ça ?", options: [
-        { text: "Oui, 3 chiffres après la virgule.", isCorrect: true },
-        { text: "Non, c'est 10⁻².", isCorrect: false },
-        { text: "Non, c'est 10³.", isCorrect: false },
-    ]},
-    { text: "Résultat : 0,001 = 10⁻³ ✓", y: 0.5, sz: 0.03, color: CG },
-
-    { type: "SEP" },
-    { text: "Exercice 2 : Écris 10⁻⁵ sous forme décimale.", y: 0.29, sz: 0.03, color: CW },
-    { type: "question", isVerification: true, text: "10⁻⁵ = 0,00001. C'est bien ça ?", options: [
-        { text: "Oui, un 1 à la 5ᵉ place après la virgule.", isCorrect: true },
-        { text: "Non, 10⁻⁵ = 0,00005.", isCorrect: false },
-        { text: "Non, 10⁻⁵ = −50.", isCorrect: false },
-    ]},
-    { text: "Résultat : 10⁻⁵ = 0,00001 ✓", y: 0.5, sz: 0.03, color: CG },
-
-    { type: "SEP" },
-    { text: "Exercice 3 : La masse d'un grain de sable est 0,000 01 kg.", y: 0.29, sz: 0.03, color: CW },
-    { text: "Écris cette masse sous la forme 10ⁿ.", y: 0.37, sz: 0.03, color: CW },
-    { type: "question", isVerification: true, text: "0,000 01 = 10⁻⁵. C'est bien ça ?", options: [
-        { text: "Oui, 5 chiffres après la virgule.", isCorrect: true },
-        { text: "Non, 10⁻⁶.", isCorrect: false },
-        { text: "Non, 10⁵.", isCorrect: false },
-    ]},
-    { text: "Résultat : 0,000 01 kg = 10⁻⁵ kg ✓", y: 0.55, sz: 0.03, color: CG },
+    // ---------- Remarque + En résumé ----------
+    { type: 'SEP' },
+    { text: "Remarque : ", x: 0.05, y: 0.20, sz: 0.035, bold: true, color: CY },
+    { text: "On observe que l'exposant négatif indique directement", x: 0.20, y: 0.20, sz: 0.035, color: CW },
+    { text: "combien de chiffres après la virgule possède le nombre.", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "En résumé (à retenir) : ", x: 0.05, y: 0.35, sz: 0.035, bold: true, color: CY },
+    { text: "1. 10⁰ = 1 ; 10⁻ⁿ = 1 / 10ⁿ.", x: 0.05, y: 0.40, sz: 0.035, color: CW },
+    { text: "2. 10⁻ⁿ s'écrit 0,00…01 avec n chiffres après la virgule.", x: 0.05, y: 0.45, sz: 0.035, color: CW },
+    { text: "3. À chaque fois qu'on divise par 10, l'exposant diminue de 1.", x: 0.05, y: 0.50, sz: 0.035, color: CW },
 ];
 
 // =====================================================================
-// Notion S13 : Écriture d'un nombre décimal sous la forme a × 10ⁿ
+// S13 — Écriture d'un nombre décimal sous la forme a × 10ⁿ
 // =====================================================================
 const S13_Events = [
-    // ---------- Titre ----------
-    { text: "Notion_S13 : Écrire un nombre sous la forme a × 10ⁿ avec a et n des entiers relatifs", y: 0.07, sz: 0.042, bold: true, color: CY, isTitle: true },
+    { text: 'Notion : Écriture sous la forme a × 10ⁿ d\'un nombre décimal', y: 0.10, sz: 0.06, bold: true, color: CY, isTitle: true },
 
-    // ========== PHASE 1 : Situation réelle de la vie ==========
-    { text: "Situation : ", x: 0.05, y: 0.19, sz: 0.03, color: CY },
-    { text: "À la pharmacie, un flacon contient 0,45 L de sirop.", x: 0.17, y: 0.19, sz: 0.03, color: CW },
-    { text: "La masse de la Lune est 73 000 000 000 000 000 000 000 kg.", x: 0.17, y: 0.27, sz: 0.03, color: CW },
-    { text: "Problème : ", x: 0.05, y: 0.35, sz: 0.03, color: CY },
-    { text: "Comment écrire 0,45 sous la forme a × 10ⁿ (a et n entiers) ?", x: 0.17, y: 0.35, sz: 0.03, color: CW },
+    // ---------- Fait réel + question ----------
+    { text: "Un flacon contient 0,45 L de sirop.", id: 'intro1', y: 0.25, sz: 0.035, color: CW },
+    { text: "La masse de la Lune : 73 000 000 000 000 000 000 000 kg.", id: 'intro2', y: 0.30, sz: 0.035, color: CW },
+    { text: "Comment écrire 0,45 sous la forme a × 10ⁿ (a et n entiers) ?", y: 0.35, sz: 0.035, color: CW },
+    { type: 'question', text: "As-tu une idée ?", options: [
+        { text: "0,45 = 45 × 10⁻²", isCorrect: true },
+        { text: "0,45 = 45 × 10²", isCorrect: false },
+        { text: "0,45 = 4,5 × 10⁻¹", isCorrect: false } ] },
 
-    { type: "question", text: "Tu as une idée ?", options: [
-        { text: "Oui", value: { triggerNext: { text: "Génial ! Partage ton idée :", choices: [
-            { label: "0,45 = 45 × 10⁻²", value: { isCorrect: true } },
-            { label: "0,45 = 45 × 10²", value: { isCorrect: false } },
-            { label: "0,45 = 4,5 × 10⁻¹ (a décimal)", value: { isCorrect: false } },
-        ]}}},
-        { text: "Non", value: { isCorrect: false } },
-    ]},
+    // ---------- Démonstration par les fractions ----------
+    { type: 'SEP' },
+    { text: "Démontrons pas à pas", id: 'consigne', y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "0,45, c'est 45 centièmes.", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "Donc 0,45 = 45 / 100.", x: 0.05, y: 0.30, sz: 0.035, color: CW },
+    { text: "Or 1 / 100 = 10⁻² (notion S12).", x: 0.05, y: 0.35, sz: 0.035, color: CW },
+    { text: "Donc 0,45 = 45 × 10⁻².", x: 0.05, y: 0.40, sz: 0.035, bold: true, color: CG },
+    { type: 'clear', id: 'consigne' },
+    { text: "Méthode en 2 étapes", y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "Étape 1 : trouver a (le nombre sans la virgule).", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "Pour 0,45 : a = 45.", x: 0.05, y: 0.30, sz: 0.035, color: CW },
+    { text: "Étape 2 : trouver n (combien de fois on a décalé la virgule).", x: 0.05, y: 0.35, sz: 0.035, color: CW },
+    { text: "De 0,45 à 45 : décalage de 2 rangs vers la droite.", x: 0.05, y: 0.40, sz: 0.035, color: CW },
+    { text: "Donc n = −2 (décalage à droite → exposant négatif).", x: 0.05, y: 0.45, sz: 0.035, bold: true, color: CW },
+    { text: "Question : 7360 = 736 × 10¹, c'est bien ça ?", id: 'qM', x: 0.05, y: 0.65, sz: 0.035, color: CW },
+    { type: 'question', text: "As-tu une idée ?", options: [
+        { text: "Oui, on enlève 1 zéro, donc n = 1", isCorrect: true },
+        { text: "Non, 7360 = 736 × 10²", isCorrect: false },
+        { text: "Non, 7360 = 736 × 10⁻¹", isCorrect: false } ] },
+    { type: 'clear', id: 'qM' },
+    { type: 'text', text: "Oui : 7360 = 736 × 10¹.", x: 0.05, y: 0.65, sz: 0.035, color: CW, pause: 400 },
 
-    // ========== PHASE 2 : Démonstration par les fractions ==========
-    { type: "SEP" },
-    { text: "Démontrons pas à pas", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "Rappel : 0,45, c'est 45 centièmes.", y: 0.29, sz: 0.03, color: CW },
-    { text: "0,45 =", x: 0.08, y: 0.42, sz: 0.034, color: CW },
-    { text: "45", x: 0.26, align: "center", y: 0.36, sz: 0.03, color: CW },
-    { type: "line", x1: 0.23, y1: 0.41, x2: 0.29, y2: 0.41, color: CW, duration: 30 },
-    { text: "100", x: 0.26, align: "center", y: 0.47, sz: 0.03, color: CW },
+    // ---------- Règle pratique ----------
+    { type: 'SEP' },
+    { text: "Règle pratique", x: 0.05, y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "Si le nombre est plus petit que 1 (virgule) :", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "→ n est négatif.", x: 0.05, y: 0.30, sz: 0.035, color: CW },
+    { text: "Si le nombre est grand (zéros à la fin) :", x: 0.05, y: 0.35, sz: 0.035, color: CW },
+    { text: "→ n est positif.", x: 0.05, y: 0.40, sz: 0.035, color: CW },
+    { text: "Exemples : ", x: 0.05, y: 0.50, sz: 0.035, bold: true, color: CW },
+    { text: "0,7 = 7 × 10⁻¹", x: 0.05, y: 0.55, sz: 0.035, color: CW },
+    { text: "0,08 = 8 × 10⁻²", x: 0.05, y: 0.60, sz: 0.035, color: CW },
+    { text: "500 = 5 × 10²", x: 0.05, y: 0.65, sz: 0.035, color: CW },
+    { text: "80 000 = 8 × 10⁴", x: 0.05, y: 0.70, sz: 0.035, color: CW },
 
-    { text: "= 45 ×", x: 0.33, y: 0.42, sz: 0.034, color: CW },
-    { text: "1", x: 0.46, align: "center", y: 0.36, sz: 0.03, color: CW },
-    { type: "line", x1: 0.43, y1: 0.41, x2: 0.49, y2: 0.41, color: CW, duration: 30 },
-    { text: "100", x: 0.46, align: "center", y: 0.47, sz: 0.03, color: CW },
+    // ---------- Résolution du problème ----------
+    { type: 'SEP' },
+    { text: "Résolution : 0,45 L de sirop", x: 0.05, y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "Étape 1 : a = 45 (nombre sans virgule).", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "Étape 2 : 2 chiffres après la virgule → n = −2.", x: 0.05, y: 0.30, sz: 0.035, color: CW },
+    { text: "0,45 = 45 × 10⁻².", x: 0.05, y: 0.35, sz: 0.035, bold: true, color: CG },
+    { text: "Le flacon contient 45 × 10⁻² L.", x: 0.05, y: 0.40, sz: 0.035, color: CW },
 
-    { text: "= 45 × 10⁻²", x: 0.54, y: 0.42, sz: 0.034, bold: true, color: CG },
-    { text: "Car on sait que 1/100 = 10⁻² (notion précédente).", y: 0.57, sz: 0.028, color: CW },
-
-    { type: "question", isVerification: true, text: "Donc 0,45 = 45 × 10⁻², c'est juste ?", options: [
-        { text: "Oui, a = 45 et n = −2.", isCorrect: true },
-        { text: "Non, a = 4,5.", isCorrect: false },
-    ]},
-    { text: "Résultat : 0,45 = 45 × 10⁻² ✓", y: 0.5, sz: 0.03, color: CG },
-
-    // ========== PHASE 3 : La méthode pas à pas ==========
-    { type: "SEP" },
-    { text: "Méthode en 2 étapes", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "Étape 1 : trouver a (le nombre sans la virgule).", y: 0.3, sz: 0.03, color: CW },
-    { text: "Pour 0,45, on enlève la virgule → a = 45.", y: 0.39, sz: 0.03, color: CW },
-    { text: "Étape 2 : trouver n (combien de fois on a décalé la virgule).", y: 0.5, sz: 0.03, color: CW },
-    { text: "De 0,45 à 45, on a décalé la virgule de 2 rangs vers la droite.", y: 0.59, sz: 0.03, color: CW },
-    { text: "Donc n = −2 (décalage vers la droite → exposant négatif).", y: 0.68, sz: 0.028, bold: true, color: CY },
-
-    // ========== PHASE 4 : Règle pratique ==========
-    { type: "SEP" },
-    { text: "Règle pratique", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "Si le nombre est plus petit que 1 (avec virgule) :", y: 0.29, sz: 0.03, color: CW },
-    { text: "   → n est négatif (exposant négatif).", y: 0.37, sz: 0.03, color: CW },
-    { text: "Si le nombre est grand (avec des zéros à la fin) :", y: 0.47, sz: 0.03, color: CW },
-    { text: "   → n est positif (exposant positif).", y: 0.55, sz: 0.03, color: CW },
-    { text: "Exemple : 4500 = 45 × 10² (2 zéros enlevés → n = 2).", y: 0.65, sz: 0.03, color: CG },
-
-    { type: "question", isVerification: true, text: "Donc 7360 = 736 × 10¹, c'est bien ça ?", options: [
-        { text: "Oui, on enlève 1 zéro, donc n = 1.", isCorrect: true },
-        { text: "Non, c'est 736 × 10².", isCorrect: false },
-    ]},
-    { text: "Résultat : 7360 = 736 × 10¹ ✓", y: 0.5, sz: 0.03, color: CG },
-
-    // ========== PHASE 5 : Exemples variés ==========
-    { type: "SEP" },
-    { text: "Exemples variés", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "0,7 = 7 × 10⁻¹", y: 0.29, sz: 0.03, color: CW },
-    { text: "0,08 = 8 × 10⁻²", y: 0.37, sz: 0.03, color: CW },
-    { text: "0,006 = 6 × 10⁻³", y: 0.45, sz: 0.03, color: CW },
-    { text: "500 = 5 × 10²", y: 0.53, sz: 0.03, color: CW },
-    { text: "80 000 = 8 × 10⁴", y: 0.61, sz: 0.03, color: CW },
-
-    // ========== PHASE 6 : Remarque importante ==========
-    { type: "SEP" },
-    { text: "Remarque : plusieurs écritures possibles", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "Un même nombre peut s'écrire de plusieurs façons.", y: 0.29, sz: 0.03, color: CW },
-    { text: "4500 = 45 × 10²", y: 0.39, sz: 0.03, color: CW },
-    { text: "4500 = 450 × 10¹", y: 0.47, sz: 0.03, color: CW },
-    { text: "4500 = 4500 × 10⁰", y: 0.55, sz: 0.03, color: CW },
-    { text: "4500 = 45 000 × 10⁻¹", y: 0.63, sz: 0.03, color: CW },
-    { text: "Contrainte : a et n doivent être des entiers relatifs.", y: 0.73, sz: 0.028, bold: true, color: CY },
-
-    // ========== PHASE 7 : Résolution du problème ==========
-    { type: "SEP" },
-    { text: "Résolution du problème : 0,45 L de sirop", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "Étape 1 : a = 45 (nombre sans virgule).", y: 0.29, sz: 0.03, color: CW },
-    { text: "Étape 2 : 2 chiffres après la virgule → n = −2.", y: 0.37, sz: 0.03, color: CW },
-    { text: "0,45 = 45 × 10⁻²", y: 0.47, sz: 0.034, bold: true, color: CG },
-    { text: "Résultat : 0,45 L = 45 × 10⁻² L, avec a = 45 et n = −2. ✓", y: 0.57, sz: 0.032, bold: true, color: CG },
-
-    // ========== EXERCICES D'APPLICATION ==========
-    { type: "SEP" },
-    { text: "Exercices d'application", y: 0.19, sz: 0.032, bold: true, color: CY },
-    { text: "Exercice 1 : Écris 0,073 sous la forme a × 10ⁿ.", y: 0.29, sz: 0.03, color: CW },
-    { type: "question", isVerification: true, text: "0,073 = 73 × 10⁻³, c'est bien ça ?", options: [
-        { text: "Oui, a = 73 et n = −3.", isCorrect: true },
-        { text: "Non, c'est 7,3 × 10⁻².", isCorrect: false },
-        { text: "Non, c'est 73 × 10³.", isCorrect: false },
-    ]},
-    { text: "Résultat : 0,073 = 73 × 10⁻³ ✓", y: 0.5, sz: 0.03, color: CG },
-
-    { type: "SEP" },
-    { text: "Exercice 2 : Écris 2500 sous la forme a × 10ⁿ.", y: 0.29, sz: 0.03, color: CW },
-    { type: "question", isVerification: true, text: "2500 = 25 × 10², c'est bien ça ?", options: [
-        { text: "Oui, on enlève 2 zéros, donc n = 2.", isCorrect: true },
-        { text: "Non, 2500 = 250 × 10².", isCorrect: false },
-        { text: "Non, 2500 = 25 × 10⁻².", isCorrect: false },
-    ]},
-    { text: "Résultat : 2500 = 25 × 10² ✓", y: 0.5, sz: 0.03, color: CG },
-
-    { type: "SEP" },
-    { text: "Exercice 3 : La distance Terre-Lune est 384 000 000 m.", y: 0.29, sz: 0.03, color: CW },
-    { text: "Écris cette distance sous la forme a × 10ⁿ.", y: 0.37, sz: 0.03, color: CW },
-    { type: "question", isVerification: true, text: "384 000 000 = 384 × 10⁶, c'est bien ça ?", options: [
-        { text: "Oui, 6 zéros enlevés, donc n = 6.", isCorrect: true },
-        { text: "Non, 384 × 10⁵.", isCorrect: false },
-        { text: "Non, 384 × 10⁻⁶.", isCorrect: false },
-    ]},
-    { text: "Résultat : 384 000 000 m = 384 × 10⁶ m ✓", y: 0.55, sz: 0.03, color: CG },
+    // ---------- Remarque + En résumé ----------
+    { type: 'SEP' },
+    { text: "Remarque : ", x: 0.05, y: 0.20, sz: 0.035, bold: true, color: CY },
+    { text: "un même nombre a plusieurs écritures possibles :", x: 0.20, y: 0.20, sz: 0.035, color: CW },
+    { text: "4500 = 45 × 10² = 450 × 10¹ = 4500 × 10⁰.", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "En résumé (à retenir) : ", x: 0.05, y: 0.35, sz: 0.035, bold: true, color: CY },
+    { text: "1. Tout décimal peut s'écrire a × 10ⁿ avec a et n entiers.", x: 0.05, y: 0.40, sz: 0.035, color: CW },
+    { text: "2. n > 0 si on enlève des zéros, n < 0 si on décale la virgule.", x: 0.05, y: 0.45, sz: 0.035, color: CW },
+    { text: "3. L'écriture n'est pas unique, sauf si on impose 1 ≤ a < 10.", x: 0.05, y: 0.50, sz: 0.035, color: CW },
 ];
 
 // =====================================================================
-// Notion S14 : Produit de deux nombres écrits sous la forme a × 10ⁿ
+// S14 — Produit de deux nombres écrits sous la forme a × 10ⁿ
 // =====================================================================
 const S14_Events = [
-    // ---------- Titre ----------
-    { text: "Notion S_14 : Produit de deux nombres écrits sous la forme a × 10ⁿ", y: 0.07, sz: 0.042, bold: true, color: CY, isTitle: true },
+    { text: 'Notion : Produit de deux nombres décimaux écrits sous la forme a × 10ⁿ', y: 0.10, sz: 0.06, bold: true, color: CY, isTitle: true },
 
-    // ========== PHASE 1 : Situation réelle de la vie ==========
-    { text: "Situation : ", x: 0.05, y: 0.19, sz: 0.03, color: CY },
-    { text: "Un laboratoire commande des boîtes de comprimés.", x: 0.17, y: 0.19, sz: 0.03, color: CW },
-    { text: "Chaque boîte contient 3 × 10⁴ comprimés (30 000).", x: 0.17, y: 0.27, sz: 0.03, color: CW },
-    { text: "Le laboratoire commande 2 × 10² boîtes (200).", x: 0.17, y: 0.35, sz: 0.03, color: CW },
-    { text: "Problème : ", x: 0.05, y: 0.43, sz: 0.03, color: CY },
-    { text: "Combien de comprimés au total ? Calcule (3 × 10⁴) × (2 × 10²).", x: 0.17, y: 0.43, sz: 0.03, color: CW },
+    // ---------- Fait réel + question ----------
+    { text: "Un laboratoire commande 2 × 10² boîtes.", id: 'intro1', y: 0.25, sz: 0.035, color: CW },
+    { text: "Chaque boîte contient 3 × 10⁴ comprimés.", id: 'intro2', y: 0.30, sz: 0.035, color: CW },
+    { text: "Combien de comprimés au total ?", y: 0.35, sz: 0.035, color: CW },
+    { type: 'question', text: "As-tu une idée ?", options: [
+        { text: "6 × 10⁶", isCorrect: true },
+        { text: "6 × 10⁸", isCorrect: false },
+        { text: "5 × 10⁶", isCorrect: false } ] },
 
-    { type: "question", text: "Tu as une idée ?", options: [
-        { text: "Oui", value: { triggerNext: { text: "Génial ! Partage ton idée :", choices: [
-            { label: "6 × 10⁶", value: { isCorrect: true } },
-            { label: "6 × 10⁸", value: { isCorrect: false } },
-            { label: "5 × 10⁶", value: { isCorrect: false } },
-        ]}}},
-        { text: "Non", value: { isCorrect: false } },
-    ]},
+    // ---------- Démonstration pas à pas ----------
+    { type: 'SEP' },
+    { text: "Démontrons pas à pas", id: 'consigne', y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "(3 × 10⁴) × (2 × 10²)", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "On regroupe les nombres et les puissances :", x: 0.05, y: 0.30, sz: 0.035, color: CW },
+    { text: "= (3 × 2) × (10⁴ × 10²)", x: 0.05, y: 0.35, sz: 0.035, color: CW },
+    { text: "= 6 × 10⁴⁺²  (on additionne les exposants).", x: 0.05, y: 0.40, sz: 0.035, color: CW },
+    { text: "= 6 × 10⁶.", x: 0.05, y: 0.45, sz: 0.035, bold: true, color: CG },
+    { text: "Vérification : 30 000 × 200 = 6 000 000. ✓", x: 0.05, y: 0.50, sz: 0.035, color: CW },
 
-    // ========== PHASE 2 : Démonstration pas à pas ==========
-    { type: "SEP" },
-    { text: "Démontrons pas à pas", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "(3 × 10⁴) × (2 × 10²)", y: 0.29, sz: 0.034, color: CW },
-    { text: "On enlève les parenthèses et on regroupe :", y: 0.39, sz: 0.028, color: CW },
-    { text: "= (3 × 2) × (10⁴ × 10²)", y: 0.47, sz: 0.034, color: CW },
-    { text: "= 6 × 10⁴⁺²  (on additionne les exposants, notion S12)", y: 0.55, sz: 0.034, color: CW },
-    { text: "= 6 × 10⁶", y: 0.63, sz: 0.034, bold: true, color: CG },
-    { text: "Vérification : 30 000 × 200 = 6 000 000 = 6 × 10⁶. ✓", y: 0.71, sz: 0.028, color: CW },
+    // ---------- Règle générale ----------
+    { type: 'clear', id: 'consigne' },
+    { text: "Règle générale", y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "(a × 10ᵐ) × (b × 10ⁿ) = (a × b) × 10ᵐ⁺ⁿ", x: 0.05, y: 0.25, sz: 0.035, bold: true, color: CG },
+    { text: "On multiplie les nombres a et b entre eux.", x: 0.05, y: 0.30, sz: 0.035, color: CW },
+    { text: "On additionne les exposants m et n.", x: 0.05, y: 0.35, sz: 0.035, color: CW },
+    { text: "Exemples : ", x: 0.05, y: 0.45, sz: 0.035, bold: true, color: CW },
+    { text: "(2 × 10³) × (3 × 10⁴) = 6 × 10⁷", x: 0.05, y: 0.50, sz: 0.035, color: CW },
+    { text: "(5 × 10⁻²) × (4 × 10³) = 20 × 10¹", x: 0.05, y: 0.55, sz: 0.035, color: CW },
+    { text: "(7 × 10⁻³) × (2 × 10⁻²) = 14 × 10⁻⁵", x: 0.05, y: 0.60, sz: 0.035, color: CW },
+    { text: "Question : (4 × 10³) × (5 × 10²) = 20 × 10⁵, c'est bien ça ?", id: 'qR', x: 0.05, y: 0.75, sz: 0.035, color: CW },
+    { type: 'question', text: "As-tu une idée ?", options: [
+        { text: "Oui, 4 × 5 = 20 et 3 + 2 = 5", isCorrect: true },
+        { text: "Non, c'est 9 × 10⁵", isCorrect: false },
+        { text: "Non, c'est 20 × 10⁶", isCorrect: false } ] },
+    { type: 'clear', id: 'qR' },
+    { type: 'text', text: "Oui : (4 × 10³) × (5 × 10²) = 20 × 10⁵.", x: 0.05, y: 0.75, sz: 0.035, color: CW, pause: 400 },
 
-    // ========== PHASE 3 : Règle générale ==========
-    { type: "SEP" },
-    { text: "Règle générale", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "(a × 10ᵐ) × (b × 10ⁿ) = (a × b) × 10ᵐ⁺ⁿ", y: 0.3, sz: 0.034, bold: true, color: CG },
-    { text: "Autrement dit :", y: 0.4, sz: 0.028, color: CW },
-    { text: "→ On multiplie les nombres a et b entre eux.", y: 0.48, sz: 0.03, color: CW },
-    { text: "→ On additionne les exposants m et n.", y: 0.56, sz: 0.03, color: CW },
-    { text: "C'est tout !", y: 0.64, sz: 0.028, bold: true, color: CY },
+    // ---------- Réajustement parfois nécessaire ----------
+    { type: 'SEP' },
+    { text: "Parfois on réajuste", id: 'consigneR', y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "Exemple : (8 × 10³) × (5 × 10²) = 40 × 10⁵", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "On peut écrire : 40 × 10⁵ = 4 × 10¹ × 10⁵ = 4 × 10⁶.", x: 0.05, y: 0.30, sz: 0.035, color: CW },
+    { text: "Les deux écritures sont correctes.", x: 0.05, y: 0.35, sz: 0.035, bold: true, color: CW },
+    { type: 'clear', id: 'consigneR' },
 
-    { type: "question", isVerification: true, text: "Donc (4 × 10³) × (5 × 10²) = 20 × 10⁵. C'est bien ça ?", options: [
-        { text: "Oui, 4 × 5 = 20 et 3 + 2 = 5.", isCorrect: true },
-        { text: "Non, c'est 9 × 10⁵.", isCorrect: false },
-        { text: "Non, c'est 20 × 10⁶.", isCorrect: false },
-    ]},
-    { text: "Résultat : (4 × 10³) × (5 × 10²) = 20 × 10⁵ ✓", y: 0.51, sz: 0.03, color: CG },
+    // ---------- Résolution du problème ----------
+    { text: "Résolution : les comprimés du laboratoire", y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "(3 × 10⁴) × (2 × 10²) = (3 × 2) × 10⁴⁺²", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "= 6 × 10⁶.", x: 0.05, y: 0.30, sz: 0.035, bold: true, color: CG },
+    { text: "Le laboratoire reçoit 6 000 000 comprimés.", x: 0.05, y: 0.35, sz: 0.035, color: CW },
 
-    // ========== PHASE 4 : Exemples variés (avec exposants négatifs) ==========
-    { type: "SEP" },
-    { text: "Exemples variés", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "(2 × 10³) × (3 × 10⁴) = 6 × 10⁷", y: 0.29, sz: 0.03, color: CW },
-    { text: "(5 × 10⁻²) × (4 × 10³) = 20 × 10¹", y: 0.37, sz: 0.03, color: CW },
-    { text: "(7 × 10⁻³) × (2 × 10⁻²) = 14 × 10⁻⁵", y: 0.45, sz: 0.03, color: CW },
-    { text: "(6 × 10⁴) × (10 × 10²) = 60 × 10⁶", y: 0.53, sz: 0.03, color: CW },
-    { text: "Astuce : la règle marche aussi avec des exposants négatifs !", y: 0.63, sz: 0.028, bold: true, color: CY },
-
-    // ========== PHASE 5 : Remarque (réajustement parfois nécessaire) ==========
-    { type: "SEP" },
-    { text: "Remarque : parfois on doit réajuster", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "Exemple : (8 × 10³) × (5 × 10²) = 40 × 10⁵", y: 0.3, sz: 0.03, color: CW },
-    { text: "On peut l'écrire aussi 4 × 10⁶ (plus joli, plus simple).", y: 0.38, sz: 0.03, color: CW },
-    { text: "Car 40 × 10⁵ = 4 × 10¹ × 10⁵ = 4 × 10⁶.", y: 0.46, sz: 0.03, color: CW },
-    { text: "Mais 40 × 10⁵ reste correct : on a juste a = 40.", y: 0.56, sz: 0.028, color: CW },
-
-    { type: "question", isVerification: true, text: "Donc (6 × 10²) × (3 × 10³) = 18 × 10⁵ = 1,8 × 10⁶. C'est juste ?", options: [
-        { text: "Oui, 18 × 10⁵ = 1,8 × 10⁶.", isCorrect: true },
-        { text: "Non, c'est 9 × 10⁵.", isCorrect: false },
-    ]},
-    { text: "Résultat : 18 × 10⁵ = 1,8 × 10⁶ ✓", y: 0.53, sz: 0.03, color: CG },
-
-    // ========== PHASE 6 : Résolution du problème ==========
-    { type: "SEP" },
-    { text: "Résolution du problème : comprimés du laboratoire", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "(3 × 10⁴) × (2 × 10²) = (3 × 2) × 10⁴⁺²", y: 0.29, sz: 0.03, color: CW },
-    { text: "= 6 × 10⁶", y: 0.37, sz: 0.034, bold: true, color: CG },
-    { text: "Résultat : Le laboratoire reçoit 6 × 10⁶ = 6 000 000 comprimés. ✓", y: 0.48, sz: 0.032, bold: true, color: CG },
-
-    // ========== EXERCICES D'APPLICATION ==========
-    { type: "SEP" },
-    { text: "Exercices d'application", y: 0.19, sz: 0.032, bold: true, color: CY },
-    { text: "Exercice 1 : Calcule (7 × 10³) × (3 × 10⁴).", y: 0.29, sz: 0.03, color: CW },
-    { type: "question", isVerification: true, text: "Le résultat est 21 × 10⁷. C'est bien ça ?", options: [
-        { text: "Oui, 7 × 3 = 21 et 3 + 4 = 7.", isCorrect: true },
-        { text: "Non, c'est 10 × 10⁷.", isCorrect: false },
-        { text: "Non, c'est 21 × 10¹².", isCorrect: false },
-    ]},
-    { text: "Résultat : (7 × 10³) × (3 × 10⁴) = 21 × 10⁷ ✓", y: 0.5, sz: 0.03, color: CG },
-
-    { type: "SEP" },
-    { text: "Exercice 2 : Calcule (5 × 10⁻²) × (6 × 10³).", y: 0.29, sz: 0.03, color: CW },
-    { type: "question", isVerification: true, text: "Le résultat est 30 × 10¹. C'est bien ça ?", options: [
-        { text: "Oui, 5 × 6 = 30 et −2 + 3 = 1.", isCorrect: true },
-        { text: "Non, c'est 30 × 10⁻⁶.", isCorrect: false },
-        { text: "Non, c'est 11 × 10¹.", isCorrect: false },
-    ]},
-    { text: "Résultat : (5 × 10⁻²) × (6 × 10³) = 30 × 10¹ ✓", y: 0.5, sz: 0.03, color: CG },
-
-    { type: "SEP" },
-    { text: "Exercice 3 : Un astronome observe 4 × 10⁸ étoiles dans une galaxie.", y: 0.29, sz: 0.03, color: CW },
-    { text: "Il y a 2 × 10³ galaxies semblables dans cet amas.", y: 0.37, sz: 0.03, color: CW },
-    { text: "Combien d'étoiles au total ?", y: 0.45, sz: 0.03, color: CW },
-    { type: "question", isVerification: true, text: "Le total est 8 × 10¹¹ étoiles. C'est bien ça ?", options: [
-        { text: "Oui, 4 × 2 = 8 et 8 + 3 = 11.", isCorrect: true },
-        { text: "Non, c'est 6 × 10¹¹.", isCorrect: false },
-        { text: "Non, c'est 8 × 10²⁴.", isCorrect: false },
-    ]},
-    { text: "Résultat : 4 × 10⁸ × 2 × 10³ = 8 × 10¹¹ étoiles. ✓", y: 0.6, sz: 0.03, color: CG },
+    // ---------- Remarque + En résumé ----------
+    { type: 'SEP' },
+    { text: "Remarque : ", x: 0.05, y: 0.20, sz: 0.035, bold: true, color: CY },
+    { text: "on observe que la règle fonctionne aussi", x: 0.20, y: 0.20, sz: 0.035, color: CW },
+    { text: "avec des exposants négatifs.", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "En résumé (à retenir) : ", x: 0.05, y: 0.35, sz: 0.035, bold: true, color: CY },
+    { text: "1. (a × 10ᵐ) × (b × 10ⁿ) = (a × b) × 10ᵐ⁺ⁿ.", x: 0.05, y: 0.40, sz: 0.035, color: CW },
+    { text: "2. On multiplie les entiers et on additionne les exposants.", x: 0.05, y: 0.45, sz: 0.035, color: CW },
+    { text: "3. On peut réajuster l'écriture à la fin si besoin.", x: 0.05, y: 0.50, sz: 0.035, color: CW },
 ];
 
 // =====================================================================
-// Notion S15 : Encadrement d'un nombre écrit sous la forme a × 10ⁿ
+// S15 — Encadrement par deux puissances de 10 consécutives
 // =====================================================================
 const S15_Events = [
-    // ---------- Titre ----------
-    { text: "Notion_S15 : Encadrer un nombre écrit sous la forme a × 10ⁿ", y: 0.07, sz: 0.042, bold: true, color: CY, isTitle: true },
+    { text: 'Notion : Encadrement par deux puissances de 10', y: 0.10, sz: 0.06, bold: true, color: CY, isTitle: true },
 
-    // ========== PHASE 1 : Situation réelle de la vie ==========
-    { text: "Situation : ", x: 0.05, y: 0.19, sz: 0.03, color: CY },
-    { text: "Un journaliste écrit un article sur une ville.", x: 0.17, y: 0.19, sz: 0.03, color: CW },
-    { text: "La population exacte est 384 000 habitants.", x: 0.17, y: 0.27, sz: 0.03, color: CW },
-    { text: "Problème : ", x: 0.05, y: 0.35, sz: 0.03, color: CY },
-    { text: "Entre quelles puissances de 10 consécutives se trouve ce nombre ?", x: 0.17, y: 0.35, sz: 0.03, color: CW },
+    // ---------- Fait réel + question ----------
+    { text: "Un journaliste parle d'une ville de 384 000 habitants.", id: 'intro1', y: 0.25, sz: 0.035, color: CW },
+    { text: "Il veut situer ce nombre entre deux puissances de 10.", id: 'intro2', y: 0.30, sz: 0.035, color: CW },
+    { text: "Entre quelles puissances de 10 consécutives se trouve-t-il ?", y: 0.35, sz: 0.035, color: CW },
+    { type: 'question', text: "As-tu une idée ?", options: [
+        { text: "Entre 10⁵ et 10⁶", isCorrect: true },
+        { text: "Entre 10⁴ et 10⁵", isCorrect: false },
+        { text: "Entre 10⁶ et 10⁷", isCorrect: false } ] },
 
-    { type: "question", text: "Tu as une idée ?", options: [
-        { text: "Oui", value: { triggerNext: { text: "Génial ! Partage ton idée :", choices: [
-            { label: "Entre 10⁵ et 10⁶", value: { isCorrect: true } },
-            { label: "Entre 10⁴ et 10⁵", value: { isCorrect: false } },
-            { label: "Entre 10⁶ et 10⁷", value: { isCorrect: false } },
-        ]}}},
-        { text: "Non", value: { isCorrect: false } },
-    ]},
+    // ---------- Définition d'un encadrement ----------
+    { type: 'SEP' },
+    { text: "Qu'est-ce qu'encadrer un nombre ?", id: 'consigne', y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "C'est trouver deux nombres :", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "→ un plus petit (en dessous),", x: 0.05, y: 0.30, sz: 0.035, color: CW },
+    { text: "→ un plus grand (au-dessus).", x: 0.05, y: 0.35, sz: 0.035, color: CW },
+    { text: "On écrit : petit < nombre < grand.", x: 0.05, y: 0.40, sz: 0.035, color: CW },
+    { text: "Exemple : 5 < 7 < 10.", x: 0.05, y: 0.45, sz: 0.035, color: CW },
+    { type: 'clear', id: 'consigne' },
+    { text: "Encadrer par des puissances de 10 consécutives", y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "Puissances utiles : ", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "10³ = 1 000 ; 10⁴ = 10 000 ; 10⁵ = 100 000 ; 10⁶ = 1 000 000.", x: 0.05, y: 0.30, sz: 0.035, color: CW },
+    { text: "Notre nombre : 384 000.", x: 0.05, y: 0.35, sz: 0.035, color: CW },
+    { text: "100 000 < 384 000 < 1 000 000.", x: 0.05, y: 0.40, sz: 0.035, color: CW },
+    { text: "Donc 10⁵ < 384 000 < 10⁶.", x: 0.05, y: 0.45, sz: 0.035, bold: true, color: CG },
 
-    // ========== PHASE 2 : Définition d'un encadrement ==========
-    { type: "SEP" },
-    { text: "Qu'est-ce qu'encadrer un nombre ?", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "Encadrer un nombre, c'est trouver deux nombres :", y: 0.29, sz: 0.03, color: CW },
-    { text: "→ un plus petit que lui (en dessous),", y: 0.37, sz: 0.03, color: CW },
-    { text: "→ un plus grand que lui (au-dessus).", y: 0.45, sz: 0.03, color: CW },
-    { text: "On écrit : plus petit < nombre < plus grand.", y: 0.55, sz: 0.03, color: CW },
-    { text: "Exemple simple : 7 est encadré par 5 et 10 → 5 < 7 < 10.", y: 0.65, sz: 0.028, color: CW },
+    // ---------- Méthode avec a × 10ⁿ ----------
+    { type: 'SEP' },
+    { text: "Méthode avec l'écriture a × 10ⁿ", id: 'consigneM', y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "Écrivons 384 000 = 384 × 10³.", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "On encadre a = 384 : 100 < 384 < 1 000.", x: 0.05, y: 0.30, sz: 0.035, color: CW },
+    { text: "Donc 10² < 384 < 10³.", x: 0.05, y: 0.35, sz: 0.035, color: CW },
+    { text: "On multiplie tout par 10³ :", x: 0.05, y: 0.40, sz: 0.035, color: CW },
+    { text: "10² × 10³ < 384 × 10³ < 10³ × 10³.", x: 0.05, y: 0.45, sz: 0.035, color: CW },
+    { text: "Donc 10⁵ < 384 000 < 10⁶.", x: 0.05, y: 0.50, sz: 0.035, bold: true, color: CG },
+    { type: 'clear', id: 'consigneM' },
+    { text: "Astuce : compter les chiffres du nombre.", y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "384 000 a 6 chiffres → entre 10⁵ et 10⁶.", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "4 500 a 4 chiffres → entre 10³ et 10⁴.", x: 0.05, y: 0.30, sz: 0.035, color: CW },
+    { text: "73 a 2 chiffres → entre 10¹ et 10².", x: 0.05, y: 0.35, sz: 0.035, color: CW },
 
-    { type: "question", isVerification: true, text: "Donc 25 est encadré par 20 et 30. C'est bien ça ?", options: [
-        { text: "Oui, 20 < 25 < 30.", isCorrect: true },
-        { text: "Non, 25 n'est pas entre 20 et 30.", isCorrect: false },
-    ]},
-    { text: "Résultat : 20 < 25 < 30 ✓", y: 0.5, sz: 0.03, color: CG },
+    // ---------- Cas des décimaux ----------
+    { type: 'SEP' },
+    { text: "Cas des décimaux", id: 'consigneD', y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "0,07 = 7 × 10⁻².", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "Donc 10⁻² < 0,07 < 10⁻¹.", x: 0.05, y: 0.30, sz: 0.035, bold: true, color: CG },
+    { text: "0,003 = 3 × 10⁻³.", x: 0.05, y: 0.35, sz: 0.035, color: CW },
+    { text: "Donc 10⁻³ < 0,003 < 10⁻².", x: 0.05, y: 0.40, sz: 0.035, bold: true, color: CG },
+    { type: 'clear', id: 'consigneD' },
 
-    // ========== PHASE 3 : Encadrement par des puissances de 10 ==========
-    { type: "SEP" },
-    { text: "Encadrer par des puissances de 10 consécutives", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "Rappel des puissances de 10 utiles :", y: 0.29, sz: 0.03, color: CW },
-    { text: "10³ = 1 000 ; 10⁴ = 10 000 ; 10⁵ = 100 000 ; 10⁶ = 1 000 000.", y: 0.37, sz: 0.03, color: CW },
-    { text: "Notre nombre : 384 000.", y: 0.47, sz: 0.03, color: CW },
-    { text: "Il est plus grand que 100 000 (= 10⁵).", y: 0.55, sz: 0.03, color: CW },
-    { text: "Il est plus petit que 1 000 000 (= 10⁶).", y: 0.63, sz: 0.03, color: CW },
-    { text: "Donc : 10⁵ < 384 000 < 10⁶.", y: 0.71, sz: 0.034, bold: true, color: CG },
+    // ---------- Résolution du problème ----------
+    { text: "Résolution : la ville de 384 000 habitants", y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "384 000 a 6 chiffres.", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "Donc 10⁵ < 384 000 < 10⁶.", x: 0.05, y: 0.30, sz: 0.035, bold: true, color: CG },
+    { text: "La population est entre 100 000 et 1 000 000.", x: 0.05, y: 0.35, sz: 0.035, color: CW },
 
-    // ========== PHASE 4 : Méthode avec l'écriture a × 10ⁿ ==========
-    { type: "SEP" },
-    { text: "Méthode avec l'écriture a × 10ⁿ", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "Écrivons 384 000 sous la forme a × 10ⁿ :", y: 0.29, sz: 0.03, color: CW },
-    { text: "384 000 = 384 × 10³", y: 0.37, sz: 0.034, color: CW },
-    { text: "On regarde le nombre a = 384 :", y: 0.47, sz: 0.028, color: CW },
-    { text: "100 < 384 < 1 000  donc  10² < 384 < 10³.", y: 0.55, sz: 0.03, color: CW },
-    { text: "On multiplie tout par 10³ :", y: 0.63, sz: 0.028, color: CW },
-    { text: "10² × 10³ < 384 × 10³ < 10³ × 10³", y: 0.69, sz: 0.034, color: CW },
-
-    { type: "SEP" },
-    { text: "On additionne les exposants (règle S12) :", y: 0.19, sz: 0.028, color: CW },
-    { text: "10⁵ < 384 × 10³ < 10⁶", y: 0.29, sz: 0.034, bold: true, color: CG },
-    { text: "Donc : 10⁵ < 384 000 < 10⁶. ✓", y: 0.39, sz: 0.034, bold: true, color: CG },
-    { text: "Astuce : on compte le nombre total de chiffres du nombre.", y: 0.51, sz: 0.028, bold: true, color: CY },
-    { text: "384 000 a 6 chiffres → il est entre 10⁵ et 10⁶.", y: 0.59, sz: 0.028, color: CW },
-
-    // ========== PHASE 5 : Exemples variés ==========
-    { type: "SEP" },
-    { text: "Exemples variés", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "73 a 2 chiffres  →  10¹ < 73 < 10²", y: 0.29, sz: 0.03, color: CW },
-    { text: "4 500 a 4 chiffres  →  10³ < 4 500 < 10⁴", y: 0.37, sz: 0.03, color: CW },
-    { text: "0,07 a la forme 7 × 10⁻²  →  10⁻² < 0,07 < 10⁻¹", y: 0.45, sz: 0.03, color: CW },
-    { text: "0,003 = 3 × 10⁻³  →  10⁻³ < 0,003 < 10⁻²", y: 0.53, sz: 0.03, color: CW },
-    { text: "Pour les décimaux : la puissance inférieure est l'exposant de a × 10ⁿ.", y: 0.63, sz: 0.028, bold: true, color: CY },
-
-    // ========== PHASE 6 : Résolution du problème ==========
-    { type: "SEP" },
-    { text: "Résolution du problème : la ville de 384 000 habitants", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "384 000 a 6 chiffres.", y: 0.29, sz: 0.03, color: CW },
-    { text: "Donc il est entre 10⁵ et 10⁶.", y: 0.37, sz: 0.03, color: CW },
-    { text: "10⁵ < 384 000 < 10⁶", y: 0.47, sz: 0.034, bold: true, color: CG },
-    { text: "Résultat : La population est comprise entre 100 000 et 1 000 000. ✓", y: 0.57, sz: 0.032, bold: true, color: CG },
-
-    // ========== EXERCICES D'APPLICATION ==========
-    { type: "SEP" },
-    { text: "Exercices d'application", y: 0.19, sz: 0.032, bold: true, color: CY },
-    { text: "Exercice 1 : Encadre 25 000 par deux puissances de 10.", y: 0.29, sz: 0.03, color: CW },
-    { type: "question", isVerification: true, text: "10⁴ < 25 000 < 10⁵. C'est bien ça ?", options: [
-        { text: "Oui, 25 000 a 5 chiffres → entre 10⁴ et 10⁵.", isCorrect: true },
-        { text: "Non, entre 10³ et 10⁴.", isCorrect: false },
-        { text: "Non, entre 10⁵ et 10⁶.", isCorrect: false },
-    ]},
-    { text: "Résultat : 10⁴ < 25 000 < 10⁵ ✓", y: 0.5, sz: 0.03, color: CG },
-
-    { type: "SEP" },
-    { text: "Exercice 2 : Encadre 0,008 par deux puissances de 10.", y: 0.29, sz: 0.03, color: CW },
-    { type: "question", isVerification: true, text: "10⁻³ < 0,008 < 10⁻². C'est bien ça ?", options: [
-        { text: "Oui, 0,008 = 8 × 10⁻³, entre 10⁻³ et 10⁻².", isCorrect: true },
-        { text: "Non, entre 10⁻² et 10⁻¹.", isCorrect: false },
-        { text: "Non, entre 10⁻⁴ et 10⁻³.", isCorrect: false },
-    ]},
-    { text: "Résultat : 10⁻³ < 0,008 < 10⁻² ✓", y: 0.5, sz: 0.03, color: CG },
-
-    { type: "SEP" },
-    { text: "Exercice 3 : La distance Terre-Soleil est 1,5 × 10¹¹ m.", y: 0.29, sz: 0.03, color: CW },
-    { text: "Encadre cette distance par deux puissances de 10.", y: 0.37, sz: 0.03, color: CW },
-    { type: "question", isVerification: true, text: "10¹¹ < 1,5 × 10¹¹ < 10¹². C'est bien ça ?", options: [
-        { text: "Oui, 1 < 1,5 < 10, donc entre 10¹¹ et 10¹².", isCorrect: true },
-        { text: "Non, entre 10¹⁰ et 10¹¹.", isCorrect: false },
-        { text: "Non, entre 10¹² et 10¹³.", isCorrect: false },
-    ]},
-    { text: "Résultat : 10¹¹ < 1,5 × 10¹¹ < 10¹² ✓", y: 0.6, sz: 0.03, color: CG },
+    // ---------- Remarque + En résumé ----------
+    { type: 'SEP' },
+    { text: "Remarque : ", x: 0.05, y: 0.20, sz: 0.035, bold: true, color: CY },
+    { text: "on observe que le nombre de chiffres d'un entier", x: 0.20, y: 0.20, sz: 0.035, color: CW },
+    { text: "donne directement l'exposant de la borne supérieure.", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "En résumé (à retenir) : ", x: 0.05, y: 0.35, sz: 0.035, bold: true, color: CY },
+    { text: "1. Encadrer = trouver un plus petit et un plus grand.", x: 0.05, y: 0.40, sz: 0.035, color: CW },
+    { text: "2. Pour un entier à k chiffres : 10ᵏ⁻¹ < N < 10ᵏ.", x: 0.05, y: 0.45, sz: 0.035, color: CW },
+    { text: "3. Pour un décimal a × 10ⁿ (1 ≤ a < 10) : 10ⁿ < N < 10ⁿ⁺¹.", x: 0.05, y: 0.50, sz: 0.035, color: CW },
 ];
 
 // =====================================================================
-// Notion S16 : Comparaison de deux nombres écrits sous la forme a × 10ⁿ
+// S16 — Comparaison de deux nombres écrits sous la forme a × 10ⁿ
 // =====================================================================
 const S16_Events = [
-    // ---------- Titre ----------
-    { text: "Notion_S16 : Comparer deux nombres écrits sous la forme a × 10ⁿ", y: 0.07, sz: 0.042, bold: true, color: CY, isTitle: true },
+    { text: 'Notion : Comparer deux nombres décimaux écrits sous la forme a × 10ⁿ', y: 0.10, sz: 0.06, bold: true, color: CY, isTitle: true },
 
-    // ========== PHASE 1 : Situation réelle de la vie ==========
-    { text: "Situation : ", x: 0.05, y: 0.19, sz: 0.03, color: CY },
-    { text: "La ville A compte 45 × 10⁴ habitants.", x: 0.17, y: 0.19, sz: 0.03, color: CW },
-    { text: "La ville B compte 320 × 10³ habitants.", x: 0.17, y: 0.27, sz: 0.03, color: CW },
-    { text: "Problème : ", x: 0.05, y: 0.35, sz: 0.03, color: CY },
-    { text: "Quelle ville est la plus peuplée ?", x: 0.17, y: 0.35, sz: 0.03, color: CW },
+    // ---------- Fait réel + question ----------
+    { text: "La ville A : 45 × 10⁴ habitants.", id: 'intro1', y: 0.25, sz: 0.035, color: CW },
+    { text: "La ville B : 320 × 10³ habitants.", id: 'intro2', y: 0.30, sz: 0.035, color: CW },
+    { text: "Quelle ville est la plus peuplée ?", y: 0.35, sz: 0.035, color: CW },
+    { type: 'question', text: "As-tu une idée ?", options: [
+        { text: "La ville A (45 × 10⁴)", isCorrect: true },
+        { text: "La ville B (320 × 10³)", isCorrect: false },
+        { text: "Elles sont égales", isCorrect: false } ] },
 
-    { type: "question", text: "Tu as une idée ?", options: [
-        { text: "Oui", value: { triggerNext: { text: "Génial ! Partage ton idée :", choices: [
-           { label: "La ville B (320 × 10³)", value: { isCorrect: false } },
-            { label: "La ville A (45 × 10⁴)", value: { isCorrect: true } },
-           { label: "Elles sont égales", value: { isCorrect: false } },
-        ]}}},
-        { text: "Non", value: { isCorrect: false } },
-    ]},
+    // ---------- Démonstration ----------
+    { type: 'SEP' },
+    { text: "Même puissance de 10, puis comparaison", id: 'consigne', y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "Écrivons les deux nombres avec la même puissance :", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "45 × 10⁴ = 450 × 10³.", x: 0.05, y: 0.30, sz: 0.035, color: CW },
+    { text: "320 × 10³ reste : 320 × 10³.", x: 0.05, y: 0.35, sz: 0.035, color: CW },
+    { text: "On compare les entiers : 450 > 320.", x: 0.05, y: 0.40, sz: 0.035, color: CW },
+    { text: "Donc 450 × 10³ > 320 × 10³.", x: 0.05, y: 0.45, sz: 0.035, bold: true, color: CG },
+    { text: "C'est-à-dire : 45 × 10⁴ > 320 × 10³.", x: 0.05, y: 0.50, sz: 0.035, color: CW },
 
-    // ========== PHASE 2 : Démonstration (même puissance de 10) ==========
-    { type: "SEP" },
-    { text: "Écrivons les deux nombres avec la MÊME puissance de 10.", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "45 × 10⁴ = 45 × 10 × 10³ = 450 × 10³", y: 0.29, sz: 0.03, color: CW },
-    { text: "320 × 10³ reste écrit : 320 × 10³", y: 0.37, sz: 0.03, color: CW },
-    { text: "Maintenant, on compare les entiers : 450 > 320.", y: 0.47, sz: 0.03, color: CW },
-    { text: "Donc : 450 × 10³ > 320 × 10³", y: 0.57, sz: 0.034, bold: true, color: CG },
-    { text: "C'est-à-dire : 45 × 10⁴ > 320 × 10³.", y: 0.67, sz: 0.03, color: CW },
+    // ---------- Méthode en 3 étapes ----------
+    { type: 'clear', id: 'consigne' },
+    { text: "Méthode en 3 étapes", y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "1. Écrire les deux nombres avec la même puissance de 10.", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "2. Comparer les entiers obtenus.", x: 0.05, y: 0.30, sz: 0.035, color: CW },
+    { text: "3. Conclure avec le même signe.", x: 0.05, y: 0.35, sz: 0.035, color: CW },
+    { text: "Question : il faut la même puissance de 10 pour comparer ?", id: 'qM', x: 0.05, y: 0.55, sz: 0.035, color: CW },
+    { type: 'question', text: "As-tu une idée ?", options: [
+        { text: "Oui, puis on compare les entiers", isCorrect: true },
+        { text: "Non, on compare seulement les exposants", isCorrect: false },
+        { text: "Non, on compare a et n séparément", isCorrect: false } ] },
+    { type: 'clear', id: 'qM' },
+    { type: 'text', text: "Oui : même puissance → on compare les entiers.", x: 0.05, y: 0.55, sz: 0.035, color: CW, pause: 400 },
 
-    // ========== PHASE 3 : La méthode en 3 étapes ==========
-    { type: "SEP" },
-    { text: "Méthode en 3 étapes", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "1. Écrire les deux nombres avec la même puissance de 10.", y: 0.29, sz: 0.03, color: CW },
-    { text: "2. Comparer les entiers relatifs obtenus.", y: 0.39, sz: 0.03, color: CW },
-    { text: "3. Conclure avec le même signe d'inégalité.", y: 0.49, sz: 0.03, color: CW },
-    { type: "question", isVerification: true, text: "Si j'ai bien compris, il faut la même puissance de 10 pour comparer. C'est ça ?", options: [
-        { text: "Non, on compare seulement les exposants.", isCorrect: false },
-        { text: "Oui, puis on compare les entiers.", isCorrect: true },
-        { text: "Non, on compare a et n séparément.", isCorrect: false },
-    ]},
-    { text: "Résultat : même puissance de 10 → on compare les entiers. ✓", y: 0.62, sz: 0.03, color: CG },
+    // ---------- Cas avec exposants négatifs ----------
+    { type: 'SEP' },
+    { text: "Exemple avec des exposants négatifs", id: 'consigneN', y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "Comparons 736 × 10⁻² et 8 × 10⁻¹.", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "8 × 10⁻¹ = 80 × 10⁻² (même puissance).", x: 0.05, y: 0.30, sz: 0.035, color: CW },
+    { text: "On compare : 736 > 80.", x: 0.05, y: 0.35, sz: 0.035, color: CW },
+    { text: "Donc 736 × 10⁻² > 8 × 10⁻¹.", x: 0.05, y: 0.40, sz: 0.035, bold: true, color: CG },
+    { text: "Vérification : 7,36 > 0,8. ✓", x: 0.05, y: 0.45, sz: 0.035, color: CW },
 
-    // ========== PHASE 4 : Exemple avec exposants négatifs ==========
-    { type: "SEP" },
-    { text: "Exemple avec des exposants négatifs", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "Comparons 736 × 10⁻² et 8 × 10⁻¹.", y: 0.29, sz: 0.03, color: CW },
-    { text: "8 × 10⁻¹ = 80 × 10⁻² (même puissance 10⁻²).", y: 0.39, sz: 0.03, color: CW },
-    { text: "On compare les entiers : 736 > 80.", y: 0.49, sz: 0.03, color: CW },
-    { text: "Donc : 736 × 10⁻² > 8 × 10⁻¹.", y: 0.59, sz: 0.034, bold: true, color: CG },
-    { text: "(Vérification : 7,36 > 0,8 ✓)", y: 0.69, sz: 0.028, color: CW },
+    // ---------- Résolution du problème ----------
+    { type: 'clear', id: 'consigneN' },
+    { text: "Résolution : les deux villes", y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "45 × 10⁴ = 450 × 10³, et 450 > 320.", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "La ville A est la plus peuplée (450 000 > 320 000).", x: 0.05, y: 0.30, sz: 0.035, bold: true, color: CG },
 
-    // ========== PHASE 5 : Résolution du problème ==========
-    { type: "SEP" },
-    { text: "Résolution du problème : les deux villes", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "45 × 10⁴ = 450 × 10³, et 450 > 320.", y: 0.29, sz: 0.03, color: CW },
-    { text: "Résultat : La ville A est la plus peuplée (450 000 > 320 000). ✓", y: 0.41, sz: 0.032, bold: true, color: CG },
-
-    // ========== EXERCICES D'APPLICATION ==========
-    { type: "SEP" },
-    { text: "Exercices d'application", y: 0.19, sz: 0.032, bold: true, color: CY },
-    { text: "Exercice 1 : Compare 25 × 10⁵ et 3 × 10⁶.", y: 0.29, sz: 0.03, color: CW },
-    { type: "question", isVerification: true, text: "25 × 10⁵ < 3 × 10⁶, c'est bien ça ?", options: [
-        { text: "Oui, car 3 × 10⁶ = 30 × 10⁵ et 25 < 30.", isCorrect: true },
-        { text: "Non, 25 × 10⁵ > 3 × 10⁶.", isCorrect: false },
-        { text: "Ils sont égaux.", isCorrect: false },
-    ]},
-    { text: "Résultat : 25 × 10⁵ < 3 × 10⁶ ✓", y: 0.5, sz: 0.03, color: CG },
-
-    { type: "SEP" },
-    { text: "Exercice 2 : Compare 7 × 10⁻³ et 700 × 10⁻⁵.", y: 0.29, sz: 0.03, color: CW },
-    { type: "question", isVerification: true, text: "Ces deux nombres sont égaux, c'est bien ça ?", options: [
-        { text: "Oui, car 7 × 10⁻³ = 700 × 10⁻⁵.", isCorrect: true },
-        { text: "Non, 7 × 10⁻³ est plus grand.", isCorrect: false },
-        { text: "Non, 700 × 10⁻⁵ est plus grand.", isCorrect: false },
-    ]},
-    { text: "Résultat : 7 × 10⁻³ = 700 × 10⁻⁵ ✓", y: 0.5, sz: 0.03, color: CG },
-
-    { type: "SEP" },
-    { text: "Exercice 3 : Range dans l'ordre croissant :", y: 0.29, sz: 0.03, color: CW },
-    { text: "5 × 10² ; 45 × 10¹ ; 3 × 10³.", y: 0.37, sz: 0.03, color: CW },
-    { type: "question", isVerification: true, text: "L'ordre est : 45 × 10¹ < 5 × 10² < 3 × 10³. C'est bien ça ?", options: [
-        { text: "Oui, car 450 < 500 < 3 000.", isCorrect: true },
-        { text: "Non, 5 × 10² est le plus petit.", isCorrect: false },
-        { text: "Non, 3 × 10³ est le plus petit.", isCorrect: false },
-    ]},
-    { text: "Résultat : 45 × 10¹ < 5 × 10² < 3 × 10³ ✓", y: 0.55, sz: 0.03, color: CG },
+    // ---------- Remarque + En résumé ----------
+    { type: 'SEP' },
+    { text: "Remarque : ", x: 0.05, y: 0.20, sz: 0.035, bold: true, color: CY },
+    { text: "on observe que la comparaison devient simple", x: 0.20, y: 0.20, sz: 0.035, color: CW },
+    { text: "dès que les deux écritures partagent la même puissance de 10.", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "En résumé (à retenir) : ", x: 0.05, y: 0.35, sz: 0.035, bold: true, color: CY },
+    { text: "1. Pour comparer, on met la même puissance de 10.", x: 0.05, y: 0.40, sz: 0.035, color: CW },
+    { text: "2. On compare ensuite les entiers.", x: 0.05, y: 0.45, sz: 0.035, color: CW },
+    { text: "3. Le signe d'inégalité est conservé.", x: 0.05, y: 0.50, sz: 0.035, color: CW },
 ];
 
 // =====================================================================
-// Notion S17 : Nombre décimal d'ordre n, troncature, consécutifs
+// S17 — Nombre décimal d'ordre n, troncature, décimaux consécutifs
 // =====================================================================
 const S17_Events = [
-    // ---------- Titre ----------
-    { text: "Notion_S17 : Nombre décimal d'ordre n", y: 0.07, sz: 0.042, bold: true, color: CY, isTitle: true },
+    { text: 'Notion : Nombre décimal d\'ordre n, troncature', y: 0.10, sz: 0.06, bold: true, color: CY, isTitle: true },
 
-    // ========== PHASE 1 : Situation réelle de la vie ==========
-    { text: "Situation : ", x: 0.05, y: 0.19, sz: 0.03, color: CY },
-    { text: "Au marché, la balance affiche 3,489371 kg.", x: 0.17, y: 0.19, sz: 0.03, color: CW },
-    { text: "Le vendeur écrit 3,48 kg sur le ticket.", x: 0.17, y: 0.27, sz: 0.03, color: CW },
-    { text: "Problème : ", x: 0.05, y: 0.35, sz: 0.03, color: CY },
-    { text: "Quel est l'ordre de 7,36 ? C'est quoi une troncature ?", x: 0.17, y: 0.35, sz: 0.03, color: CW },
+    // ---------- Fait réel + question ----------
+    { text: "Au marché, la balance affiche 3,489371 kg.", id: 'intro1', y: 0.25, sz: 0.035, color: CW },
+    { text: "Le vendeur écrit 3,48 kg sur le ticket.", id: 'intro2', y: 0.30, sz: 0.035, color: CW },
+    { text: "Quel est l'ordre de 7,36 ? C'est quoi une troncature ?", y: 0.35, sz: 0.035, color: CW },
+    { type: 'question', text: "As-tu une idée ?", options: [
+        { text: "7,36 est d'ordre 2", isCorrect: true },
+        { text: "7,36 est d'ordre 0", isCorrect: false },
+        { text: "7,36 est d'ordre 1", isCorrect: false } ] },
 
-    { type: "question", text: "Tu as une idée ?", options: [
-        { text: "Oui", value: { triggerNext: { text: "Génial ! Partage ton idée :", choices: [
-          { label: "7,36 est d'ordre 0", value: { isCorrect: false } },
-            { label: "7,36 est d'ordre 2", value: { isCorrect: true } },
-            { label: "7,36 est d'ordre 1", value: { isCorrect: false } },
-            
-        ]}}},
-        { text: "Non", value: { isCorrect: false } },
-    ]},
+    // ---------- Définition de l'ordre n ----------
+    { type: 'SEP' },
+    { text: "Définition : nombre décimal d'ordre n", id: 'consigne', y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "Un nombre décimal d'ordre n s'écrit :", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "entier relatif × 10⁻ⁿ.", x: 0.05, y: 0.30, sz: 0.035, bold: true, color: CG },
+    { text: "Exemple : 7,36 = 736 × 10⁻².", x: 0.05, y: 0.35, sz: 0.035, color: CW },
+    { text: "736 est un entier, l'exposant est −2.", x: 0.05, y: 0.40, sz: 0.035, color: CW },
+    { text: "Donc 7,36 est d'ordre 2.", x: 0.05, y: 0.45, sz: 0.035, bold: true, color: CG },
+    { type: 'clear', id: 'consigne' },
 
-    // ========== PHASE 2 : Définition de l'ordre n ==========
-    { type: "SEP" },
-    { text: "Définition : ", x: 0.05, y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "Un nombre décimal d'ordre n s'écrit :", y: 0.29, sz: 0.03, color: CW },
-    { text: "entier relatif × 10⁻ⁿ", y: 0.39, sz: 0.034, bold: true, color: CG, underline: true },
-    { text: "Exemple : 7,36 = 736 × 10⁻² → il est d'ordre 2.", y: 0.51, sz: 0.03, color: CW },
-    { text: "Car 736 est un entier et l'exposant est −2.", y: 0.59, sz: 0.028, color: CW },
+    // ---------- Un nombre a plusieurs ordres ----------
+    { text: "Un même nombre a plusieurs ordres !", y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "7,36 = 736 × 10⁻² → ordre 2", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "7,36 = 7 360 × 10⁻³ → ordre 3", x: 0.05, y: 0.30, sz: 0.035, color: CW },
+    { text: "7,36 = 73 600 × 10⁻⁴ → ordre 4", x: 0.05, y: 0.35, sz: 0.035, color: CW },
+    { text: "7,36 est d'ordre tout entier ≥ 2.", x: 0.05, y: 0.40, sz: 0.035, bold: true, color: CG },
+    { text: "Question : 5,27 est d'ordre 2, c'est bien ça ?", id: 'qO', x: 0.05, y: 0.60, sz: 0.035, color: CW },
+    { type: 'question', text: "As-tu une idée ?", options: [
+        { text: "Oui, ordre 2 (et tout ordre ≥ 2)", isCorrect: true },
+        { text: "Non, ordre 1", isCorrect: false },
+        { text: "Non, ordre 3 seulement", isCorrect: false } ] },
+    { type: 'clear', id: 'qO' },
+    { type: 'text', text: "Oui : 5,27 = 527 × 10⁻², ordre 2.", x: 0.05, y: 0.60, sz: 0.035, color: CW, pause: 400 },
 
-    // ========== PHASE 3 : Un nombre a plusieurs ordres ==========
-    { type: "SEP" },
-    { text: "Un même nombre a plusieurs ordres !", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "7,36 = 736 × 10⁻² → ordre 2", y: 0.29, sz: 0.03, color: CW },
-    { text: "7,36 = 7 360 × 10⁻³ → ordre 3", y: 0.37, sz: 0.03, color: CW },
-    { text: "7,36 = 73 600 × 10⁻⁴ → ordre 4", y: 0.45, sz: 0.03, color: CW },
-    { text: "7,36 est d'ordre tout entier supérieur ou égal à 2.", y: 0.55, sz: 0.03, bold: true, color: CG },
-    { type: "question", isVerification: true, text: "Alors 7,36 = 736 000 × 10⁻⁵, donc il est aussi d'ordre 5 ?", options: [
-        { text: "Oui, exactement !", isCorrect: true },
-        { text: "Non, on s'arrête à l'ordre 4.", isCorrect: false },
-    ]},
-    { text: "Résultat : Oui, 7,36 est d'ordre 2, 3, 4, 5… et tout ordre ≥ 2. ✓", y: 0.68, sz: 0.03, color: CG },
+    // ---------- La troncature ----------
+    { type: 'SEP' },
+    { text: "Troncature à n décimales", id: 'consigneT', y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "Définition : on garde les n premiers chiffres", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "après la virgule, on coupe le reste SANS arrondir.", x: 0.05, y: 0.30, sz: 0.035, color: CW },
+    { text: "Exemple : 3,489371.", x: 0.05, y: 0.35, sz: 0.035, color: CW },
+    { text: "Troncature à 1 décimale : 3,4", x: 0.05, y: 0.40, sz: 0.035, color: CW },
+    { text: "Troncature à 2 décimales : 3,48", x: 0.05, y: 0.45, sz: 0.035, bold: true, color: CG },
+    { text: "C'est ce que fait le vendeur sur le ticket !", x: 0.05, y: 0.50, sz: 0.035, color: CW },
+    { text: "Question : troncature à 1 décimale de 6,783 = ?", id: 'qT', x: 0.05, y: 0.65, sz: 0.035, color: CW },
+    { type: 'question', text: "As-tu une idée ?", options: [
+        { text: "6,7", isCorrect: true },
+        { text: "6,8 (arrondi)", isCorrect: false },
+        { text: "6,78", isCorrect: false } ] },
+    { type: 'clear', id: 'qT' },
+    { type: 'clear', id: 'consigneT' },
+    { type: 'text', text: "6,7 : on coupe après la 1ʳᵉ décimale.", x: 0.05, y: 0.65, sz: 0.035, color: CW, pause: 400 },
 
-    // ========== PHASE 4 : La troncature ==========
-    { type: "SEP" },
-    { text: "Troncature à n décimales", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "Définition : on garde seulement les n premiers chiffres", y: 0.29, sz: 0.03, color: CW },
-    { text: "après la virgule, et on coupe le reste SANS arrondir.", y: 0.37, sz: 0.03, color: CW },
-    { text: "Troncature à 1 décimale de 3,489371 : 3,4", y: 0.49, sz: 0.03, color: CW },
-    { text: "Troncature à 2 décimales de 3,489371 : 3,48", y: 0.57, sz: 0.03, color: CW },
-    { text: "C'est ce que fait le vendeur sur son ticket !", y: 0.67, sz: 0.028, bold: true, color: CY },
+    // ---------- Décimaux consécutifs d'ordre n ----------
+    { type: 'SEP' },
+    { text: "Décimaux consécutifs d'ordre n", id: 'consigneC', y: 0.20, sz: 0.035, bold: true, color: CW },
+    { text: "1,8 et 1,9 sont consécutifs d'ordre 1.", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "Écart : 1,9 − 1,8 = 0,1 = 10⁻¹.", x: 0.05, y: 0.30, sz: 0.035, color: CW },
+    { text: "1,85 et 1,86 sont consécutifs d'ordre 2.", x: 0.05, y: 0.35, sz: 0.035, color: CW },
+    { text: "Écart : 1,86 − 1,85 = 0,01 = 10⁻².", x: 0.05, y: 0.40, sz: 0.035, color: CW },
+    { text: "Le décimal d'ordre 2 qui suit 1,85 est 1,86.", x: 0.05, y: 0.45, sz: 0.035, bold: true, color: CG },
+    { text: "Question : quel décimal d'ordre 2 suit 1,85 ?", id: 'qC', x: 0.05, y: 0.60, sz: 0.035, color: CW },
+    { type: 'question', text: "As-tu une idée ?", options: [
+        { text: "1,86", isCorrect: true },
+        { text: "1,9", isCorrect: false },
+        { text: "1,84", isCorrect: false } ] },
+    { type: 'clear', id: 'qC' },
+    { type: 'clear', id: 'consigneC' },
+    { type: 'text', text: "1,86 : on ajoute 0,01 = 10⁻².", x: 0.05, y: 0.60, sz: 0.035, color: CW, pause: 400 },
 
-    // ========== PHASE 5 : Consécutifs d'ordre n ==========
-    { type: "SEP" },
-    { text: "Consécutifs d'ordre n", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "1,8 et 1,9 sont consécutifs d'ordre 1.", y: 0.29, sz: 0.03, color: CW },
-    { text: "Écart : 1,9 − 1,8 = 0,1 = 10⁻¹.", y: 0.37, sz: 0.03, color: CW },
-    { text: "1,85 et 1,86 sont consécutifs d'ordre 2.", y: 0.47, sz: 0.03, color: CW },
-    { text: "Écart : 1,86 − 1,85 = 0,01 = 10⁻².", y: 0.55, sz: 0.03, color: CW },
-    { text: "2 est le décimal d'ordre 1 qui suit 1,9.", y: 0.65, sz: 0.03, color: CW },
-
-    // ========== PHASE 6 : Résolution du problème ==========
-    { type: "SEP" },
-    { text: "Résolution du problème", y: 0.19, sz: 0.03, bold: true, color: CY },
-    { text: "7,36 = 736 × 10⁻² → ordre 2 (et tout ordre ≥ 2).", y: 0.29, sz: 0.03, color: CW },
-    { text: "Troncature à 2 décimales de 3,489371 : 3,48.", y: 0.39, sz: 0.03, color: CW },
-    { text: "Résultat : ordre n = exposant de 10⁻ⁿ ; troncature = couper sans arrondir. ✓", y: 0.51, sz: 0.032, bold: true, color: CG },
-
-    // ========== EXERCICES D'APPLICATION ==========
-    { type: "SEP" },
-    { text: "Exercices d'application", y: 0.19, sz: 0.032, bold: true, color: CY },
-    { text: "Exercice 1 : Quel est l'ordre de 5,27 ?", y: 0.29, sz: 0.03, color: CW },
-    { type: "question", isVerification: true, text: "5,27 est d'ordre 2, car 5,27 = 527 × 10⁻². C'est bien ça ?", options: [
-        { text: "Non, ordre 1.", isCorrect: false },
-         { text: "Oui, ordre 2 (et tout ordre ≥ 2).", isCorrect: true },
-        { text: "Non, ordre 3 seulement.", isCorrect: false },
-    ]},
-    { text: "Résultat : 5,27 est d'ordre 2 ✓", y: 0.5, sz: 0.03, color: CG },
-
-    { type: "SEP" },
-    { text: "Exercice 2 : Troncature à 1 décimale de 6,783 ?", y: 0.29, sz: 0.03, color: CW },
-    { type: "question", isVerification: true, text: "C'est 6,7, c'est bien ça ?", options: [
-        { text: "Oui, on coupe après la 1ʳᵉ décimale.", isCorrect: true },
-        { text: "Non, c'est 6,8 (arrondi).", isCorrect: false },
-        { text: "Non, c'est 6,78.", isCorrect: false },
-    ]},
-    { text: "Résultat : Troncature à 1 décimale de 6,783 = 6,7 ✓", y: 0.5, sz: 0.03, color: CG },
-
-    { type: "SEP" },
-    { text: "Exercice 3 : Quel décimal d'ordre 2 suit 1,85 ?", y: 0.29, sz: 0.03, color: CW },
-    { type: "question", isVerification: true, text: "C'est 1,86, c'est bien ça ?", options: [
-        { text: "Oui, 1,85 + 0,01 = 1,86.", isCorrect: true },
-        { text: "Non, c'est 1,9.", isCorrect: false },
-        { text: "Non, c'est 1,84.", isCorrect: false },
-    ]},
-    { text: "Résultat : 1,86 suit 1,85 (consécutifs d'ordre 2) ✓", y: 0.5, sz: 0.03, color: CG },
+    // ---------- Remarque + En résumé ----------
+    { type: 'SEP' },
+    { text: "Remarque : ", x: 0.05, y: 0.20, sz: 0.035, bold: true, color: CY },
+    { text: "on observe que la troncature coupe sans arrondir,", x: 0.20, y: 0.20, sz: 0.035, color: CW },
+    { text: "contrairement à l'arrondi qui regarde le chiffre suivant.", x: 0.05, y: 0.25, sz: 0.035, color: CW },
+    { text: "En résumé (à retenir) : ", x: 0.05, y: 0.35, sz: 0.035, bold: true, color: CY },
+    { text: "1. Un décimal d'ordre n s'écrit entier × 10⁻ⁿ.", x: 0.05, y: 0.40, sz: 0.035, color: CW },
+    { text: "2. Troncature à n décimales = couper sans arrondir.", x: 0.05, y: 0.45, sz: 0.035, color: CW },
+    { text: "3. Deux décimaux consécutifs d'ordre n ont pour écart 10⁻ⁿ.", x: 0.05, y: 0.50, sz: 0.035, color: CW },
 ];
+const S18_Events = [
+  {
+    text: "Notion : La hauteur d'un triangle",
+    y: 0.08,
+    sz: 0.055,
+    bold: true,
+    color: CY,
+    isTitle: true,
+  },
+  {
+    text: "Voici un triangle ABC.",
+    x: 0.05,
+    y: 0.16,
+    sz: 0.032,
+    color: CW,
+  },
 
+  // --- Triangle ABC (base BC horizontale) ---
+  {
+    type: "line",
+    x1: 0.27,
+    y1: 0.22,
+    x2: 0.14,
+    y2: 0.58,
+    color: CW,
+    duration: 45,
+  }, // AB
+  {
+    type: "line",
+    x1: 0.14,
+    y1: 0.58,
+    x2: 0.42,
+    y2: 0.58,
+    color: CW,
+    duration: 45,
+  }, // BC
+  {
+    type: "line",
+    x1: 0.42,
+    y1: 0.58,
+    x2: 0.27,
+    y2: 0.22,
+    color: CW,
+    duration: 45,
+  }, // CA
+  { text: "A", x: 0.265, y: 0.185, sz: 0.032, color: CY },
+  { text: "B", x: 0.115, y: 0.605, sz: 0.032, color: CY },
+  { text: "C", x: 0.43, y: 0.605, sz: 0.032, color: CY },
+
+  {
+    type: "question",
+    text: "Sais-tu ce qu'est la hauteur d'un triangle ?",
+    options: [
+      { text: "Oui, je crois", isCorrect: true },
+      { text: "Non, aucune idée", isCorrect: false },
+    ],
+  },
+  { text: "Définition :", x: 0.05, y: 0.7, sz: 0.032, bold: true, color: CY },
+  {
+    text: "La hauteur issue d'un sommet coupe",
+    x: 0.05,
+    y: 0.75,
+    sz: 0.028,
+    color: CW,
+  },
+  {
+    text: "à angle droit le côté opposé.",
+    x: 0.05,
+    y: 0.79,
+    sz: 0.028,
+    color: CW,
+  },
+
+  // --- Hauteur issue de A, pied sur (BC) ---
+  {
+    type: "question",
+    text: "La hauteur issue de A doit tomber sur quel côté ?",
+    options: [
+      { text: "Sur (BC)", isCorrect: true },
+      { text: "Sur (AB)", isCorrect: false },
+      { text: "Sur (AC)", isCorrect: false },
+    ],
+  },
+  {
+    type: "line",
+    x1: 0.27,
+    y1: 0.22,
+    x2: 0.27,
+    y2: 0.58,
+    color: CG,
+    duration: 70,
+  },
+  {
+    type: "line",
+    x1: 0.27,
+    y1: 0.566,
+    x2: 0.278,
+    y2: 0.566,
+    color: "#ffffff",
+    duration: 12,
+  },
+  {
+    type: "line",
+    x1: 0.278,
+    y1: 0.58,
+    x2: 0.278,
+    y2: 0.566,
+    color: "#ffffff",
+    duration: 12,
+  },
+
+  // --- Hauteur issue de B, pied sur (AC) ---
+  {
+    type: "question",
+    text: "Et la hauteur issue de B, sur quel côté tombe-t-elle ?",
+    options: [
+      { text: "Sur (AC)", isCorrect: true },
+      { text: "Sur (BC)", isCorrect: false },
+      { text: "Sur (AB)", isCorrect: false },
+    ],
+  },
+  {
+    type: "line",
+    x1: 0.14,
+    y1: 0.58,
+    x2: 0.321,
+    y2: 0.342,
+    color: CG,
+    duration: 70,
+  },
+  {
+    type: "line",
+    x1: 0.314,
+    y1: 0.35,
+    x2: 0.319,
+    y2: 0.361,
+    color: "#ffffff",
+    duration: 12,
+  },
+  {
+    type: "line",
+    x1: 0.325,
+    y1: 0.353,
+    x2: 0.319,
+    y2: 0.361,
+    color: "#ffffff",
+    duration: 12,
+  },
+
+  // --- Hauteur issue de C, pied sur (AB) ---
+  {
+    type: "question",
+    text: "Enfin, la hauteur issue de C, sur quel côté tombe-t-elle ?",
+    options: [
+      { text: "Sur (AB)", isCorrect: true },
+      { text: "Sur (BC)", isCorrect: false },
+      { text: "Sur (AC)", isCorrect: false },
+    ],
+  },
+  {
+    type: "line",
+    x1: 0.42,
+    y1: 0.58,
+    x2: 0.222,
+    y2: 0.354,
+    color: CG,
+    duration: 70,
+  },
+  {
+    type: "line",
+    x1: 0.228,
+    y1: 0.361,
+    x2: 0.224,
+    y2: 0.373,
+    color: "#ffffff",
+    duration: 12,
+  },
+  {
+    type: "line",
+    x1: 0.217,
+    y1: 0.365,
+    x2: 0.224,
+    y2: 0.373,
+    color: "#ffffff",
+    duration: 12,
+  },
+
+  // --- Point de concours ---
+  {
+    type: "question",
+    isVerification: true,
+    text: "Regarde bien les 3 hauteurs : que remarques-tu ?",
+    options: [
+      { text: "Elles sont parallèles", isCorrect: false },
+      { text: "Elles se croisent toutes au même point", isCorrect: true },
+      { text: "Elles ne se touchent jamais", isCorrect: false },
+    ],
+    retryStart: 260,
+  },
+  {
+    type: "line",
+    x1: 0.264,
+    y1: 0.403,
+    x2: 0.276,
+    y2: 0.415,
+    color: "#ffffff",
+    duration: 15,
+  },
+  {
+    type: "line",
+    x1: 0.264,
+    y1: 0.415,
+    x2: 0.276,
+    y2: 0.403,
+    color: "#ffffff",
+    duration: 15,
+  },
+  { text: "O", x: 0.24, y: 0.4, sz: 0.032, color: "#ffffff" },
+
+  {
+    text: "Remarque : les trois hauteurs se coupent en un même point.",
+    x: 0.05,
+    y: 0.86,
+    sz: 0.03,
+    color: CB,
+  },
+  {
+    text: "Ce point s'appelle l'ORTHOCENTRE du triangle.",
+    x: 0.05,
+    y: 0.91,
+    sz: 0.032,
+    color: CG,
+    bold: true,
+  },
+];
 
 export const programme = {
     SA0: {
@@ -2171,7 +1947,10 @@ export const programme = {
                     { id: 'S14', title: 'Produit de deux nombres écrits a·10ⁿ', events: S14_Events, nextNotionId: 'S15' },
                     { id: 'S15', title: 'Encadrement d\'un nombre écrit a·10ⁿ', events: S15_Events, nextNotionId: 'S16' },
                     { id: 'S16', title: 'Comparaison de deux nombres écrits a·10ⁿ', events: S16_Events, nextNotionId: 'S17' },
-                    { id: 'S17', title: 'Nombre décimal d\'ordre n', events: S17_Events, nextNotionId: 'S12' }
+                    { id: 'S17', title: 'Nombre décimal d\'ordre n', events: S17_Events, nextNotionId: 'S12' },
+                    { id: 'S18', title: 'Hauteur d\'un triangle', events: S18_Events, nextNotionId: 'S12' }
+
+                
 
                 ]
             }

@@ -221,7 +221,7 @@ window.onReplayRequest = requestReplay;
         if (safeCount <= 0 && progress <= 0) return false;
 
         ctx.fillStyle = ev.color || CW;
-        ctx.font = getFont(ev.sz || 0.045, ev.bold, ev.italic);
+        ctx.font = getFont((ev.sz || 0.045) * 0.3, ev.bold, ev.italic);
         ctx.textAlign = ev.align || 'left';
         const textX = boardWidth * (ev.x || 0.05);
         const textY = (ev.y || 0.5) * boardHeight;
