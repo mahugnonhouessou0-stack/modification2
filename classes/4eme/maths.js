@@ -15,6 +15,657 @@ const S00_Events = [
         text: "Bonjour ! Je suis Camélia. On m'a dit que je serai avec toi. Pret ?"
     }, 
 ];
+const S1_1_Events = [
+  // ============================================================
+  // TITRE
+  // ============================================================
+  { text: "Notion : Reconnaissance d'un angle au centre d'un cercle", isTitle: true, x: 0.05, y: 0.08, sz: 0.04, bold: true, color: CY, start: 0, compteur: 20 },
+
+  // ============================================================
+  // PRÉREQUIS : qu'est-ce qu'un angle ?
+  // ============================================================
+  { text: "Avant de commencer, rappelle-toi :", x: 0.05, y: 0.23, sz: 0.035, color: CW },
+  { text: "qu'est-ce qu'un angle ?", x: 0.05, y: 0.29, sz: 0.035, color: CW },
+  { type: 'angle', x: 0.25, y: 0.58, r: 0.18, angle: 55, vertex: 'S', labelLeft: 'A', labelRight: 'B', color: '#ff4444', duration: 180 },
+
+  {
+    type: 'question',
+    freeAnswer: true,
+    text: "Je te laisse répondre. Je ne sais pas.",
+    expectedAnswer: "Un angle est forme de deux demi droites de meme origine"
+  },
+
+  { type: 'text', text: "Un angle est formé de deux demi-droites", x: 0.05, y: 0.85, sz: 0.035, color: '#ffffff', pause: 400 },
+  { type: 'text', text: "de même origine, appelée le sommet.", x: 0.05, y: 0.90, sz: 0.035, color: CG, bold: true, pause: 400 },
+  { type: 'SEP' },
+
+  // ============================================================
+  // CONSTRUCTION DE L'ANGLE AU CENTRE
+  // ============================================================
+  { text: "Traçons un cercle de centre O,", x: 0.05, y: 0.18, sz: 0.035, color: CW },
+  { text: "puis un angle dont le sommet est O.", x: 0.05, y: 0.24, sz: 0.035, color: CW },
+  { type: 'cercle', x: 0.25, y: 0.55, r: 0.20, color: CB, duration: 300 },
+  { type: 'angle', x: 0.25, y: 0.55, r: 0.20, angle: 60, vertex: 'O', labelLeft: 'A', labelRight: 'B', color: '#ff4444', duration: 180 },
+
+  { type: 'text', text: "Le sommet de cet angle AÔB", x: 0.05, y: 0.82, sz: 0.035, color: CW, pause: 300 },
+  { type: 'text', text: "est le centre du cercle.", x: 0.05, y: 0.87, sz: 0.035, color: CW, pause: 300 },
+  { type: 'text', text: "On l'appelle : angle au centre.", x: 0.05, y: 0.93, sz: 0.035, color: CG, bold: true, pause: 400 },
+
+  {
+    type: 'question',
+    text: "Jamais entendu parler. Tu sais quelque chose de cet angle au centre ?",
+    options: [
+      { text: "Oui", isCorrect: true },
+      { text: "Non", isCorrect: false }
+    ]
+  },
+
+  { type: 'SEP' },
+
+  // ============================================================
+  // DÉFINITION
+  // ============================================================
+  { text: "Définissons l'angle au centre.", x: 0.05, y: 0.18, sz: 0.04, bold: true, color: CY },
+  { type: 'cercle', x: 0.25, y: 0.55, r: 0.20, color: CB, duration: 300 },
+  { type: 'angle', x: 0.25, y: 0.55, r: 0.20, angle: 70, vertex: 'O', labelLeft: 'A', labelRight: 'B', color: '#ff4444', duration: 180 },
+
+  { type: 'text', text: "Un angle au centre d'un cercle est un angle", x: 0.05, y: 0.82, sz: 0.035, color: CW, pause: 200 },
+  { type: 'text', text: "dont le sommet est le centre de ce cercle.", x: 0.05, y: 0.87, sz: 0.035, color: CW, pause: 200 },
+  { type: 'text', text: "Ici, AÔB est un angle au centre de centre O.", x: 0.05, y: 0.93, sz: 0.035, color: CG, pause: 400 },
+  { type: 'SEP' },
+
+  // ============================================================
+  // ARC INTERCEPTÉ
+  // ============================================================
+  { text: "Sais-tu pour quel but je te montre ceci ?", x: 0.05, y: 0.18, sz: 0.035, color: CW },
+  { type: 'cercle', x: 0.30, y: 0.55, r: 0.20, color: CB, duration: 300 },
+  { type: 'arc_angle_growth', x: 0.30, y: 0.55, r: 0.20, maxAngle: 65, startAngle: 0, labelFixed: 'B', labelMoving: 'A', labelArc: 'A͡B', maxLength: 4.5, color: CY, duration: 400 },
+
+  {
+    type: 'question',
+    text: "Sais-tu pour quel but ?",
+    options: [
+      { text: "Oui", isCorrect: true },
+      { text: "Non", isCorrect: false }
+    ]
+  },
+// ---------- Séparation AU DÉBUT (sous l'intro, au-dessus des questions) ----------
+    { type: 'line', x1: 0.49, y1: 0.17, x2: 0.49, y2: 0.90, color: '#ffffff', duration: 40 },
+
+  { type: 'text', text: "La portion du cercle comprise entre A et B,", x: 0.52, y: 0.20, sz: 0.035, color: CW, pause: 200 },
+  { type: 'text', text: "à l'intérieur de l'angle, est l'arc intercepté.", x: 0.52, y: 0.25, sz: 0.035, color: CW, pause: 200 },
+  { type: 'text', text: "On dit que l'angle AÔB intercepte l'arc A͡B.", x: 0.05, y: 0.32, sz: 0.035, color: CG, bold: true, pause: 400 },
+  { type: 'SEP' },
+
+  // ============================================================
+  // NOTATION : petit arc / grand arc
+  // ============================================================
+  { text: "Notation :", x: 0.05, y: 0.18, sz: 0.04, bold: true, color: CY },
+  { type: 'cercle', x: 0.25, y: 0.55, r: 0.20, color: CB, duration: 200 },
+  { type: 'arc', x: 0.25, y: 0.55, r: 0.20, startAngle: 0, endAngle: -1.13, anticlockwise: true, labelStart: 'B', labelEnd: 'A', color: CY, lineWidth: 5, duration: 100, pause: 150 },
+  { type: 'text', text: "Le petit arc A͡B (le plus court) se lit petit arc AB", x: 0.05, y: 0.82, sz: 0.035, color: CW, pause: 200 },
+  { type: 'arc', x: 0.25, y: 0.55, r: 0.20, startAngle: 0, endAngle: -1.13, anticlockwise: false, labelStart: 'B', labelEnd: 'A', color: '#ff4444', lineWidth: 4, duration: 100, pause: 150 },
+  { type: 'text', text: "Le grand arc ~AB (le plus long) se lit grand arc AB", x: 0.05, y: 0.89, sz: 0.035, color: CW, pause: 300 },
+
+  // ---------- Séparation AU DÉBUT (sous l'intro, au-dessus des questions) ----------
+    { type: 'line', x1: 0.49, y1: 0.17, x2: 0.49, y2: 0.90, color: '#ffffff', duration: 40 },
+
+  { type: 'text', text: "N.B. : on ne parle pas d'angle saillant ou d'angle rentrant.", x: 0.52, y: 0.20, sz: 0.035, color: '#ff9900', bold: true, pause: 400 },
+
+  { type: 'SEP' },
+
+  // ============================================================
+  // REMARQUE + RÉSUMÉ (partie 1)
+  // ============================================================
+  { type: 'text', text: "Remarque :", x: 0.05, y: 0.20, sz: 0.038, color: CY, bold: true },
+  { type: 'text', text: "Un angle au centre intercepte toujours", x: 0.05, y: 0.27, sz: 0.033, color: CW },
+  { type: 'text', text: "un petit arc et un grand arc.", x: 0.05, y: 0.32, sz: 0.033, color: CW },
+
+  { type: 'text', text: "En résumé (à retenir) :", x: 0.05, y: 0.55, sz: 0.038, color: CY, bold: true },
+  { type: 'text', text: "• Le sommet d'un angle au centre est le centre du cercle.", x: 0.05, y: 0.63, sz: 0.032, color: CG },
+  { type: 'text', text: "• Il intercepte un arc : A͡B (petit) et ~AB (grand).", x: 0.05, y: 0.68, sz: 0.032, color: CG },
+
+  // ============================================================
+  // ============================================================
+  // SOUS-NOTION : Propriété admise (proportionnalité)
+  // ============================================================
+  { type: 'SEP' },
+
+  { text: "Observons l'arc quand l'angle au centre change.", x: 0.05, y: 0.18, sz: 0.035, color: CW },
+  { type: 'cercle', x: 0.30, y: 0.55, r: 0.22, color: CB, duration: 300 },
+  { type: 'arc_angle_growth', x: 0.30, y: 0.55, r: 0.22, maxAngle: 60, startAngle: 0, labelFixed: 'B', labelMoving: 'A', labelArc: 'A͡B', maxLength: 4.6, color: CY, duration: 400 },
+
+  {
+    type: 'question',
+    text: "Que remarques-tu quand l'angle grandit ?",
+    options: [
+      { text: "L'arc grandit aussi", isCorrect: true },
+      { text: "L'arc ne change pas", isCorrect: false }
+    ]
+  },
+
+  { type: 'clear', target: 'arc_angle_growth' },
+  { type: 'arc_angle_growth', x: 0.30, y: 0.55, r: 0.22, maxAngle: 130, startAngle: 0, labelFixed: 'B', labelMoving: 'A', labelArc: 'A͡B', maxLength: 10.0, color: CY, duration: 500 },
+  { type: 'text', text: "Plus l'angle est grand, plus l'arc intercepté", x: 0.05, y: 0.85, sz: 0.032, color: CW, pause: 400 },
+  { type: 'text', text: "est long.", x: 0.05, y: 0.90, sz: 0.032, color: CW, pause: 400 },
+
+// ---------- Séparation AU DÉBUT (sous l'intro, au-dessus des questions) ----------
+    { type: 'line', x1: 0.49, y1: 0.17, x2: 0.49, y2: 0.90, color: '#ffffff', duration: 40 },
+
+  { text: "Propriété (admise) :", x: 0.52, y: 0.18, sz: 0.04, color: CY, bold: true },
+  { type: 'text', text: "La longueur d'un arc de cercle est proportionnelle", x: 0.52, y: 0.27, sz: 0.035, color: CG, bold: true },
+  { type: 'text', text: "à la mesure de l'angle au centre qui l'intercepte.", x: 0.52, y: 0.32, sz: 0.035, color: CG, bold: true },
+  
+  { type: 'text', text: "On peut utiliser un tableau de proportionnalité", x: 0.52, y: 0.42, sz: 0.032, color: CW },
+  { type: 'text', text: "pour calculer une longueur d'arc ou un angle.", x: 0.52, y: 0.47, sz: 0.032, color: CW },
+  { type: 'SEP' },
+
+  // Exemple intégré (pas une section « exercices »)
+  { text: "Exemple : un arc de 60° mesure 6 cm.", x: 0.05, y: 0.18, sz: 0.033, color: CW },
+  { text: "Que mesure un arc de 120° sur ce cercle ?", x: 0.05, y: 0.24, sz: 0.033, color: CW },
+
+  {
+    type: 'question',
+    text: "As-tu une idée du résultat ?",
+    addOther: true,
+    expectedAnswer: "12 cm",
+    options: [
+      { text: "6 cm", isCorrect: false },
+      { text: "12 cm", isCorrect: true },
+      { text: "18 cm", isCorrect: false }
+    ]
+  },
+
+  { type: 'text', text: "120° = 2 × 60°, donc la longueur double aussi :", x: 0.05, y: 0.50, sz: 0.035, color: CG, pause: 400 },
+  { type: 'text', text: "2 × 6 = 12 cm.", x: 0.05, y: 0.56, sz: 0.036, color: CG, bold: true, pause: 400 },
+  { type: 'SEP' },
+
+  { type: 'text', text: "En résumé (à retenir) :", x: 0.05, y: 0.50, sz: 0.038, color: CY, bold: true },
+  { type: 'text', text: "Si l'angle au centre double, la longueur", x: 0.05, y: 0.58, sz: 0.032, color: CG },
+  { type: 'text', text: "de l'arc double aussi.", x: 0.05, y: 0.63, sz: 0.032, color: CG },
+
+  // ============================================================
+  // ============================================================
+  // SOUS-NOTION : Propriétés démontrées
+  // ============================================================
+  { type: 'SEP' },
+
+  { text: "Comparons deux angles au centre de même mesure.", x: 0.05, y: 0.18, sz: 0.033, color: CW },
+  { type: 'cercle', x: 0.30, y: 0.55, r: 0.22, color: CB, duration: 300 },
+  { type: 'arc_angle_growth', x: 0.30, y: 0.55, r: 0.22, maxAngle: 55, startAngle: 0, labelFixed: 'B', labelMoving: 'A', labelArc: 'A͡B', maxLength: 4.2, color: CY, duration: 350 },
+  { type: 'arc_angle_growth', x: 0.30, y: 0.55, r: 0.22, maxAngle: 55, startAngle: 3.14, labelFixed: 'D', labelMoving: 'C', labelArc: 'C͡D', maxLength: 4.2, color: '#ff4444', duration: 350 },
+
+  {
+    type: 'question',
+    text: "AÔB = CÔD = 55°. Que dire des longueurs de A͡B et C͡D ?",
+    options: [
+      { text: "Elles sont différentes", isCorrect: false },
+      { text: "Elles sont égales", isCorrect: true }
+    ],
+    nextQuestion: {
+      text: "Et si deux arcs ont la même longueur, que dire des angles au centre qui les interceptent ?",
+      options: [
+        { text: "Ils ont des mesures différentes", isCorrect: false },
+        { text: "Ils ont la même mesure", isCorrect: true }
+      ]
+    }
+  },
+// ---------- Séparation AU DÉBUT (sous l'intro, au-dessus des questions) ----------
+    { type: 'line', x1: 0.49, y1: 0.17, x2: 0.49, y2: 0.90, color: '#ffffff', duration: 40 },
+ 
+  { type: 'text', text: "Propriétés démontrées :", x: 0.52, y: 0.18, sz: 0.04, color: CY, bold: true },
+  { type: 'text', text: "1. Dans un cercle, si deux angles au centre ont la même mesure,", x: 0.52, y: 0.27, sz: 0.035, color: CW },
+  { type: 'text', text: "alors ils interceptent deux arcs de même longueur.", x: 0.52, y: 0.32, sz: 0.035, color: CW },
+  { type: 'text', text: "2. Dans un cercle, si deux arcs ont la même longueur, alors", x: 0.52, y: 0.45, sz: 0.0325, color: CW },
+  { type: 'text', text: "ils sont interceptés par deux angles au centre de même mesure.", x: 0.52, y: 0.50, sz: 0.035, color: CW },
+  { type: 'text', text: "Remarque : ces deux propriétés sont chacune la", x: 0.52, y: 0.64, sz: 0.030, color: '#ff9900' },
+  { type: 'text', text: "conséquence immédiate de l'autre.", x: 0.52, y: 0.69, sz: 0.030, color: '#ff9900' },
+  { type: 'SEP' },
+
+  // ============================================================
+  // EXEMPLES PROGRESSIFS INTÉGRÉS (pas de section « exercices »)
+  // ============================================================
+  { type: 'cercle', x: 0.30, y: 0.50, r: 0.20, color: CB, duration: 200 },
+  { type: 'arc_angle_growth', x: 0.30, y: 0.50, r: 0.20, maxAngle: 90, startAngle: 0, labelFixed: 'B', labelMoving: 'A', labelArc: 'A͡B', maxLength: 4, color: CY, duration: 250 },
+  { type: 'text', text: "L'arc A͡B de 90° mesure 4 cm.", x: 0.05, y: 0.80, sz: 0.032, color: CW },
+  { type: 'text', text: "Quelle est la longueur d'un arc de 45° ?", x: 0.05, y: 0.85, sz: 0.032, color: CW },
+  {
+    type: 'question',
+    freeAnswer: true,
+    text: "Calcule et donne ta réponse.",
+    expectedAnswer: "2 cm",
+    retryStart: 15
+  },
+  { type: 'SEP' },
+
+  { type: 'cercle', x: 0.30, y: 0.50, r: 0.20, color: CB, duration: 200 },
+  { type: 'arc_angle_growth', x: 0.30, y: 0.50, r: 0.20, maxAngle: 40, startAngle: 0, labelFixed: 'B', labelMoving: 'A', labelArc: 'A͡B', maxLength: 3, color: CY, duration: 250 },
+  { type: 'arc_angle_growth', x: 0.30, y: 0.50, r: 0.20, maxAngle: 40, startAngle: 3.14, labelFixed: 'D', labelMoving: 'C', labelArc: 'C͡D', maxLength: 3, color: '#7af0a0', duration: 250 },
+  {
+    type: 'question',
+    isVerification: true,
+    text: "Sachant que AÔB = CÔD, que dire de A͡B et C͡D ?",
+    options: [
+      { text: "Elles ont la même longueur", isCorrect: true },
+      { text: "On ne peut rien dire", isCorrect: false }
+    ],
+    retryStart: 20
+  },
+  { type: 'SEP' },
+
+  { type: 'text', text: "Problème : sur un cercle, l'arc P͡Q mesure 30°", x: 0.05, y: 0.18, sz: 0.032, color: CW },
+  { type: 'text', text: "et l'arc R͡S mesure 60°. Sachant que L(P͡Q) = 3 cm,", x: 0.05, y: 0.23, sz: 0.032, color: CW },
+  { type: 'text', text: "quelle est la longueur de l'arc R͡S ?", x: 0.05, y: 0.28, sz: 0.032, color: CW },
+  {
+    type: 'question',
+    text: "Que faut-il observer en premier pour résoudre ce problème ?",
+    options: [
+      { text: "Le rapport entre les deux mesures d'angle", isCorrect: true },
+      { text: "La couleur du cercle", isCorrect: false }
+    ]
+  },
+ { type: 'text', text: "60° = 2 × 30°, donc L(R͡S) = 2 × 3 = 6 cm.", x: 0.05, y: 0.55, sz: 0.033, color: CG, bold: true, pause: 400 },
+  {
+    type: 'question',
+    isVerification: true,
+    freeAnswer: true,  
+ text: "Confirme : quelle est la longueur de l'arc R͡S ?",
+ 
+    expectedAnswer :"6 cm",
+     retryStart: 30
+  },
+];
+
+const S2_2_Events = [
+  // ============================================================
+  // TITRE
+  // ============================================================
+  { text: "Notion : Corde dans un cercle", isTitle: true, x: 0.05, y: 0.08, sz: 0.055, bold: true, color: CY, start: 0, compteur: 20 },
+
+  // ============================================================
+  // PARTIE 1 : RECONNAISSANCE ET DÉFINITION
+  // ============================================================
+
+  // --- Prérequis : segment ---
+  { text: "Avant de commencer, rappelle-toi :", x: 0.05, y: 0.23, sz: 0.035, color: CW },
+  { text: "qu'est-ce qu'un segment ?", x: 0.05, y: 0.29, sz: 0.035, color: CW },
+  { type: 'point', x: 0.15, y: 0.55, label: 'M', labelPos: 'top', color: '#ffffff', duration: 60 },
+  { type: 'point', x: 0.40, y: 0.55, label: 'N', labelPos: 'top', color: '#ffffff', duration: 60 },
+  { type: 'line', x1: 0.15, y1: 0.55, x2: 0.40, y2: 0.55, color: '#ffffff', duration: 60 },
+
+  {
+    type: 'question',
+    freeAnswer: true,
+    text: "Je te laisse répondre. Je ne sais pas.",
+    expectedAnswer: "Un segment relie deux points"
+  },
+
+  { type: 'text', text: "Un segment [MN] relie deux points,", x: 0.05, y: 0.82, sz: 0.033, color: '#ffffff', pause: 400 },
+  { type: 'text', text: "ici M et N, appelés ses extrémités.", x: 0.05, y: 0.87, sz: 0.033, color: CG, bold: true, pause: 400 },
+  { type: 'SEP' },
+
+  // --- Observation dans le cercle ---
+  { text: "Traçons un cercle de centre O,", x: 0.05, y: 0.18, sz: 0.035, color: CW },
+  { text: "puis un segment reliant deux de ses points.", x: 0.05, y: 0.24, sz: 0.035, color: CW },
+  { type: 'cercle', x: 0.25, y: 0.52, r: 0.20, color: CB, duration: 300 },
+  { type: 'point', x: 0.3474, y: 0.42, label: 'A', labelPos: 'top', color: '#ffffff', duration: 60 },
+  { type: 'point', x: 0.1526, y: 0.42, label: 'B', labelPos: 'top', color: '#ffffff', duration: 60 },
+  { type: 'line', x1: 0.3474, y1: 0.42, x2: 0.1526, y2: 0.42, color: '#f5e441', duration: 80 },
+
+  { type: 'text', text: "A et B sont deux points du cercle.", x: 0.05, y: 0.80, sz: 0.035, color: CW, pause: 300 },
+  { type: 'text', text: "Le segment [AB] les relie.", x: 0.05, y: 0.85, sz: 0.035, color: CW, pause: 300 },
+
+  {
+    type: 'question',
+    text: "Jamais entendu parler. Tu sais quelque chose de ce segment [AB] ?",
+    options: [
+      { text: "Oui", isCorrect: true },
+      { text: "Non", isCorrect: false }
+    ]
+  },
+  { type: 'SEP' },
+
+  // --- Définition ---
+  { text: "Définissons la corde d'un cercle.", x: 0.05, y: 0.18, sz: 0.04, bold: true, color: CY },
+  { type: 'cercle', x: 0.25, y: 0.52, r: 0.20, color: CB, duration: 300 },
+  { type: 'point', x: 0.3474, y: 0.42, label: 'A', labelPos: 'top', color: '#ffffff', duration: 60 },
+  { type: 'point', x: 0.1526, y: 0.42, label: 'B', labelPos: 'top', color: '#ffffff', duration: 60 },
+  { type: 'line', x1: 0.3474, y1: 0.42, x2: 0.1526, y2: 0.42, color: '#f5e441', duration: 80 },
+
+  { type: 'text', text: "On appelle corde d'un cercle tout segment", x: 0.05, y: 0.80, sz: 0.035, color: CW, pause: 300 },
+  { type: 'text', text: "dont les extrémités sont des points du cercle.", x: 0.05, y: 0.85, sz: 0.035, color: CW, pause: 300 },
+  { type: 'text', text: "Ici, [AB] est une corde du cercle de centre O.", x: 0.05, y: 0.92, sz: 0.035, color: CG, bold: true, pause: 400 },
+  { type: 'SEP' },
+
+  // --- Distinction corde / rayon / diamètre ---
+  { text: "Ne confondons pas corde, rayon et diamètre.", x: 0.05, y: 0.18, sz: 0.035, color: CW },
+  { type: 'cercle', x: 0.30, y: 0.55, r: 0.20, color: CB, duration: 250 },
+  { type: 'point', x: 0.30, y: 0.75, label: 'P', labelPos: 'bottom', color: '#ffffff', duration: 60 },
+  { type: 'line', x1: 0.30, y1: 0.55, x2: 0.30, y2: 0.75, color: '#7af0a0', duration: 60 },
+  { type: 'point', x: 0.4125, y: 0.55, label: 'Q', labelPos: 'right', color: '#ffffff', duration: 60 },
+  { type: 'point', x: 0.1875, y: 0.55, label: 'R', labelPos: 'left', color: '#ffffff', duration: 60 },
+  { type: 'line', x1: 0.4125, y1: 0.55, x2: 0.1875, y2: 0.55, color: '#f5e441', duration: 60 },
+  { type: 'point', x: 0.3862, y: 0.4214, label: 'S', labelPos: 'top', color: '#ffffff', duration: 60 },
+  { type: 'point', x: 0.2138, y: 0.4214, label: 'T', labelPos: 'top', color: '#ffffff', duration: 60 },
+  { type: 'line', x1: 0.3862, y1: 0.4214, x2: 0.2138, y2: 0.4214, color: '#ff4444', duration: 60 },
+
+  {
+    type: 'question',
+    text: "Lequel de ces trois segments est une corde qui n'est pas un diamètre ?",
+    addOther: true,
+    expectedAnswer: "ST",
+    options: [
+      { text: "[OP] (part du centre)", isCorrect: false },
+      { text: "[QR] (passe par le centre)", isCorrect: false },
+      { text: "[ST]", isCorrect: true }
+    ],
+    retryStart: 15
+  },
+
+  { type: 'text', text: "[OP] est un rayon : une extrémité est O.", x: 0.05, y: 0.85, sz: 0.030, color: CW, pause: 300 },
+  { type: 'text', text: "[QR] est un diamètre : il passe par O.", x: 0.05, y: 0.90, sz: 0.030, color: CW, pause: 300 },
+  { type: 'text', text: "[ST] est une corde qui n'est pas un diamètre.", x: 0.05, y: 0.95, sz: 0.030, color: CG, bold: true, pause: 400 },
+  { type: 'SEP' },
+
+  { type: 'text', text: "Remarque :", x: 0.05, y: 0.20, sz: 0.038, color: CY, bold: true },
+  { type: 'text', text: "Le diamètre est donc la plus grande corde", x: 0.05, y: 0.27, sz: 0.033, color: CW },
+  { type: 'text', text: "que l'on puisse tracer dans un cercle.", x: 0.05, y: 0.32, sz: 0.033, color: CW },
+
+  { type: 'text', text: "En résumé (à retenir) :", x: 0.05, y: 0.55, sz: 0.038, color: CY, bold: true },
+  { type: 'text', text: "• Une corde relie deux points du cercle.", x: 0.05, y: 0.63, sz: 0.032, color: CG },
+  { type: 'text', text: "• Un rayon relie le centre à un point du cercle :", x: 0.05, y: 0.70, sz: 0.032, color: CG },
+  { type: 'text', text: "  ce n'est pas une corde.", x: 0.05, y: 0.75, sz: 0.032, color: CG },
+  { type: 'text', text: "• Un diamètre est une corde qui passe par le centre.", x: 0.05, y: 0.82, sz: 0.032, color: CG },
+
+  // ============================================================
+  // ============================================================
+  // PARTIE 2 : PROPRIÉTÉS DE LA CORDE
+  // (sous-notion, pas d'attribut isTitle)
+  // ============================================================
+  { type: 'SEP' },
+
+    // ============================================================
+  // ============================================================
+  // PARTIE 2 : PROPRIÉTÉS DE LA CORDE
+  // ============================================================
+  { type: 'SEP' },
+
+  { text: "Propriétés de la corde", x: 0.05, y: 0.18, sz: 0.04, bold: true, color: CY },
+  { text: "Rappel : deux arcs de même longueur", x: 0.05, y: 0.27, sz: 0.035, color: CW },
+  { text: "donnent deux angles au centre égaux.", x: 0.05, y: 0.32, sz: 0.035, color: CW },
+
+  // --- FIGURE (reste affichée à gauche pendant toute la démonstration) ---
+  { type: 'cercle', x: 0.25, y: 0.62, r: 0.19, color: CB, duration: 300 },
+  { type: 'point', x: 0.25, y: 0.62, label: '', color: CY, duration: 60 },
+ 
+
+  // Triangle OAB (à droite)
+  { type: 'point', x: 0.3457, y: 0.5385, label: 'A', labelPos: 'right', color: '#ffffff', duration: 60 },
+  { type: 'point', x: 0.3457, y: 0.7015, label: 'B', labelPos: 'right', color: '#ffffff', duration: 60 },
+  { type: 'line', x1: 0.25, y1: 0.62, x2: 0.3457, y2: 0.5385, color: CB, duration: 60 },
+  { type: 'line', x1: 0.25, y1: 0.62, x2: 0.3457, y2: 0.7015, color: CB, duration: 60 },
+  { type: 'line', x1: 0.3457, y1: 0.5385, x2: 0.3457, y2: 0.7015, color: '#f5e441', duration: 60 },
+
+  // Triangle OCD (à gauche, symétrique)
+  { type: 'point', x: 0.1543, y: 0.5385, label: 'C', labelPos: 'left', color: '#ffffff', duration: 60 },
+  { type: 'point', x: 0.1543, y: 0.7015, label: 'D', labelPos: 'left', color: '#ffffff', duration: 60 },
+  { type: 'line', x1: 0.25, y1: 0.62, x2: 0.1543, y2: 0.5385, color: '#7af0a0', duration: 60 },
+  { type: 'line', x1: 0.25, y1: 0.62, x2: 0.1543, y2: 0.7015, color: '#7af0a0', duration: 60 },
+  { type: 'line', x1: 0.1543, y1: 0.5385, x2: 0.1543, y2: 0.7015, color: '#ff4444', duration: 60 },
+
+  { type: 'text', text: "On donne : L(A͡B) = L(C͡D).", x: 0.05, y: 0.90, sz: 0.030, color: CW },
+
+    // ---------- Séparation AU DÉBUT (sous l'intro, au-dessus des questions) ----------
+    { type: 'line', x1: 0.49, y1: 0.17, x2: 0.49, y2: 0.90, color: '#ffffff', duration: 40 },
+
+  // --- DÉMONSTRATION (à droite, figure toujours visible à gauche) ---
+  { type: 'text', text: "Cherchons ce que l'on peut en déduire.", x: 0.52, y: 0.20, sz: 0.035, bold: true, color: CY },
+  { type: 'text', text: "1. A͡B = C͡D donc les angles au centre sont égaux AÔB = CÔD.", x: 0.52, y: 0.28, sz: 0.035, color: CW, pause: 300 },
+  { type: 'text', text: "2. [OA],[OB],[OC],[OD] sont des rayons du même cercle alors", x: 0.52, y: 0.35, sz: 0.035, color: CW, pause: 300 },
+   { type: 'text',text: "OA = OC et OB = OD.", x: 0.52, y: 0.42, sz: 0.035, color: CW, pause: 300 },
+  {
+    type: 'question',
+    text: "Deux côtés égaux et l'angle entre eux égal : que dire des triangles OAB et OCD ?",
+    options: [
+      { text: "Ils sont superposables", isCorrect: true },
+      { text: "On ne peut rien dire", isCorrect: false }
+    ]
+  },
+
+  { type: 'text', text: "3. Les triangles OAB et OCD sont donc superposables.", x: 0.52, y: 0.50, sz: 0.035, color: CW, pause: 300 },
+  { type: 'text', text: "4. Conclusion : AB = CD.", x: 0.52, y: 0.58, sz: 0.035, color: CG, bold: true, pause: 400 },
+
+  // --- Page neuve pour l'énoncé de la propriété ---
+  { type: 'SEP' },
+
+  { text: "Propriété 1 :", x: 0.05, y: 0.20, sz: 0.04, color: CY, bold: true },
+  { type: 'text', text: "Dans un cercle, si deux arcs ont la même", x: 0.05, y: 0.28, sz: 0.035, color: CG, bold: true },
+  { type: 'text', text: "longueur, alors les deux cordes qui les", x: 0.05, y: 0.34, sz: 0.035, color: CG, bold: true },
+  { type: 'text', text: "sous-tendent ont la même longueur.", x: 0.05, y: 0.40, sz: 0.035, color: CG, bold: true },
+
+  // ============================================================
+  // RÉCIPROQUE
+  // ============================================================
+  { type: 'SEP' },
+
+  { text: "Et si deux cordes sont égales ?", x: 0.05, y: 0.18, sz: 0.04, bold: true, color: CY },
+  { text: "Reprenons la même figure.", x: 0.05, y: 0.26, sz: 0.035, color: CW },
+
+  // --- même figure, redessinée sur la page neuve ---
+  { type: 'cercle', x: 0.25, y: 0.62, r: 0.19, color: CB, duration: 300 },
+  { type: 'point', x: 0.25, y: 0.62, label: '', color: CY, duration: 60 },
+  { type: 'point', x: 0.3457, y: 0.5385, label: 'A', labelPos: 'right', color: '#ffffff', duration: 60 },
+  { type: 'point', x: 0.3457, y: 0.7015, label: 'B', labelPos: 'right', color: '#ffffff', duration: 60 },
+  { type: 'line', x1: 0.25, y1: 0.62, x2: 0.3457, y2: 0.5385, color: CB, duration: 60 },
+  { type: 'line', x1: 0.25, y1: 0.62, x2: 0.3457, y2: 0.7015, color: CB, duration: 60 },
+  { type: 'line', x1: 0.3457, y1: 0.5385, x2: 0.3457, y2: 0.7015, color: '#f5e441', duration: 60 },
+
+  { type: 'point', x: 0.1543, y: 0.5385, label: 'C', labelPos: 'left', color: '#ffffff', duration: 60 },
+  { type: 'point', x: 0.1543, y: 0.7015, label: 'D', labelPos: 'left', color: '#ffffff', duration: 60 },
+  { type: 'line', x1: 0.25, y1: 0.62, x2: 0.1543, y2: 0.5385, color: '#7af0a0', duration: 60 },
+  { type: 'line', x1: 0.25, y1: 0.62, x2: 0.1543, y2: 0.7015, color: '#7af0a0', duration: 60 },
+  { type: 'line', x1: 0.1543, y1: 0.5385, x2: 0.1543, y2: 0.7015, color: '#ff4444', duration: 60 },
+
+  { type: 'text', text: "On donne cette fois : AB = CD.", x: 0.05, y: 0.90, sz: 0.035, color: CW },
+
+  
+    // ---------- Séparation AU DÉBUT (sous l'intro, au-dessus des questions) ----------
+    { type: 'line', x1: 0.49, y1: 0.17, x2: 0.49, y2: 0.90, color: '#ffffff', duration: 40 },
+
+  // --- Démonstration réciproque, à droite ---
+  { type: 'text', text: "OA=OC=OB=OD (rayons) et AB = CD (donné).", x: 0.52, y: 0.20, sz: 0.035, color: CW, pause: 300 },
+  { type: 'text', text: "Les 3 côtés de OAB égalent ceux de OCD : triangles", x: 0.52, y: 0.26, sz: 0.035, color: CW, pause: 300 },
+  { type: 'text', text: "encore superposables.", x: 0.52, y: 0.31, sz: 0.035, color: CW, pause: 300 },
+
+  {
+    type: 'question',
+    isVerification: true,
+    text: "Si les triangles OAB et OCD sont superposables, que dire des angles AÔB et CÔD ?",
+    options: [
+      { text: "Ils sont égaux", isCorrect: true },
+      { text: "Ils sont différents", isCorrect: false }
+    ],
+    retryStart: 20
+  },
+
+  { type: 'text', text: "Donc AÔB = CÔD, donc A͡B = C͡D (arcs égaux).", x: 0.52, y: 0.38, sz: 0.035, color: CW, pause: 300 },
+
+  // --- Page neuve : énoncé + remarque + résumé ---
+  { type: 'SEP' },
+
+  { text: "Propriété 2 (réciproque) :", x: 0.05, y: 0.18, sz: 0.04, color: CY, bold: true },
+  { type: 'text', text: "Dans un cercle, si deux cordes ont la même", x: 0.05, y: 0.27, sz: 0.035, color: CG, bold: true },
+  { type: 'text', text: "longueur, alors elles sous-tendent deux arcs", x: 0.05, y: 0.32, sz: 0.035, color: CG, bold: true },
+  { type: 'text', text: "de même longueur.", x: 0.05, y: 0.37, sz: 0.035, color: CG, bold: true },
+
+  { type: 'SEP' },
+
+  { type: 'text', text: "Remarque :", x: 0.05, y: 0.20, sz: 0.038, color: CY, bold: true },
+  { type: 'text', text: "Ces deux propriétés reposent sur les", x: 0.05, y: 0.28, sz: 0.035, color: CW },
+  { type: 'text', text: "triangles superposables (rayons égaux).", x: 0.05, y: 0.33, sz: 0.035, color: CW },
+
+  { type: 'text', text: "En résumé (à retenir) :", x: 0.05, y: 0.55, sz: 0.038, color: CY, bold: true },
+  { type: 'text', text: "• Arcs égaux ⇒ cordes égales.", x: 0.05, y: 0.63, sz: 0.035, color: CG },
+  { type: 'text', text: "• Cordes égales ⇒ arcs égaux.", x: 0.05, y: 0.69, sz: 0.035, color: CG },
+];
+
+// ============================================================
+// NOTION : Distance d'un point à une droite
+// ============================================================
+
+const S3_3_Events = [
+    // --- TITRE ---
+    { text: 'Notion : Distance d\'un point à une droite', isTitle: true, x: 0.05, y: 0.08, sz: 0.04, bold: true, color: CY, start: 0, compteur: 15 },
+
+    // ============================================================
+    // ÉTAPES 1 à 4 : Prérequis — la perpendiculaire
+    // ============================================================
+    { type: 'text', text: 'Avant de commencer, une petite question.', x: 0.05, y: 0.17, sz: 0.035, color: CW },
+
+    // Droite (D)
+    { type: 'point', x: 0.08, y: 0.58, label: '', labelPos: 'top', color: '#ffffff', duration: 60 },
+    { type: 'point', x: 0.62, y: 0.58, label: '', labelPos: 'top', color: '#ffffff', duration: 60 },
+    { type: 'line', x1: 0.08, y1: 0.58, x2: 0.62, y2: 0.58, color: CB, duration: 80 },
+    { type: 'text', text: '(D)', x: 0.64, y: 0.58, sz: 0.04, color: CB },
+
+    // Point A, extérieur à (D)
+    { type: 'point', x: 0.32, y: 0.25, label: 'A', labelPos: 'top', color: '#ffffff', duration: 60 },
+
+    {
+        type: 'question',
+        freeAnswer: true,
+        text: "Comment appelle-t-on la droite qui part de A et qui coupe (D) en formant un angle droit ?",
+        expectedAnswer: "la perpendiculaire à (D)"
+    },
+
+    { type: 'text', text: "Cette droite s'appelle la perpendiculaire à (D) passant par A.", id: 'ligne_speciale', x: 0.05, y: 0.70, sz: 0.035, color: CY, pause: 400 },
+
+    // ============================================================
+    // ÉTAPE 5 : Construction + définition (« on appelle »)
+    // ============================================================
+    { type: 'clear', id: 'ligne_speciale' },
+
+    { type: 'point', x: 0.32, y: 0.58, label: 'H', labelPos: 'bottom', color: CY, duration: 60 },
+    { type: 'line', x1: 0.32, y1: 0.25, x2: 0.32, y2: 0.58, color: CG, duration: 80 },
+    // Signe d'angle droit en H
+    { type: 'line', x1: 0.32, y1: 0.55, x2: 0.35, y2: 0.55, color: '#ff4444', duration: 40 },
+    { type: 'line', x1: 0.35, y1: 0.55, x2: 0.35, y2: 0.58, color: '#ff4444', duration: 40 },
+
+    { type: 'text', text: "H est le point d'intersection de (D) et de la perpendiculaire", id: 'ligne_speciale', x: 0.05, y: 0.70, sz: 0.035, color: CW },
+    { type: 'text', text: 'à (D) passant par A.', id: 'ligne_speciale', x: 0.05, y: 0.75, sz: 0.035, color: CW, pause: 400 },
+
+    { type: 'clear', id: 'ligne_speciale' },
+    { type: 'text', text: "On appelle distance du point A à la droite (D)", id: 'ligne_speciale', x: 0.05, y: 0.70, sz: 0.036, bold: true, color: CY },
+    { type: 'text', text: 'la distance AH.', id: 'ligne_speciale', x: 0.05, y: 0.75, sz: 0.036, bold: true, color: CY, pause: 400 },
+
+    // ============================================================
+    // ÉTAPES 6 à 8 : Vérification de compréhension + effacement
+    // ============================================================
+    {
+        type: 'question',
+        text: "As-tu déjà entendu parler de la distance d'un point à une droite ?",
+        options: [
+            { text: 'Oui, un peu', isCorrect: true },
+            { text: 'Non, jamais', isCorrect: false }
+        ]
+    },
+
+    { type: 'SEP' },
+
+    // ============================================================
+    // ÉTAPES 9 à 12 : Développement complet
+    // ============================================================
+    { type: 'text', text: "Définissons la distance d'un point à une droite.", x: 0.05, y: 0.18, sz: 0.038, bold: true, color: CY },
+
+    // Redessin complet
+    { type: 'point', x: 0.08, y: 0.60, label: '', labelPos: 'top', color: '#ffffff', duration: 60 },
+    { type: 'point', x: 0.62, y: 0.60, label: '', labelPos: 'top', color: '#ffffff', duration: 60 },
+    { type: 'line', x1: 0.08, y1: 0.60, x2: 0.62, y2: 0.60, color: CB, duration: 80 },
+    { type: 'text', text: '(D)', x: 0.64, y: 0.60, sz: 0.04, color: CB },
+
+    { type: 'point', x: 0.32, y: 0.28, label: 'A', labelPos: 'top', color: '#ffffff', duration: 60 },
+    { type: 'point', x: 0.32, y: 0.60, label: 'H', labelPos: 'bottom', color: CY, duration: 60 },
+    { type: 'line', x1: 0.32, y1: 0.28, x2: 0.32, y2: 0.60, color: CG, duration: 80 },
+    { type: 'line', x1: 0.32, y1: 0.57, x2: 0.35, y2: 0.57, color: '#ff4444', duration: 40 },
+    { type: 'line', x1: 0.35, y1: 0.57, x2: 0.35, y2: 0.60, color: '#ff4444', duration: 40 },
+
+    // M : un autre point quelconque de (D), pour préparer la propriété
+    { type: 'point', x: 0.50, y: 0.60, label: 'M', labelPos: 'bottom', color: CB, duration: 60 },
+    { type: 'line', x1: 0.32, y1: 0.28, x2: 0.50, y2: 0.60, color: '#ff9900', duration: 80 },
+
+    { type: 'text', text: 'On note : d(A,(D)) = AH', x: 0.05, y: 0.71, sz: 0.035, bold: true, color: CG, pause: 300 },
+    { type: 'text', text: 'On lit : « la distance de A à la droite (D) est AH ».', x: 0.05, y: 0.76, sz: 0.035, color: CW, pause: 300 },
+    { type: 'text', text: 'Termes clés : perpendiculaire → pied H → distance AH.', x: 0.05, y: 0.81, sz: 0.035, color: CB },
+
+    {
+        type: 'question',
+        text: 'Sais-tu à quoi peut servir cette distance ?',
+        options: [
+            { text: 'Oui, je crois', isCorrect: true },
+            { text: 'Pas encore', isCorrect: false }
+        ]
+    },
+
+    { type: 'SEP' },
+
+    // ============================================================
+    // ÉTAPE 13 : Application + propriété (tableau divisé en 2)
+   
+
+    // --- GAUCHE : schéma + propriété (avec justification) ---
+    { type: 'text', text: 'Propriété (à admettre) :', x: 0.05, y: 0.18, sz: 0.035, bold: true, color: CY },
+
+    { type: 'point', x: 0.07, y: 0.50, label: '', labelPos: 'top', color: '#ffffff', duration: 60 },
+    { type: 'point', x: 0.42, y: 0.50, label: '', labelPos: 'top', color: '#ffffff', duration: 60 },
+    { type: 'line', x1: 0.07, y1: 0.50, x2: 0.42, y2: 0.50, color: CB, duration: 60 },
+    { type: 'text', text: '(D)', x: 0.06, y: 0.56, sz: 0.028, color: CB },
+
+    { type: 'point', x: 0.20, y: 0.25, label: 'A', labelPos: 'top', color: '#ffffff', duration: 60 },
+    { type: 'point', x: 0.20, y: 0.50, label: 'H', labelPos: 'bottom', color: CY, duration: 60 },
+    { type: 'line', x1: 0.20, y1: 0.25, x2: 0.20, y2: 0.50, color: CG, duration: 60 },
+    { type: 'line', x1: 0.20, y1: 0.47, x2: 0.23, y2: 0.47, color: '#ff4444', duration: 30 },
+    { type: 'line', x1: 0.23, y1: 0.47, x2: 0.23, y2: 0.50, color: '#ff4444', duration: 30 },
+
+    { type: 'point', x: 0.35, y: 0.50, label: 'M', labelPos: 'bottom', color: CB, duration: 60 },
+    { type: 'line', x1: 0.20, y1: 0.25, x2: 0.35, y2: 0.50, color: '#ff9900', duration: 60 },
+
+    { type: 'text', text: 'Le triangle AHM est rectangle en H.', x: 0.05, y: 0.61, sz: 0.035, color: CW },
+    { type: 'text', text: "Or, l'hypoténuse [AM] est le plus", x: 0.05, y: 0.65, sz: 0.035, color: CW },
+    { type: 'text', text: "grand côté d'un triangle rectangle.", x: 0.05, y: 0.70, sz: 0.035, color: CW },
+    { type: 'text', text: 'Donc AH est plus petit que AM.', x: 0.05, y: 0.75, sz: 0.035, bold: true, color: CG },
+    { type: 'text', text: 'Propriété : AH ≤ AM pour tout', x: 0.05, y: 0.82, sz: 0.035, bold: true, color: CY },
+    { type: 'text', text: 'point M de la droite (D).', x: 0.05, y: 0.87, sz: 0.035, bold: true, color: CY },
+
+     // ============================================================
+    { type: 'line', x1: 0.50, y1: 0.15, x2: 0.50, y2: 0.90, color: '#ffffff', duration: 40 },
+    // --- DROITE : illustration numérique ---
+    { type: 'text', text: 'Illustration numérique :', x: 0.55, y: 0.18, sz: 0.035, bold: true, color: CY },
+    { type: 'text', text: 'AH = 3 cm', x: 0.55, y: 0.25, sz: 0.035, color: CW },
+    { type: 'text', text: 'AM = 5 cm  (avec M ≠ H)', x: 0.55, y: 0.30, sz: 0.035, color: CW },
+    { type: 'text', text: 'On compare : 3 cm < 5 cm', x: 0.55, y: 0.35, sz: 0.035, color: CW },
+    { type: 'text', text: 'donc AH < AM.', x: 0.55, y: 0.40, sz: 0.035, bold: true, color: CW },
+    { type: 'text', text: 'Cas particulier :', x: 0.55, y: 0.50, sz: 0.035, bold: true, color: CY },
+    { type: 'text', text: 'si M = H, alors AM = AH.', x: 0.55, y: 0.57, sz: 0.035, color: CW },
+    { type: 'text', text: 'AH reste donc la plus petite', x: 0.55, y: 0.62, sz: 0.035, color: CW },
+    { type: 'text', text: 'distance possible.', x: 0.55, y: 0.67, sz: 0.035, color: CW },
+
+    { type: 'SEP' },
+
+    // ============================================================
+    // ÉTAPE 15 : Remarque + Résumé (à retenir)
+    // ============================================================
+    { type: 'text', text: 'Remarque :', x: 0.05, y: 0.25, sz: 0.038, bold: true, color: CY },
+    { type: 'text', text: "Si le point A appartient à la droite (D),", x: 0.05, y: 0.32, sz: 0.035, color: CW },
+    { type: 'text', text: 'alors sa distance à (D) est égale à 0.', x: 0.05, y: 0.37, sz: 0.035, color: CW },
+
+    { type: 'text', text: 'En résumé (à retenir) :', x: 0.05, y: 0.55, sz: 0.04, bold: true, color: CY },
+    { type: 'text', text: '• La distance de A à (D) est la distance AH,', x: 0.05, y: 0.63, sz: 0.035, color: CG },
+    { type: 'text', text: '  où H est le pied de la perpendiculaire à (D)', x: 0.08, y: 0.68, sz: 0.035, color: CG },
+    { type: 'text', text: '  issue de A.', x: 0.08, y: 0.73, sz: 0.035, color: CG },
+    { type: 'text', text: '• On note : d(A,(D)) = AH.', x: 0.05, y: 0.80, sz: 0.035, color: CG },
+    { type: 'text', text: '• Pour tout point M de (D) : AH ≤ AM.', x: 0.05, y: 0.86, sz: 0.035, color: CG },
+    { type: 'text', text: '• Si A appartient à (D), alors d(A,(D)) = 0.', x: 0.05, y: 0.92, sz: 0.035, bold: true, color: CG },
+];
 
 
 const S1_Events = [
@@ -1912,16 +2563,16 @@ export const programme = {
         title: 'Géométrie',
         sequences: {
             SEQ1: {
-                title: 'Le cercle',
+                title: 'Angle au centre et corde d\'un cercle',
                 notions: [
-                    { id: 'S4', title: 'Angles au centre d\'un cercle', events: S4_Events, nextNotionId: 'S5' },
-                    { id: 'S5', title: 'La corde d\'un cercle', events: S5_Events, nextNotionId: 'S6' },
+                    { id: 'S1_1', title: 'Reconnaissance d\'un angle au centre d\'un cercle', events: S1_1_Events, nextNotionId: 'S5' },
+                    { id: 'S2_2', title: 'Corde dans un cercle', events: S2_2_Events, nextNotionId: 'S6' },
                 ]
             },
             SEQ2: {
-                title: 'Les droites',
+                title: 'Distances',
                 notions: [
-                    { id: 'S6', title: 'Distance d\'un point à une droite', events: S6_Events, nextNotionId: 'S7' },
+                    { id: 'S3_3', title: 'Distance d\'un point à une droite', events: S3_3_Events, nextNotionId: 'S7' },
                     { id: 'S7', title: 'Distance entre deux droites parallèles', events: S7_Events, nextNotionId: 'S8' },
                     { id: 'S8', title: 'Points équidistants de deux droites parallèles', events: S8_Events, nextNotionId: 'S9' },
                     { id: 'S9', title: 'Points équidistants de deux droites sécantes', events: S9_Events, nextNotionId: 'S10' },

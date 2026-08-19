@@ -1421,7 +1421,7 @@ function showQuestionBox(ev) {
                 }
 
                 if (context && context.expectedAnswer) {
-                    return `J'ai un doute, voyons voir ce qui est fait au tableau. La bonne réponse est : ${context.expectedAnswer}`;
+                    return `J'ai un doute, voyons voir ce qui est fait au tableau.`;
                 }
 
                 if (context && context.options) {

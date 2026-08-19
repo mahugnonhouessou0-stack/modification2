@@ -1,0 +1,38 @@
+Notion : _nom_de_la_notion
+
+
+
+
+   1- Demandez ce que signfie/est tel élément ou notion ( à connaître avant de pouvoir maîtriser la notion en cours)
+   2- Camélia :  “Je te laisse répondre. Je ne sais pas.” Essayez de varier cette phrase dans vos rédactions.
+   3- L’élève répond en texte libre.
+   4- Réponse bonne ou mauvaise de l'élève, vous écrivez la bonne réponse au tableau en commençant par _nom_de_element+“est/signifie”+ signification . Ou fais un schéma pour répondre.
+    5- Ecrivez maintenant la formule/notion et ajouter  “On l’appelle”+nom_de_la_formule.
+    6-Camélia : Jamais entendue parlé. Tu sais quelque chose de cette+nom_de_la_notion
+    7- Eleve : “Oui” ou “non’
+    8- Effacer le tableau
+    9- Recopier intégralement toute la partie qui concerne la notion au tableau en commençant par Définissons la+“Nom_notion”. Au cas où il y a des propriétés disponibles, les intégrer lors de l’etape 13 suivi de leurs illustrations.
+    10-Camelia : Choisis les termes principaux,les aligne et finit par “?” et dis “Sais-tu pour quel but ?“
+    11- Eleve :  “oui” ou “non”
+    12- Effacer le tableau
+     13- Prendre un exemple et illustrer la  formule/notion/propriété.
+     14- Effacer le tableau
+    15- Faire dans la meme scène une Remarque ( à y=0.30) et Résumé( à retenir) (à  y= 60) 
+     16- S’il y a une sous-notion qui suit ce que vous venez de faire, vous commencez à partir de l’etape 5. Une sous-notion ne doit pas avoir un attribut “istitle’. Elle commence comme à l’etape.
+     
+[L’espace entre deux phrases est :  0.05 ] ; [  Taille du titre : 0.04]
+[Taille des textes dans les phrases : 0.035]
+[Taille d’un Katex_text : 0.025]
+
+            NB : Tous les textes(ayant une formule) ne doivent pas être forcément écrits avec katex_text car si la phrase est trop longue le texte latex n’arrive plus à être contrôlé dans les dimensions du tableau. Utilisez : x=0.25( texte latex court), x=0.35 ( texte latex de longueur moyenne) et x=0.46( texte latex long).
+
+A la fin du processus, on écrit d’abord la Remarque et après En résumé (à retenir)
+
+
+A Faire : 
+1-Toujours écrire soit la phrase introduite+question (donc à y= 0.25) après le titre apres avoir laissé une marge de 0.15 entre les deux soit une phrase qui énonce une action qu’on va ensuite produire au tableau
+2-Les questions sont posées à deux endroits :  à la même place que la phrase introductive ou en bas à gauche après une démonstration
+3-Une question posée a droit à une réponse dès la fermeture de la boîte de dialogue
+4-Les textes simples sont en blanc et  ‘Notion : _nom_de_la_notion ‘ ; ‘Remarque’ ; ‘En résumé ( à revenir)’ sont en jaune.
+5-Utiliser les attributs : type:’clear’, ‘ligne_speciale’ et  type:’clear’, ‘groupe_a_effacer’ surtout à l’etape 13 lors de l’illustration de plusieurs propriétés afin de laisser la place à chaque illustration.
+
